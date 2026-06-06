@@ -1,23 +1,19 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useLang } from '../LangContext'
 import './OnboardingPage.css'
 
-const steps = ['身份', '院校', '背景', '诉求']
+const intentIcons = ['👥', '🤝', '💼', '♡']
+const intentColors = ['#6B8CAE', '#3D7A6B', '#B5713A', '#C4857A']
 
 export default function OnboardingPage() {
   const navigate = useNavigate()
+  const { s } = useLang()
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({
     zhName: '', enName: '', school: '', industry: '', city: '',
     intents: [], quote: ''
   })
-
-  const intentOptions = [
-    { label: '结识朋友', icon: '👥', color: '#6B8CAE' },
-    { label: '寻找合作', icon: '🤝', color: '#3D7A6B' },
-    { label: '商务对接', icon: '💼', color: '#B5713A' },
-    { label: '寻觅伴侣', icon: '♡', color: '#C4857A' },
-  ]
 
   const toggleIntent = (label) => {
     setForm(f => ({
@@ -28,7 +24,7 @@ export default function OnboardingPage() {
     }))
   }
 
-  const next = () => step < 3 ? setStep(s => s + 1) : navigate('/directory')
+  const next = () => step < 3 ? setStep(st => st + 1) : navigate('/directory')
 
   return (
     <div className="ob-page">
@@ -38,16 +34,16 @@ export default function OnboardingPage() {
       </div>
 
       <div className="ob-progress-wrap">
-        <button className="ob-back" onClick={() => step > 0 ? setStep(s => s-1) : navigate('/intro')}>‹</button>
+        <button className="ob-back" onClick={() => step > 0 ? setStep(st => st - 1) : navigate('/intro')}>‹</button>
         <span className="ob-step-label serif">Step {step + 1} / 4</span>
         <div style={{width:24}}/>
       </div>
 
       <div className="ob-track">
-        {steps.map((s, i) => (
-          <div key={s} className={`ob-track-step ${i <= step ? 'done' : ''}`}>
+        {s.obSteps.map((label, i) => (
+          <div key={label} className={`ob-track-step ${i <= step ? 'done' : ''}`}>
             <div className="ob-dot" />
-            <span>{s}</span>
+            <span>{label}</span>
           </div>
         ))}
         <div className="ob-track-line">
@@ -58,28 +54,28 @@ export default function OnboardingPage() {
       <div className="ob-content">
         {step === 0 && (
           <>
-            <h2 className="ob-title serif">你是谁？</h2>
-            <p className="ob-subtitle">让大家认识你</p>
-            <label className="ob-label">中文名</label>
-            <input className="ob-input" placeholder="例：张嘉嘉" value={form.zhName}
+            <h2 className="ob-title serif">{s.obStep1Title}</h2>
+            <p className="ob-subtitle">{s.obStep1Sub}</p>
+            <label className="ob-label">{s.obZhName}</label>
+            <input className="ob-input" placeholder={s.obZhNamePh} value={form.zhName}
               onChange={e => setForm(f => ({...f, zhName: e.target.value}))} />
-            <label className="ob-label">英文名 / 昵称</label>
-            <input className="ob-input" placeholder="例：Serena Zhang" value={form.enName}
+            <label className="ob-label">{s.obEnName}</label>
+            <input className="ob-input" placeholder={s.obEnNamePh} value={form.enName}
               onChange={e => setForm(f => ({...f, enName: e.target.value}))} />
-            <label className="ob-label">目前所在城市</label>
-            <input className="ob-input" placeholder="例：上海" value={form.city}
+            <label className="ob-label">{s.obCity}</label>
+            <input className="ob-input" placeholder={s.obCityPh} value={form.city}
               onChange={e => setForm(f => ({...f, city: e.target.value}))} />
           </>
         )}
 
         {step === 1 && (
           <>
-            <h2 className="ob-title serif">你在哪里求学？</h2>
-            <p className="ob-subtitle">选择你的学校</p>
-            {['Oxford', 'Cambridge', 'Other'].map(s => (
-              <button key={s} className={`ob-school-btn ${form.school === s ? 'selected' : ''}`}
-                onClick={() => setForm(f => ({...f, school: s}))}>
-                {s === 'Oxford' ? '牛津 · Oxford' : s === 'Cambridge' ? '剑桥 · Cambridge' : '其他 · Other'}
+            <h2 className="ob-title serif">{s.obStep2Title}</h2>
+            <p className="ob-subtitle">{s.obStep2Sub}</p>
+            {s.obSchools.map((school, i) => (
+              <button key={i} className={`ob-school-btn ${form.school === school ? 'selected' : ''}`}
+                onClick={() => setForm(f => ({...f, school}))}>
+                {school}
               </button>
             ))}
           </>
@@ -87,38 +83,38 @@ export default function OnboardingPage() {
 
         {step === 2 && (
           <>
-            <h2 className="ob-title serif">你的背景</h2>
-            <p className="ob-subtitle">介绍你的职业与行业</p>
-            <label className="ob-label">行业 / 身份</label>
-            <input className="ob-input" placeholder="例：风险投资 · 合伙人" value={form.industry}
+            <h2 className="ob-title serif">{s.obStep3Title}</h2>
+            <p className="ob-subtitle">{s.obStep3Sub}</p>
+            <label className="ob-label">{s.obIndustry}</label>
+            <input className="ob-input" placeholder={s.obIndustryPh} value={form.industry}
               onChange={e => setForm(f => ({...f, industry: e.target.value}))} />
           </>
         )}
 
         {step === 3 && (
           <>
-            <h2 className="ob-title serif">你此刻想要什么</h2>
-            <p className="ob-subtitle" style={{marginBottom:6}}>这是平台的灵魂 —— 把诉求摊开说清楚，连接就没有负担。</p>
+            <h2 className="ob-title serif">{s.obStep4Title}</h2>
+            <p className="ob-subtitle" style={{marginBottom:6}}>{s.obStep4Sub}</p>
             <div className="ob-intent-grid">
-              {intentOptions.map(opt => (
-                <button key={opt.label}
-                  className={`ob-intent-btn ${form.intents.includes(opt.label) ? 'selected' : ''}`}
-                  style={form.intents.includes(opt.label) ? {borderColor: opt.color, background: opt.color + '18'} : {}}
-                  onClick={() => toggleIntent(opt.label)}>
-                  <span>{opt.icon}</span> {opt.label}
+              {s.obIntents.map((label, i) => (
+                <button key={label}
+                  className={`ob-intent-btn ${form.intents.includes(label) ? 'selected' : ''}`}
+                  style={form.intents.includes(label) ? {borderColor: intentColors[i], background: intentColors[i] + '18'} : {}}
+                  onClick={() => toggleIntent(label)}>
+                  <span>{intentIcons[i]}</span> {label}
                 </button>
               ))}
             </div>
-            <label className="ob-label" style={{marginTop:20}}>用一句话说说你的具体诉求</label>
-            <textarea className="ob-textarea" placeholder="e.g. 我在为公司寻找一位 CTO。"
+            <label className="ob-label" style={{marginTop:20}}>{s.obQuoteLabel}</label>
+            <textarea className="ob-textarea" placeholder={s.obQuotePh}
               value={form.quote} onChange={e => setForm(f => ({...f, quote: e.target.value}))} />
-            <p className="ob-hint">✦ 越具体，SerenDipity AI 越能帮你找到对的人。</p>
+            <p className="ob-hint">{s.obHint}</p>
           </>
         )}
       </div>
 
       <button className="ob-btn serif" onClick={next}>
-        {step < 3 ? '下一步' : '完成，进入名录 →'}
+        {step < 3 ? s.obNext : s.obFinish}
       </button>
     </div>
   )

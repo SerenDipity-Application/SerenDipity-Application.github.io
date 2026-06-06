@@ -1,13 +1,20 @@
 import { useNavigate } from 'react-router-dom'
+import { useLang } from '../LangContext'
 import './EntryPage.css'
 
 export default function EntryPage() {
   const navigate = useNavigate()
+  const { lang, toggle, s } = useLang()
+
   return (
     <div className="entry-page">
+      <button className="entry-lang-toggle" onClick={toggle}>
+        {lang === 'zh' ? 'EN' : '中文'}
+      </button>
+
       <div className="entry-border-frame">
         <div className="entry-top-badge">
-          <span className="crown">♛</span> INVITE ONLY · 邀请制
+          <span className="crown">♛</span> {s.entryBadge}
         </div>
 
         <div className="entry-crest">
@@ -21,9 +28,9 @@ export default function EntryPage() {
 
         <div className="entry-divider" />
 
-        <h2 className="entry-event serif">牛剑舞会</h2>
-        <p className="entry-event-en serif">Oxbridge Mayball 2026</p>
-        <p className="entry-date">2026 年 6 月 27 日</p>
+        <h2 className="entry-event serif">{s.entryEvent}</h2>
+        <p className="entry-event-en serif">{s.entryEventCN}</p>
+        <p className="entry-date">{s.entryDate}</p>
 
         <div className="entry-skyline">
           <svg viewBox="0 0 300 80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,15 +62,15 @@ export default function EntryPage() {
         </div>
 
         <div className="entry-footer-text">
-          <p>这里是本场活动的专属圈子</p>
-          <p>通过签到二维码进入，即可加入</p>
+          <p>{s.entryDesc1}</p>
+          <p>{s.entryDesc2}</p>
         </div>
 
         <button className="entry-btn serif" onClick={() => navigate('/intro')}>
-          进入本场圈子 &rsaquo;
+          {s.entryBtn}
         </button>
 
-        <p className="entry-wechat-note">— 仅限在微信 / 小程序内使用 —</p>
+        <p className="entry-wechat-note">{s.entryWechat}</p>
       </div>
     </div>
   )

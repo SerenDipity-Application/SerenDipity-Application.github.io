@@ -1,21 +1,29 @@
 import { useNavigate } from 'react-router-dom'
+import { useLang } from '../LangContext'
 import { myProfile } from '../data'
 import './MyProfilePage.css'
-
-const rows = [
-  { icon: '💼', label: '背景', value: myProfile.background },
-  { icon: '📊', label: '行业', value: myProfile.industry },
-  { icon: '👤', label: '身份', value: myProfile.role },
-  { icon: '📍', label: '来自', value: myProfile.city },
-]
 
 const intentStyle = {
   '结识朋友': { bg: '#EDE8F5', text: '#6B5A9A', icon: '👥' },
   '寻找合作': { bg: '#D4EDE7', text: '#3D7A6B', icon: '🤝' },
+  'Make Friends':       { bg: '#EDE8F5', text: '#6B5A9A', icon: '👥' },
+  'Find Collaborators': { bg: '#D4EDE7', text: '#3D7A6B', icon: '🤝' },
 }
 
 export default function MyProfilePage() {
   const navigate = useNavigate()
+  const { lang, s } = useLang()
+
+  const zhToEn = {'结识朋友':'Make Friends','寻找合作':'Find Collaborators'}
+  const displayIntents = myProfile.intents.map(i => lang === 'en' ? (zhToEn[i] || i) : i)
+
+  const rows = [
+    { icon: '💼', label: s.myRowLabels[0], value: myProfile.background },
+    { icon: '📊', label: s.myRowLabels[1], value: myProfile.industry },
+    { icon: '👤', label: s.myRowLabels[2], value: myProfile.role },
+    { icon: '📍', label: s.myRowLabels[3], value: myProfile.city },
+  ]
+
   return (
     <div className="my-page">
       <div className="my-header">
@@ -23,9 +31,9 @@ export default function MyProfilePage() {
         <button className="my-grid-btn">⊞</button>
       </div>
 
-      <h1 className="my-page-title serif">我的名片</h1>
+      <h1 className="my-page-title serif">{s.myTitle}</h1>
       <div className="my-page-rule" />
-      <p className="my-page-sub">别人会这样看到你</p>
+      <p className="my-page-sub">{s.mySubtitle}</p>
 
       <div className="my-card">
         <div className="my-card-sparkle my-card-sparkle-1">✦</div>
@@ -58,15 +66,15 @@ export default function MyProfilePage() {
       <div className="my-intent-card">
         <div className="my-intent-header">
           <span>♡</span>
-          <span className="my-intent-title">我的诉求</span>
-          <button className="my-intent-edit" onClick={() => navigate('/onboarding')}>编辑</button>
+          <span className="my-intent-title">{s.myIntentTitle}</span>
+          <button className="my-intent-edit" onClick={() => navigate('/onboarding')}>{s.myEdit}</button>
         </div>
         <div className="my-intent-tags">
-          {myProfile.intents.map(intent => {
-            const s = intentStyle[intent] || {bg:'#eee',text:'#666',icon:''}
+          {displayIntents.map(intent => {
+            const style = intentStyle[intent] || {bg:'#eee',text:'#666',icon:''}
             return (
-              <span key={intent} className="my-intent-tag" style={{background:s.bg,color:s.text}}>
-                {s.icon} {intent}
+              <span key={intent} className="my-intent-tag" style={{background:style.bg,color:style.text}}>
+                {style.icon} {intent}
               </span>
             )
           })}
