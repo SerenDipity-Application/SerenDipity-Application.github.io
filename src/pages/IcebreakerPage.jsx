@@ -20,18 +20,31 @@ export default function IcebreakerPage() {
   const navigate = useNavigate()
   const { lang, s } = useLang()
   const member = members.find(m => m.id === parseInt(id)) || members[0]
+
   const [activeTone, setActiveTone] = useState('recommended')
+  const [mode, setMode] = useState('ai')          // 'ai' | 'custom'
+  const [customText, setCustomText] = useState('')
   const [copied, setCopied] = useState(false)
 
   const messages = lang === 'zh' ? messagesZH : messagesEN
+  const toneKeys = ['direct', 'casual']
+
+  const activeText = mode === 'custom' ? customText : messages[activeTone](member)
 
   const copy = () => {
-    navigator.clipboard.writeText(messages[activeTone](member))
+    navigator.clipboard.writeText(activeText)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const toneKeys = ['direct', 'casual']
+  // When switching to custom mode, pre-fill with current AI suggestion
+  const switchToCustom = () => {
+    if (!customText) setCustomText(messages[activeTone](member))
+    setMode('custom')
+  }
+
+  // When switching back to AI mode, keep custom text in state for re-editing
+  const switchToAI = () => setMode('ai')
 
   return (
     <div className="ib-page">
@@ -45,40 +58,115 @@ export default function IcebreakerPage() {
         <p className="ib-small-label">{s.ibSmallLabel}</p>
       </div>
 
+      {/* Mode tabs */}
+      <div className="ib-mode-tabs">
+        <button
+          className={`ib-mode-tab ${mode === 'ai' ? 'active' : ''}`}
+          onClick={switchToAI}>
+          ✦ {lang === 'zh' ? 'AI 建议' : 'AI Suggestions'}
+        </button>
+        <button
+          className={`ib-mode-tab ${mode === 'custom' ? 'active' : ''}`}
+          onClick={switchToCustom}>
+          {s.ibWriteOwn}
+        </button>
+      </div>
+
       <div className="ib-card">
-        <div className="ib-card-header">
-          <span className="ib-star">✦</span>
-          <h2 className="ib-card-title serif">{s.ibTitle}</h2>
-        </div>
-        <p className="ib-to">
-          {lang === 'zh'
-            ? <>发给 <b>{member.zhName}</b> · 都是见过面的人，主动一点不会唐突。</>
-            : <>To <b>{member.enName}</b> · You've met in person — reaching out is natural.</>
-          }
-        </p>
+        {mode === 'ai' ? (
+          <>
+            <div className="ib-card-header">
+              <span className="ib-star">✦</span>
+              <h2 className="ib-card-title serif">{s.ibTitle}</h2>
+            </div>
+            <p className="ib-to">
+              {lang === 'zh'
+                ? <>发给 <b>{member.zhName}</b> · 都是见过面的人，主动一点不会唐突。</>
+                : <>To <b>{member.enName}</b> · You've met in person — reaching out is natural.</>
+              }
+            </p>
 
-        <div className={`ib-message-box ${activeTone === 'recommended' ? 'gold' : ''}`}>
-          {activeTone === 'recommended' && <div className="ib-rec-label">✦ {lang === 'zh' ? '推荐' : 'Recommended'}</div>}
-          <p className="ib-message">{messages[activeTone](member)}</p>
-          {activeTone === 'recommended' && <div className="ib-check">✓</div>}
-        </div>
+            {/* Recommended message box */}
+            <div className={`ib-message-box ${activeTone === 'recommended' ? 'gold' : ''}`}>
+              {activeTone === 'recommended' && (
+                <div className="ib-rec-label">✦ {lang === 'zh' ? '推荐' : 'Recommended'}</div>
+              )}
+              <p className="ib-message">{messages[activeTone](member)}</p>
+              {activeTone === 'recommended' && <div className="ib-check">✓</div>}
+            </div>
 
-        <p className="ib-tone-label">{s.ibToneLabel}</p>
-        <div className="ib-tones">
-          {toneKeys.map((key, i) => (
-            <button key={key}
-              className={`ib-tone-btn ${activeTone === key ? 'active' : ''}`}
-              onClick={() => setActiveTone(key)}>
-              <span className="ib-tone-title">{s.ibTones[i]}</span>
-              <p className="ib-tone-preview">{messages[key](member).slice(0, 36)}…</p>
+            {/* Tone options */}
+            <p className="ib-tone-label">{s.ibToneLabel}</p>
+            <div className="ib-tones">
+              {toneKeys.map((key, i) => (
+                <button key={key}
+                  className={`ib-tone-btn ${activeTone === key ? 'active' : ''}`}
+                  onClick={() => setActiveTone(key)}>
+                  <span className="ib-tone-title">{s.ibTones[i]}</span>
+                  <p className="ib-tone-preview">{messages[key](member).slice(0, 36)}…</p>
+                </button>
+              ))}
+            </div>
+
+            {/* Use AI text as starting point for custom */}
+            <button className="ib-use-as-base" onClick={switchToCustom}>
+              {lang === 'zh' ? '✏ 在此基础上自己改' : '✏ Edit this as a starting point'}
             </button>
-          ))}
-        </div>
+          </>
+        ) : (
+          <>
+            <div className="ib-card-header">
+              <span className="ib-star">✏</span>
+              <h2 className="ib-card-title serif">{s.ibWriteOwnTitle}</h2>
+            </div>
+            <p className="ib-to">
+              {lang === 'zh'
+                ? <>发给 <b>{member.zhName}</b></>
+                : <>To <b>{member.enName}</b></>
+              }
+            </p>
+
+            <textarea
+              className="ib-custom-textarea"
+              placeholder={s.ibWriteOwnPh}
+              value={customText}
+              onChange={e => setCustomText(e.target.value)}
+              autoFocus
+            />
+
+            <p className="ib-custom-hint">{s.ibWriteOwnHint}</p>
+
+            {/* Quick-fill chips */}
+            <p className="ib-tone-label">
+              {lang === 'zh' ? '或者用 AI 建议填入：' : 'Or fill in from an AI suggestion:'}
+            </p>
+            <div className="ib-tones">
+              {['recommended', ...toneKeys].map((key, i) => (
+                <button key={key}
+                  className="ib-tone-btn ib-fill-btn"
+                  onClick={() => setCustomText(messages[key](member))}>
+                  <span className="ib-tone-title">
+                    {key === 'recommended'
+                      ? (lang === 'zh' ? '✦ 推荐版本' : '✦ Recommended')
+                      : s.ibTones[i - 1]}
+                  </span>
+                  <p className="ib-tone-preview">{messages[key](member).slice(0, 36)}…</p>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       <div className="ib-actions">
-        <button className="ib-copy-btn" onClick={copy}>{copied ? s.ibCopied : s.ibCopy}</button>
-        <button className="ib-send-btn serif" onClick={() => navigate('/chat')}>{s.ibSend}</button>
+        <button className="ib-copy-btn" onClick={copy} disabled={mode === 'custom' && !customText.trim()}>
+          {copied ? s.ibCopied : s.ibCopy}
+        </button>
+        <button className="ib-send-btn serif"
+          onClick={() => navigate('/chat')}
+          disabled={mode === 'custom' && !customText.trim()}>
+          {s.ibSend}
+        </button>
       </div>
 
       <p className="ib-disclaimer">{s.ibDisclaimer}</p>

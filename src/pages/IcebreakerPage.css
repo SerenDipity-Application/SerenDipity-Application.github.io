@@ -16,7 +16,35 @@
 .ib-header-label { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--white); flex: 1; }
 .ib-online { font-size: 13px; color: #5DC887; font-weight: 600; }
 
-.ib-hero-text { padding: 0 20px 16px; }
+.ib-hero-text { padding: 0 20px 10px; }
+
+/* Mode tabs */
+.ib-mode-tabs {
+  display: flex;
+  margin: 0 16px 12px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50px;
+  padding: 4px;
+  gap: 4px;
+}
+.ib-mode-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  border-radius: 50px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ib-mode-tab.active {
+  background: var(--white);
+  color: var(--navy);
+  font-weight: 700;
+}
 .ib-small-label { font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; }
 
 .ib-card {
@@ -80,3 +108,51 @@
   cursor: pointer; letter-spacing: 0.5px;
 }
 .ib-disclaimer { font-size: 11px; color: rgba(255,255,255,0.35); text-align: center; padding: 0 20px; }
+
+/* Use as base button */
+.ib-use-as-base {
+  width: 100%;
+  margin-top: 14px;
+  background: none;
+  border: 1.5px dashed #DDD5C8;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-light);
+  cursor: pointer;
+}
+.ib-use-as-base:hover { border-color: var(--navy); color: var(--navy); }
+
+/* Custom textarea */
+.ib-custom-textarea {
+  width: 100%;
+  border: 1.5px solid #DDD5C8;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-dark);
+  background: var(--white);
+  min-height: 120px;
+  resize: none;
+  outline: none;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.ib-custom-textarea:focus { border-color: var(--navy); }
+.ib-custom-hint {
+  font-size: 12px;
+  color: var(--rose);
+  margin-bottom: 14px;
+}
+
+/* Fill btn variant */
+.ib-fill-btn { opacity: 0.85; }
+.ib-fill-btn:hover { opacity: 1; border-color: var(--navy); }
+
+/* Disabled state */
+.ib-copy-btn:disabled, .ib-send-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

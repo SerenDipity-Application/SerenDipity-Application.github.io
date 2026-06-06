@@ -79,6 +79,10 @@ export const t = {
     ibCopied: 'Copied ✓',
     ibSend: '✈ Send Greeting',
     ibDisclaimer: '🛡 Suggested by SerenDipity — your authentic voice, your call',
+    ibWriteOwn: '✏ Write my own',
+    ibWriteOwnTitle: 'Write your own greeting',
+    ibWriteOwnPh: 'Type your message here…',
+    ibWriteOwnHint: 'Tip: use an AI suggestion above as a starting point.',
 
     // Chat
     chatTitle: 'Chat',
@@ -186,6 +190,10 @@ export const t = {
     ibCopied: '已复制 ✓',
     ibSend: '✈ 发送招呼',
     ibDisclaimer: '🛡 建议由 SerenDipity 生成，真实表达由你决定',
+    ibWriteOwn: '✏ 自己写',
+    ibWriteOwnTitle: '写一条专属招呼',
+    ibWriteOwnPh: '在这里输入你想说的话…',
+    ibWriteOwnHint: '小提示：可以参考上面的 AI 建议再修改。',
 
     // Chat
     chatTitle: '聊天',
