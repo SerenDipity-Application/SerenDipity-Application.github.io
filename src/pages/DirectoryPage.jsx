@@ -84,7 +84,7 @@ export default function DirectoryPage() {
                     <span className="dir-dot" />
                     {lang === 'en' ? m.schoolEn : m.school} · {m.college} · {m.degree}
                   </p>
-                  <p className="dir-company">{m.company} · {lang === 'en' ? m.role : m.role}</p>
+                  <p className="dir-company">{m.company} · {lang === 'en' ? m.roleEn : m.role}</p>
                   <div className="dir-tags">
                     {displayIntents(m.intents).map(intent => {
                       const c = intentColorMap[intent] || {bg:'#eee',text:'#666',dot:'#666'}
@@ -95,7 +95,7 @@ export default function DirectoryPage() {
                       )
                     })}
                   </div>
-                  <p className="dir-quote">「{m.quote}」</p>
+                  <p className="dir-quote">「{lang === 'en' ? m.quoteEn : m.quote}」</p>
                 </div>
               </div>
               <div className="dir-card-actions">

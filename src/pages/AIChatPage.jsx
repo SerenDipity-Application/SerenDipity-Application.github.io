@@ -6,7 +6,7 @@ import './AIChatPage.css'
 
 export default function AIChatPage() {
   const navigate = useNavigate()
-  const { s } = useLang()
+  const { lang, s } = useLang()
   const [input, setInput] = useState('')
   const rec = members[3]
 
@@ -35,7 +35,7 @@ export default function AIChatPage() {
             <div className="ai-rec-avatar" style={{background: rec.color}}>{rec.initials}</div>
             <div>
               <p className="ai-rec-name">{rec.zhName} <span className="ai-rec-en serif">{rec.enName}</span></p>
-              <p className="ai-rec-info">🏛 {rec.school}大学 · 💼 {rec.industry}</p>
+              <p className="ai-rec-info">🏛 {lang === 'en' ? rec.schoolEn : rec.school} · 💼 {lang === 'en' ? rec.industryEn : rec.industry}</p>
             </div>
           </div>
           <div className="ai-rec-reason">

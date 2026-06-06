@@ -81,7 +81,7 @@ export default function MyProfilePage() {
         </div>
         <div className="my-quote-wrap">
           <span className="my-quote-mark open">"</span>
-          <p className="my-quote">{myProfile.quote}</p>
+          <p className="my-quote">{lang === 'en' ? myProfile.quoteEn : myProfile.quote}</p>
           <span className="my-quote-mark close">"</span>
         </div>
       </div>

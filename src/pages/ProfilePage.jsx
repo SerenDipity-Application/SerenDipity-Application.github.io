@@ -55,7 +55,7 @@ export default function ProfilePage() {
           </div>
           <div className="profile-quote-block">
             <div className="profile-quote-bar" />
-            <p className="profile-quote">「{member.quote}」</p>
+            <p className="profile-quote">「{lang === 'en' ? member.quoteEn : member.quote}」</p>
           </div>
         </div>
 
@@ -63,15 +63,15 @@ export default function ProfilePage() {
 
         <div className="profile-section">
           <p className="profile-section-label">{s.profileBackground}</p>
-          <p className="profile-company">{member.company} · {member.role}</p>
-          <p className="profile-industry">{member.industry} · {member.degree}</p>
+          <p className="profile-company">{member.company} · {lang === 'en' ? member.roleEn : member.role}</p>
+          <p className="profile-industry">{lang === 'en' ? member.industryEn : member.industry} · {lang === 'en' ? member.degreeEn : member.degree}</p>
         </div>
 
         <div className="profile-divider" />
 
         <div className="profile-section">
           <p className="profile-section-label">{s.profileAbout}</p>
-          <p className="profile-about">{member.about}</p>
+          <p className="profile-about">{lang === 'en' ? member.aboutEn : member.about}</p>
         </div>
       </div>
 
