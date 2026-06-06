@@ -1,0 +1,86 @@
+.my-page { min-height: 100%; background: var(--ivory); display: flex; flex-direction: column; padding: 0 20px 32px; }
+.my-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 0 0;
+}
+.my-logo { font-size: 18px; color: var(--navy); font-weight: 600; }
+.my-grid-btn {
+  background: #F0EAE0; border: none; width: 36px; height: 36px;
+  border-radius: 8px; cursor: pointer; font-size: 18px; color: var(--navy);
+}
+.my-page-title { font-size: 28px; color: var(--navy); margin-top: 16px; margin-bottom: 6px; }
+.my-page-rule { width: 28px; height: 2px; background: var(--rose); margin-bottom: 6px; }
+.my-page-sub { font-size: 13px; color: var(--text-light); margin-bottom: 20px; }
+
+.my-card {
+  background: var(--white); border-radius: 20px;
+  padding: 28px 20px 20px; margin-bottom: 12px;
+  display: flex; flex-direction: column; align-items: center;
+  position: relative; overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.my-card-sparkle { position: absolute; color: var(--rose-light); font-size: 14px; }
+.my-card-sparkle-1 { top: 20px; right: 24px; }
+.my-card-sparkle-2 { top: 40px; right: 40px; font-size: 10px; }
+.my-card-bg-wave {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
+  background: repeating-linear-gradient(
+    -45deg, rgba(196,133,122,0.04) 0px, rgba(196,133,122,0.04) 1px,
+    transparent 1px, transparent 8px
+  );
+  pointer-events: none;
+}
+
+.my-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  border: 3px solid rgba(201,168,76,0.3);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--white); font-size: 24px; font-weight: 700;
+  font-family: 'Inter', sans-serif; margin-bottom: 14px;
+}
+.my-zh-name { font-size: 22px; color: var(--navy); letter-spacing: 4px; margin-bottom: 4px; }
+.my-en-name { font-size: 15px; color: var(--rose); font-style: italic; margin-bottom: 12px; }
+.my-card-divider { display: flex; align-items: center; gap: 8px; width: 80%; margin-bottom: 12px; }
+.my-card-divider-line { flex: 1; height: 1px; background: #EDE6D8; }
+.my-card-diamond { color: var(--rose); font-size: 8px; }
+.my-school-row { display: flex; align-items: center; gap: 6px; }
+.my-school-shield { font-size: 16px; }
+.my-school-text { font-size: 13px; color: var(--text-mid); }
+
+.my-info-card {
+  background: var(--white); border-radius: 16px;
+  overflow: hidden; margin-bottom: 12px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+.my-info-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; border-bottom: 1px solid #F5F0E8;
+}
+.my-info-row:last-child { border-bottom: none; }
+.my-info-icon { font-size: 16px; width: 24px; text-align: center; color: var(--rose); }
+.my-info-label { font-size: 14px; color: var(--text-mid); flex: 1; }
+.my-info-value { font-size: 14px; color: var(--navy); font-weight: 500; }
+
+.my-intent-card {
+  background: var(--white); border-radius: 16px; padding: 16px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+.my-intent-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--rose);
+}
+.my-intent-title { font-size: 14px; color: var(--navy); font-weight: 600; flex: 1; }
+.my-intent-edit {
+  background: none; border: none; color: var(--rose);
+  font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif;
+}
+.my-intent-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.my-intent-tag {
+  font-size: 13px; padding: 7px 14px; border-radius: 50px;
+  font-weight: 500; display: flex; align-items: center; gap: 6px;
+  border: 1.5px solid transparent;
+}
+.my-quote-wrap { display: flex; align-items: flex-start; gap: 4px; }
+.my-quote-mark { font-size: 22px; color: var(--rose); line-height: 1; }
+.my-quote-mark.open { align-self: flex-start; }
+.my-quote-mark.close { align-self: flex-end; }
+.my-quote { font-size: 14px; color: var(--text-mid); line-height: 1.7; flex: 1; }

@@ -1,0 +1,133 @@
+.intro-page {
+  min-height: 100%;
+  background: var(--ivory);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 28px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.intro-watercolor {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 200px;
+  background: radial-gradient(ellipse at 80% 0%, rgba(196,133,122,0.2) 0%, transparent 70%),
+              radial-gradient(ellipse at 20% 10%, rgba(196,133,122,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+.intro-watercolor-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 180px;
+  background: radial-gradient(ellipse at 20% 100%, rgba(196,133,122,0.15) 0%, transparent 70%),
+              radial-gradient(ellipse at 80% 90%, rgba(196,133,122,0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.intro-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  z-index: 1;
+}
+.intro-logo-icon {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--rose);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.intro-logo-text {
+  font-size: 18px;
+  color: var(--navy);
+  font-weight: 600;
+}
+.intro-divider-line {
+  width: 40px;
+  height: 1px;
+  background: var(--rose-light);
+  margin-bottom: 28px;
+}
+
+.intro-title {
+  font-size: 30px;
+  color: var(--navy);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+  z-index: 1;
+}
+.intro-title-rule {
+  width: 32px;
+  height: 2px;
+  background: var(--rose);
+  margin: 0 auto 20px;
+}
+
+.intro-desc {
+  font-size: 15px;
+  color: var(--text-mid);
+  text-align: center;
+  line-height: 1.9;
+  margin-bottom: 36px;
+  z-index: 1;
+}
+
+.intro-features {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 36px;
+  z-index: 1;
+}
+.intro-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--navy);
+  font-weight: 500;
+}
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(196,133,122,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.intro-event-badge {
+  font-size: 13px;
+  color: var(--text-mid);
+  text-align: center;
+  padding: 12px 16px;
+  margin-bottom: 40px;
+  z-index: 1;
+  line-height: 1.6;
+}
+.leaf {
+  color: var(--rose);
+  margin: 0 6px;
+}
+
+.intro-btn {
+  width: 100%;
+  background: var(--navy);
+  border: none;
+  border-radius: 50px;
+  padding: 16px;
+  font-size: 18px;
+  color: var(--white);
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 1;
+  letter-spacing: 1px;
+}

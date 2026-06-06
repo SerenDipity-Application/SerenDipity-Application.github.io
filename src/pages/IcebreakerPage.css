@@ -1,0 +1,82 @@
+.ib-page {
+  min-height: 100%;
+  background: linear-gradient(160deg, #0D1B2A 0%, #1A2E42 60%, #0D2035 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 32px;
+}
+.ib-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 20px 20px 12px;
+}
+.ib-back {
+  background: none; border: none; color: rgba(255,255,255,0.7);
+  font-size: 24px; cursor: pointer;
+}
+.ib-header-label { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--white); flex: 1; }
+.ib-online { font-size: 13px; color: #5DC887; font-weight: 600; }
+
+.ib-hero-text { padding: 0 20px 16px; }
+.ib-small-label { font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; }
+
+.ib-card {
+  margin: 0 16px;
+  background: var(--ivory);
+  border-radius: 20px;
+  padding: 20px;
+  flex: 1;
+}
+.ib-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.ib-star { color: var(--gold); font-size: 16px; }
+.ib-card-title { font-size: 20px; color: var(--navy); }
+.ib-to { font-size: 13px; color: var(--text-light); margin-bottom: 16px; }
+.ib-to b { color: var(--navy); }
+
+.ib-message-box {
+  background: var(--white);
+  border: 1.5px solid #DDD5C8;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  position: relative;
+}
+.ib-message-box.gold { border-color: var(--gold); background: rgba(201,168,76,0.06); }
+.ib-rec-label {
+  font-size: 11px; color: var(--gold); font-weight: 700;
+  margin-bottom: 8px; letter-spacing: 0.5px;
+}
+.ib-message { font-size: 14px; color: var(--text-dark); line-height: 1.7; }
+.ib-check {
+  position: absolute; bottom: 10px; right: 12px;
+  color: var(--gold); font-size: 16px;
+}
+
+.ib-tone-label { font-size: 12px; color: var(--text-light); margin-bottom: 10px; }
+.ib-tones { display: flex; flex-direction: column; gap: 8px; }
+.ib-tone-btn {
+  background: var(--white); border: 1.5px solid #DDD5C8;
+  border-radius: 12px; padding: 12px 14px;
+  text-align: left; cursor: pointer;
+}
+.ib-tone-btn.active { border-color: var(--navy); }
+.ib-tone-title { font-size: 13px; font-weight: 600; display: block; margin-bottom: 4px; }
+.ib-tone-preview { font-size: 12px; color: var(--text-light); margin: 0; }
+
+.ib-actions {
+  display: flex; gap: 10px; padding: 16px 16px 8px;
+}
+.ib-copy-btn {
+  flex: 1; background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: var(--white); border-radius: 50px;
+  padding: 14px; font-size: 15px;
+  font-family: 'Inter', sans-serif; cursor: pointer;
+}
+.ib-send-btn {
+  flex: 2; background: var(--navy);
+  border: none; color: var(--white);
+  border-radius: 50px; padding: 14px;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.5px;
+}
+.ib-disclaimer { font-size: 11px; color: rgba(255,255,255,0.35); text-align: center; padding: 0 20px; }
