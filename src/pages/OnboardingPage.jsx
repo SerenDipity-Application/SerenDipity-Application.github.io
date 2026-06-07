@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
-import { saveUser, loadUser } from '../userStorage'
+import { saveUser } from '../userStorage'
 import { saveUserToFirestore } from '../firestoreUsers'
 import './OnboardingPage.css'
 
@@ -13,16 +13,10 @@ export default function OnboardingPage() {
   const { s } = useLang()
   const [step, setStep] = useState(0)
 
-  // Pre-fill from localStorage if returning user
-  const saved = loadUser()
+  // Always start blank — no bleed from previous users on the same device
   const [form, setForm] = useState({
-    zhName: saved?.zhName || '',
-    enName: saved?.enName || '',
-    school: saved?.school || '',
-    industry: saved?.industry || '',
-    city: saved?.city || '',
-    intents: saved?.intents || [],
-    quote: saved?.quote || '',
+    zhName: '', enName: '', school: '',
+    industry: '', city: '', intents: [], quote: '',
   })
 
   const toggleIntent = (label) => {

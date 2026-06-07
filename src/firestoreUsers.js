@@ -7,13 +7,14 @@ import { db } from './firebase'
 const COLLECTION = 'users'
 
 // ── User ID ───────────────────────────────────────────────────────────────────
-// Each device gets a random ID on first visit, stored in localStorage.
-// This is the Firestore document ID for that user's profile.
+// A fresh UID is generated each browser session (sessionStorage).
+// sessionStorage is cleared automatically when the tab/browser is closed,
+// so every new visit starts with a clean identity — no bleed between users.
 function getUserId() {
-  let id = localStorage.getItem('serendipity_uid')
+  let id = sessionStorage.getItem('serendipity_uid')
   if (!id) {
     id = crypto.randomUUID()
-    localStorage.setItem('serendipity_uid', id)
+    sessionStorage.setItem('serendipity_uid', id)
   }
   return id
 }
@@ -26,10 +27,14 @@ export async function saveUserToFirestore(profile) {
     uid,
     updatedAt: serverTimestamp(),
   })
+  // Also cache in sessionStorage so My Card works without a Firestore round-trip
+  sessionStorage.setItem('serendipity_profile', JSON.stringify(profile))
 }
 
-// ── Read own profile ──────────────────────────────────────────────────────────
+// ── Read own profile (session cache → Firestore fallback) ─────────────────────
 export async function loadUserFromFirestore() {
+  const cached = sessionStorage.getItem('serendipity_profile')
+  if (cached) return JSON.parse(cached)
   const uid = getUserId()
   const snap = await getDoc(doc(db, COLLECTION, uid))
   return snap.exists() ? snap.data() : null

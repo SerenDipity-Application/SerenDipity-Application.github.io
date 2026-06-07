@@ -4,7 +4,7 @@ const KEY = 'serendipity_user'
 
 export function saveUser(profile) {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ ...profile, savedAt: new Date().toISOString() }))
+    sessionStorage.setItem(KEY, JSON.stringify({ ...profile, savedAt: new Date().toISOString() }))
   } catch (e) {
     console.warn('Could not save profile:', e)
   }
@@ -12,7 +12,7 @@ export function saveUser(profile) {
 
 export function loadUser() {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = sessionStorage.getItem(KEY)
     return raw ? JSON.parse(raw) : null
   } catch (e) {
     return null
@@ -20,7 +20,7 @@ export function loadUser() {
 }
 
 export function clearUser() {
-  localStorage.removeItem(KEY)
+  sessionStorage.removeItem(KEY)
 }
 
 // ── Exports ──────────────────────────────────────────────────────────────────
