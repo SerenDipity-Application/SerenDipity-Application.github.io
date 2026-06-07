@@ -1,9 +1,28 @@
+/* ══════════════════════════════════════════════
+   ROOT — full-page container
+══════════════════════════════════════════════ */
+.entry-root {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background: #0B1825;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;   /* envelope sits near the bottom */
+  padding-bottom: 80px;
+}
+
+/* ══════════════════════════════════════════════
+   LANGUAGE TOGGLE
+══════════════════════════════════════════════ */
 .entry-lang-toggle {
   position: fixed;
   top: 16px; right: 16px;
   background: rgba(201,168,76,0.15);
   border: 1px solid rgba(201,168,76,0.4);
-  color: var(--gold);
+  color: #C9A84C;
   border-radius: 50px;
   padding: 5px 12px;
   font-size: 12px;
@@ -11,145 +30,203 @@
   font-weight: 600;
   cursor: pointer;
   letter-spacing: 1px;
-  z-index: 200;
+  z-index: 400;
+}
+/* second toggle inside the unfurled content */
+.entry-lang-toggle--content {
+  position: absolute;
+  top: 16px; right: 16px;
+  fixed: unset;
 }
 
-/* ── Page ── */
-.entry-page {
-  min-height: 100%;
-  background: linear-gradient(160deg, #0A1520 0%, #1A2E42 50%, #0D2035 100%);
+/* ══════════════════════════════════════════════
+   SKY + SKYLINE
+══════════════════════════════════════════════ */
+.entry-sky {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 16px;
-  position: relative;
-  overflow: hidden;
+  align-items: flex-end;
 }
-
-/* ── Envelope wrapper ── */
-.envelope-wrap {
-  position: relative;
+.entry-skyline-svg {
   width: 100%;
-  max-width: 340px;
-  /* tall enough for the full card */
+  height: 140px;
+  display: block;
 }
 
-/* ── Envelope back ── */
-.envelope-back {
+/* ══════════════════════════════════════════════
+   SMALL ENVELOPE
+══════════════════════════════════════════════ */
+.env-wrap {
+  position: relative;
+  z-index: 10;
+  width: 180px;
+  height: 120px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Back rectangle */
+.env-back {
   position: absolute;
   inset: 0;
   background: linear-gradient(160deg, #112030, #1E3448);
-  border: 1px solid rgba(201,168,76,0.3);
-  border-radius: 4px 4px 8px 8px;
+  border: 1.5px solid rgba(201,168,76,0.45);
+  border-radius: 2px 2px 6px 6px;
   z-index: 1;
 }
-.envelope-back-diamond {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 50%;
-  background: linear-gradient(160deg, #0D2035, #162840);
-  clip-path: polygon(0 100%, 50% 0, 100% 100%);
-}
 
-/* ── Envelope flap ── */
-.envelope-flap {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 50%;
-  transform-origin: top center;
-  transform: rotateX(0deg);
-  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 10;
-  perspective: 800px;
-}
-.envelope-flap-inner {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg, #1A3050, #0D2035);
-  border: 1px solid rgba(201,168,76,0.3);
-  border-bottom: none;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-}
-/* Gold wax seal on flap */
-.envelope-flap::after {
-  content: 'S';
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32px; height: 32px;
-  background: radial-gradient(circle, #D4B060, #B8922A);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Playfair Display', serif;
-  font-size: 16px;
-  font-style: italic;
-  color: #1A1000;
-  line-height: 32px;
-  text-align: center;
-  z-index: 11;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-}
-
-/* Flap opens on .opening */
-.envelope-wrap.opening .envelope-flap,
-.envelope-wrap.opened .envelope-flap {
-  transform: rotateX(-180deg);
-}
-
-/* ── Envelope side triangles ── */
-.envelope-body {
+/* Side & bottom fold triangles */
+.env-body {
   position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
 }
-.envelope-body-left {
+.env-left {
   position: absolute;
   top: 0; left: 0;
   width: 50%; height: 100%;
-  background: linear-gradient(135deg, #0E2236, #1A3050);
+  background: linear-gradient(135deg, #0D1E30, #183048);
   clip-path: polygon(0 0, 0 100%, 100% 50%);
   border-left: 1px solid rgba(201,168,76,0.2);
 }
-.envelope-body-right {
+.env-right {
   position: absolute;
   top: 0; right: 0;
   width: 50%; height: 100%;
-  background: linear-gradient(225deg, #0E2236, #1A3050);
+  background: linear-gradient(225deg, #0D1E30, #183048);
   clip-path: polygon(100% 0, 100% 100%, 0 50%);
   border-right: 1px solid rgba(201,168,76,0.2);
 }
-.envelope-body-bottom {
+.env-bottom {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 50%;
-  background: linear-gradient(0deg, #0A1828, #1A3050);
+  height: 55%;
+  background: linear-gradient(0deg, #091520, #183048);
   clip-path: polygon(0 100%, 50% 0, 100% 100%);
   border-bottom: 1px solid rgba(201,168,76,0.25);
 }
 
-/* ── Card inside envelope ── */
-.envelope-card {
-  position: relative;
-  z-index: 5;
-  transform: translateY(0px);
-  transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s,
-              box-shadow 0.6s ease 0.6s;
-  box-shadow: none;
+/* Flap (top triangle) */
+.env-flap {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 55%;
+  transform-origin: top center;
+  transform: rotateX(0deg);
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 8;
+  perspective: 600px;
 }
-.envelope-wrap.opening .envelope-card,
-.envelope-wrap.opened .envelope-card {
-  transform: translateY(-32px);
-  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+.env-flap-inner {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #1A3050, #0D2035);
+  border: 1.5px solid rgba(201,168,76,0.4);
+  border-bottom: none;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+/* Wax seal */
+.env-flap::after {
+  content: 'S';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px; height: 24px;
+  background: radial-gradient(circle, #D4B060, #B8922A);
+  border-radius: 50%;
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  font-style: italic;
+  color: #1A1000;
+  line-height: 24px;
+  text-align: center;
+  z-index: 9;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
-/* ── Card content ── */
+/* Flap opens when phase ≠ idle */
+.phase-flap   .env-flap,
+.phase-unfurl .env-flap,
+.phase-done   .env-flap {
+  transform: rotateX(-180deg);
+}
+
+/* Tap hint */
+.env-tap-hint {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: rgba(201,168,76,0.7);
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+  transition: opacity 0.3s;
+}
+.phase-flap   .env-tap-hint,
+.phase-unfurl .env-tap-hint,
+.phase-done   .env-tap-hint {
+  opacity: 0;
+}
+
+/* ══════════════════════════════════════════════
+   UNFURLING CONTENT
+   Starts as a tiny clip around the envelope,
+   expands to fill the full viewport.
+══════════════════════════════════════════════ */
+.env-content {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  /* clip starts as a small rect where the envelope sits:
+     inset(top right bottom left) — envelope is ~bottom 80+120px, centered 180px wide */
+  clip-path: inset(calc(100% - 210px) calc(50% - 90px) 70px calc(50% - 90px) round 4px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    clip-path 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.55s,
+    opacity   0.25s ease                           0.5s;
+  overflow-y: auto;
+  background: linear-gradient(160deg, #0A1520 0%, #1A2E42 50%, #0D2035 100%);
+}
+
+.phase-unfurl .env-content,
+.phase-done   .env-content {
+  clip-path: inset(0% 0% 0% 0% round 0px);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.env-content-inner {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px 40px;
+  position: relative;
+  /* slide up from envelope position */
+  transform: translateY(60px);
+  transition: transform 0.9s cubic-bezier(0.34, 1.2, 0.64, 1) 0.6s;
+}
+
+.phase-unfurl .env-content-inner,
+.phase-done   .env-content-inner {
+  transform: translateY(0);
+}
+
+/* ══════════════════════════════════════════════
+   INVITATION CARD CONTENT
+══════════════════════════════════════════════ */
 .entry-border-frame {
   width: 100%;
+  max-width: 340px;
   background: linear-gradient(160deg, #0D1B2A 0%, #1A2E42 40%, #0D2035 100%);
   border: 1px solid rgba(201,168,76,0.35);
   border-radius: 4px;
@@ -159,26 +236,26 @@
   align-items: center;
   position: relative;
 }
-.entry-border-frame::before, .entry-border-frame::after {
+.entry-border-frame::before,
+.entry-border-frame::after {
   content: '◆';
-  color: var(--gold);
+  color: #C9A84C;
   font-size: 10px;
   position: absolute;
 }
-.entry-border-frame::before { top: -7px; left: 50%; transform: translateX(-50%); }
+.entry-border-frame::before { top: -7px;    left: 50%; transform: translateX(-50%); }
 .entry-border-frame::after  { bottom: -7px; left: 50%; transform: translateX(-50%); }
 
 .entry-top-badge {
   font-size: 11px;
   letter-spacing: 2px;
-  color: var(--gold);
+  color: #C9A84C;
   text-transform: uppercase;
   margin-bottom: 20px;
   font-weight: 500;
 }
 .crown { margin-right: 6px; }
 
-/* Real crest image */
 .entry-crest-img {
   width: 90px;
   height: auto;
@@ -188,7 +265,7 @@
 
 .entry-brand {
   font-size: 28px;
-  color: var(--white);
+  color: #ffffff;
   letter-spacing: 1px;
   margin-bottom: 4px;
   font-weight: 600;
@@ -196,7 +273,7 @@
 }
 .entry-sub {
   font-size: 13px;
-  color: var(--gold);
+  color: #C9A84C;
   letter-spacing: 2px;
   margin-bottom: 18px;
   text-align: center;
@@ -204,13 +281,13 @@
 .entry-divider {
   width: 60px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  background: linear-gradient(90deg, transparent, #C9A84C, transparent);
   margin-bottom: 16px;
 }
 
 .entry-event {
   font-size: 34px;
-  color: var(--gold);
+  color: #C9A84C;
   font-weight: 700;
   letter-spacing: 2px;
   margin-bottom: 6px;
@@ -231,13 +308,6 @@
   margin-bottom: 16px;
   text-align: center;
 }
-
-.entry-skyline {
-  width: 100%;
-  margin-bottom: 16px;
-  opacity: 0.6;
-}
-.entry-skyline svg { width: 100%; }
 
 .entry-footer-text {
   text-align: center;
@@ -263,7 +333,7 @@
   margin-bottom: 14px;
   transition: opacity 0.3s;
 }
-.entry-btn:disabled { opacity: 0.6; cursor: default; }
+.entry-btn:hover { opacity: 0.85; }
 
 .entry-wechat-note {
   font-size: 11px;
