@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { myProfile } from '../data'
+import { loadUser, exportJSON, exportCSV, exportVCard } from '../userStorage'
 import './MyProfilePage.css'
 
 const intentStyle = {
@@ -13,6 +14,7 @@ const intentStyle = {
 export default function MyProfilePage() {
   const navigate = useNavigate()
   const { lang, s } = useLang()
+  const savedProfile = loadUser() || myProfile
 
   const zhToEn = {'结识朋友':'Make Friends','寻找合作':'Find Collaborators'}
   const displayIntents = myProfile.intents.map(i => lang === 'en' ? (zhToEn[i] || i) : i)
@@ -83,6 +85,15 @@ export default function MyProfilePage() {
           <span className="my-quote-mark open">"</span>
           <p className="my-quote">{lang === 'en' ? myProfile.quoteEn : myProfile.quote}</p>
           <span className="my-quote-mark close">"</span>
+        </div>
+      </div>
+
+      <div className="my-export-card">
+        <p className="my-export-label">{lang === 'en' ? 'Download your profile' : '导出个人资料'}</p>
+        <div className="my-export-btns">
+          <button className="my-export-btn" onClick={() => exportJSON(savedProfile)}>JSON</button>
+          <button className="my-export-btn" onClick={() => exportCSV(savedProfile)}>CSV</button>
+          <button className="my-export-btn" onClick={() => exportVCard(savedProfile)}>vCard</button>
         </div>
       </div>
     </div>

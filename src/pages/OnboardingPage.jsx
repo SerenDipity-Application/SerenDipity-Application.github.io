@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
+import { saveUser, loadUser } from '../userStorage'
 import './OnboardingPage.css'
 
 const intentIcons = ['👥', '🤝', '💼', '♡']
@@ -10,9 +11,17 @@ export default function OnboardingPage() {
   const navigate = useNavigate()
   const { s } = useLang()
   const [step, setStep] = useState(0)
+
+  // Pre-fill from localStorage if returning user
+  const saved = loadUser()
   const [form, setForm] = useState({
-    zhName: '', enName: '', school: '', industry: '', city: '',
-    intents: [], quote: ''
+    zhName: saved?.zhName || '',
+    enName: saved?.enName || '',
+    school: saved?.school || '',
+    industry: saved?.industry || '',
+    city: saved?.city || '',
+    intents: saved?.intents || [],
+    quote: saved?.quote || '',
   })
 
   const toggleIntent = (label) => {
@@ -24,7 +33,14 @@ export default function OnboardingPage() {
     }))
   }
 
-  const next = () => step < 3 ? setStep(st => st + 1) : navigate('/directory')
+  const next = () => {
+    if (step < 3) {
+      setStep(st => st + 1)
+    } else {
+      saveUser(form)   // persist to localStorage
+      navigate('/directory')
+    }
+  }
 
   return (
     <div className="ob-page">

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" fill="none">
+  <!-- Shield shape -->
+  <path d="M100 8 L185 40 L185 120 Q185 175 100 210 Q15 175 15 120 L15 40 Z"
+        fill="#0D1B2A" stroke="#C9A84C" stroke-width="2.5"/>
+  <!-- Inner shield border -->
+  <path d="M100 18 L175 46 L175 118 Q175 168 100 200 Q25 168 25 118 L25 46 Z"
+        fill="none" stroke="#C9A84C" stroke-width="1" opacity="0.5"/>
+
+  <!-- Top crown points -->
+  <polygon points="100,4 106,14 100,12 94,14" fill="#C9A84C"/>
+  <polygon points="72,10 76,20 70,20 66,14" fill="#C9A84C"/>
+  <polygon points="128,10 134,14 130,20 124,20" fill="#C9A84C"/>
+
+  <!-- Laurel left -->
+  <g stroke="#C9A84C" stroke-width="1.2" fill="none" opacity="0.9">
+    <path d="M38 130 Q30 122 34 112 Q42 118 38 130Z" fill="#C9A84C" opacity="0.7"/>
+    <path d="M35 145 Q24 140 25 128 Q36 131 35 145Z" fill="#C9A84C" opacity="0.7"/>
+    <path d="M36 160 Q24 158 27 146 Q37 147 36 160Z" fill="#C9A84C" opacity="0.7"/>
+    <path d="M42 173 Q31 174 32 161 Q43 160 42 173Z" fill="#C9A84C" opacity="0.65"/>
+    <path d="M50 115 Q45 105 51 96 Q58 103 50 115Z" fill="#C9A84C" opacity="0.7"/>
+    <path d="M44 128 Q35 122 38 111 Q47 116 44 128Z" fill="#C9A84C" opacity="0.6"/>
+    <!-- Stem -->
+    <path d="M50 96 Q42 120 45 175" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- Laurel right -->
+  <g stroke="#C9A84C" stroke-width="1.2" fill="none" opacity="0.9">
+    <path d="M162 130 Q170 122 166 112 Q158 118 162 130Z" fill="#C9A84C" opacity="0.7"/>
+    <path d="M165 145 Q176 140 175 128 Q164 131 165 145Z" fill="#C9A84C" opacity="0.7"/>
+    <path d="M164 160 Q176 158 173 146 Q163 147 164 160Z" fill="#C9A84C" opacity="0.7"/>
+    <path d="M158 173 Q169 174 168 161 Q157 160 158 173Z" fill="#C9A84C" opacity="0.65"/>
+    <path d="M150 115 Q155 105 149 96 Q142 103 150 115Z" fill="#C9A84C" opacity="0.7"/>
+    <path d="M156 128 Q165 122 162 111 Q153 116 156 128Z" fill="#C9A84C" opacity="0.6"/>
+    <!-- Stem -->
+    <path d="M150 96 Q158 120 155 175" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- Bottom laurel berries -->
+  <circle cx="65" cy="180" r="3" fill="#C9A84C" opacity="0.8"/>
+  <circle cx="72" cy="186" r="2.5" fill="#C9A84C" opacity="0.7"/>
+  <circle cx="80" cy="190" r="2" fill="#C9A84C" opacity="0.6"/>
+  <circle cx="135" cy="180" r="3" fill="#C9A84C" opacity="0.8"/>
+  <circle cx="128" cy="186" r="2.5" fill="#C9A84C" opacity="0.7"/>
+  <circle cx="120" cy="190" r="2" fill="#C9A84C" opacity="0.6"/>
+
+  <!-- Letter S -->
+  <text x="100" y="145" text-anchor="middle" dominant-baseline="middle"
+        font-family="Georgia, serif" font-size="72" font-style="italic"
+        fill="#C9A84C" opacity="0.95">S</text>
+
+  <!-- Bottom divider line -->
+  <line x1="60" y1="195" x2="140" y2="195" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
+</svg>
