@@ -39,26 +39,8 @@ export default function EntryPage() {
 
       {/* ── MIDDLE: the envelope ── */}
       <div className="env-scene">
-        {/* Skyline behind envelope */}
-        <svg className="entry-skyline-svg" viewBox="0 0 400 90" preserveAspectRatio="xMidYMax meet">
-          <rect x="14"  y="58" width="10" height="32" fill="#1E3448" opacity="0.8"/>
-          <rect x="26"  y="46" width="8"  height="44" fill="#1E3448" opacity="0.8"/>
-          <rect x="60"  y="18" width="20" height="72" fill="#1E3448" opacity="0.8"/>
-          <polygon points="70,18 80,4  90,18"          fill="#1E3448" opacity="0.8"/>
-          <rect x="100" y="34" width="8"  height="56" fill="#1E3448" opacity="0.8"/>
-          <polygon points="104,34 108,18 112,34"       fill="#1E3448" opacity="0.8"/>
-          <rect x="140" y="28" width="6"  height="62" fill="#1E3448" opacity="0.8"/>
-          <polygon points="143,28 146,10 149,28"       fill="#1E3448" opacity="0.8"/>
-          <rect x="168" y="24" width="26" height="66" fill="#1E3448" opacity="0.8"/>
-          <polygon points="181,24 181,6  194,24"       fill="#1E3448" opacity="0.8"/>
-          <rect x="220" y="30" width="5"  height="60" fill="#1E3448" opacity="0.8"/>
-          <polygon points="222.5,30 225,12 227.5,30"  fill="#1E3448" opacity="0.8"/>
-          <rect x="260" y="46" width="10" height="44" fill="#1E3448" opacity="0.8"/>
-          <rect x="310" y="54" width="14" height="36" fill="#1E3448" opacity="0.8"/>
-          <rect x="340" y="40" width="8"  height="50" fill="#1E3448" opacity="0.8"/>
-          <polygon points="344,40 348,24 352,40"       fill="#1E3448" opacity="0.8"/>
-          <rect x="365" y="62" width="10" height="28" fill="#1E3448" opacity="0.8"/>
-        </svg>
+        {/* Gate illustration behind envelope */}
+        <img src="/gate.svg" className="entry-gate-img" alt="Oxbridge Gate" />
 
         {/* The envelope */}
         <div className="env-wrap">

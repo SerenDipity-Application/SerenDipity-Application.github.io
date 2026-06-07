@@ -126,7 +126,7 @@
   position: relative;
   width: 100%;
   max-width: 340px;
-  height: 130px;           /* envelope height + skyline */
+  height: 180px;           /* envelope height + gate illustration */
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -137,13 +137,16 @@
   overflow: hidden;
 }
 
-/* Skyline sits at the bottom of the scene */
-.entry-skyline-svg {
+/* Gate illustration fills scene, centred */
+.entry-gate-img {
   position: absolute;
-  bottom: 0; left: 0;
-  width: 100%;
-  height: 90px;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 140%;          /* wider than the card so buildings bleed to edges */
+  max-width: 560px;
+  height: auto;
   display: block;
+  opacity: 0.88;
 }
 
 /* ── Envelope ── */
