@@ -85,6 +85,11 @@
 .my-quote-mark.close { align-self: flex-end; }
 .my-quote { font-size: 14px; color: var(--text-mid); line-height: 1.7; flex: 1; }
 
+.my-intent-empty {
+  font-size: 13px; color: var(--rose); cursor: pointer;
+  padding: 8px 0; text-align: center;
+}
+
 .my-export-card {
   background: var(--white); border-radius: 16px; padding: 18px 20px;
   margin-top: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
