@@ -7,44 +7,41 @@
   <path d="M100 18 L175 46 L175 118 Q175 168 100 200 Q25 168 25 118 L25 46 Z"
         fill="none" stroke="#C9A84C" stroke-width="1" opacity="0.5"/>
 
-  <!-- Crown — centered at x=100, sitting on top -->
+  <!-- Crown — centered at x=100 -->
   <polygon points="100,4  106,15 100,13 94,15"  fill="#C9A84C"/>
   <polygon points="74,11  79,22  73,23  68,16"  fill="#C9A84C"/>
   <polygon points="126,11 132,16 127,23 121,22" fill="#C9A84C"/>
 
-  <!-- ── Laurel LEFT — mirrored exactly from right ── -->
+  <!-- ── Laurel LEFT (shifted up 10px) ── -->
   <g fill="#C9A84C">
-    <!-- leaves fanning out from stem at x=56 -->
-    <path d="M56 96  Q46 88  49 76  Q59 82  56 96Z"  opacity="0.75"/>
-    <path d="M53 112 Q41 106 43 93  Q55 97  53 112Z" opacity="0.75"/>
-    <path d="M53 129 Q40 125 43 112 Q55 114 53 129Z" opacity="0.75"/>
-    <path d="M56 146 Q43 145 45 131 Q57 132 56 146Z" opacity="0.70"/>
-    <path d="M62 162 Q50 164 50 149 Q62 148 62 162Z" opacity="0.65"/>
-    <!-- stem -->
-    <line x1="58" y1="76" x2="62" y2="165" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
+    <path d="M56 86  Q46 78  49 66  Q59 72  56 86Z"  opacity="0.75"/>
+    <path d="M53 102 Q41 96  43 83  Q55 87  53 102Z" opacity="0.75"/>
+    <path d="M53 119 Q40 115 43 102 Q55 104 53 119Z" opacity="0.75"/>
+    <path d="M56 136 Q43 135 45 121 Q57 122 56 136Z" opacity="0.70"/>
+    <path d="M62 152 Q50 154 50 139 Q62 138 62 152Z" opacity="0.65"/>
+    <line x1="58" y1="66" x2="62" y2="155" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
   </g>
 
-  <!-- ── Laurel RIGHT — mirror of left across x=100 ── -->
+  <!-- ── Laurel RIGHT (mirror, shifted up 10px) ── -->
   <g fill="#C9A84C">
-    <path d="M144 96  Q154 88  151 76  Q141 82  144 96Z"  opacity="0.75"/>
-    <path d="M147 112 Q159 106 157 93  Q145 97  147 112Z" opacity="0.75"/>
-    <path d="M147 129 Q160 125 157 112 Q145 114 147 129Z" opacity="0.75"/>
-    <path d="M144 146 Q157 145 155 131 Q143 132 144 146Z" opacity="0.70"/>
-    <path d="M138 162 Q150 164 150 149 Q138 148 138 162Z" opacity="0.65"/>
-    <!-- stem -->
-    <line x1="142" y1="76" x2="138" y2="165" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
+    <path d="M144 86  Q154 78  151 66  Q141 72  144 86Z"  opacity="0.75"/>
+    <path d="M147 102 Q159 96  157 83  Q145 87  147 102Z" opacity="0.75"/>
+    <path d="M147 119 Q160 115 157 102 Q145 104 147 119Z" opacity="0.75"/>
+    <path d="M144 136 Q157 135 155 121 Q143 122 144 136Z" opacity="0.70"/>
+    <path d="M138 152 Q150 154 150 139 Q138 138 138 152Z" opacity="0.65"/>
+    <line x1="142" y1="66" x2="138" y2="155" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
   </g>
 
-  <!-- Berries at bottom — symmetric around x=100 -->
-  <circle cx="76"  cy="172" r="3"   fill="#C9A84C" opacity="0.80"/>
-  <circle cx="85"  cy="178" r="2.5" fill="#C9A84C" opacity="0.70"/>
-  <circle cx="93"  cy="182" r="2"   fill="#C9A84C" opacity="0.60"/>
-  <circle cx="124" cy="172" r="3"   fill="#C9A84C" opacity="0.80"/>
-  <circle cx="115" cy="178" r="2.5" fill="#C9A84C" opacity="0.70"/>
-  <circle cx="107" cy="182" r="2"   fill="#C9A84C" opacity="0.60"/>
+  <!-- Berries — symmetric around x=100, shifted up 10px -->
+  <circle cx="76"  cy="162" r="3"   fill="#C9A84C" opacity="0.80"/>
+  <circle cx="85"  cy="168" r="2.5" fill="#C9A84C" opacity="0.70"/>
+  <circle cx="93"  cy="172" r="2"   fill="#C9A84C" opacity="0.60"/>
+  <circle cx="124" cy="162" r="3"   fill="#C9A84C" opacity="0.80"/>
+  <circle cx="115" cy="168" r="2.5" fill="#C9A84C" opacity="0.70"/>
+  <circle cx="107" cy="172" r="2"   fill="#C9A84C" opacity="0.60"/>
 
-  <!-- Letter S — centered in the shield body -->
-  <text x="100" y="132"
+  <!-- Letter S — raised to match wreath -->
+  <text x="100" y="116"
         text-anchor="middle"
         dominant-baseline="middle"
         font-family="Georgia, serif"
@@ -53,7 +50,7 @@
         fill="#C9A84C"
         opacity="0.95">S</text>
 
-  <!-- Bottom rule — centered -->
-  <line x1="68" y1="188" x2="132" y2="188" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
+  <!-- Bottom rule -->
+  <line x1="68" y1="178" x2="132" y2="178" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
 
 </svg>

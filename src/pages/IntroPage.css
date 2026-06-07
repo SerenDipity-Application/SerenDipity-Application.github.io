@@ -1,3 +1,19 @@
+.intro-lang-toggle {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: rgba(196,133,122,0.12);
+  border: 1px solid rgba(196,133,122,0.4);
+  color: #C4857A;
+  border-radius: 50px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 1px;
+  z-index: 10;
+}
+
 .intro-page {
   min-height: 100%;
   background: var(--ivory);

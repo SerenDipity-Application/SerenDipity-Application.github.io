@@ -4,11 +4,14 @@ import './IntroPage.css'
 
 export default function IntroPage() {
   const navigate = useNavigate()
-  const { s } = useLang()
+  const { lang, toggle, s } = useLang()
 
   return (
     <div className="intro-page">
       <div className="intro-watercolor" />
+      <button className="intro-lang-toggle" onClick={toggle}>
+        {lang === 'zh' ? 'EN' : '中文'}
+      </button>
 
       <div className="intro-logo-wrap">
         <div className="intro-logo-icon">
