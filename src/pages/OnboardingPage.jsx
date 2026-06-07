@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { saveUser, loadUser } from '../userStorage'
+import { saveUserToFirestore } from '../firestoreUsers'
 import './OnboardingPage.css'
 
 const intentIcons = ['👥', '🤝', '💼', '♡']
@@ -37,7 +38,9 @@ export default function OnboardingPage() {
     if (step < 3) {
       setStep(st => st + 1)
     } else {
-      saveUser(form)   // persist to localStorage
+      saveUser(form)                  // persist to localStorage
+      saveUserToFirestore(form)       // sync to Firestore
+        .catch(e => console.warn('Firestore save failed:', e))
       navigate('/directory')
     }
   }
