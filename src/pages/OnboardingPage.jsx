@@ -180,12 +180,15 @@ export default function OnboardingPage() {
   }
 
   const handleSend = () => {
-    if (isAnimating || isTyping) return
+    if (isTyping) return   // wait only while the "..." indicator is showing
+    // isAnimating (typewriter) does NOT block sending — animation just stops
+    if (isAnimating) setIsAnimating(false)
     if (q === 7) {
       if (selectedTags.length === 0 && !inputValue.trim()) return
       const combined = [...selectedTags, ...(inputValue.trim() ? [inputValue.trim()] : [])]
       submitAnswer(combined.join(', '))
     } else {
+      if (!inputValue.trim()) return
       submitAnswer(inputValue)
     }
   }
@@ -339,13 +342,12 @@ export default function OnboardingPage() {
                 placeholder={lang === 'zh' ? '在这里输入…' : 'Type here…'}
                 value={inputValue}
                 onChange={e => setInputValue(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !isAnimating && !isTyping) handleSend() }}
-                disabled={isAnimating || isTyping}
+                onKeyDown={e => { if (e.key === 'Enter' && !isTyping) handleSend() }}
               />
               <button
                 className="ob-send-btn"
                 onClick={handleSend}
-                disabled={!inputValue.trim() || isAnimating || isTyping}>
+                disabled={!inputValue.trim() || isTyping}>
                 <span className="ob-send-icon">→</span>
               </button>
             </div>
@@ -372,7 +374,7 @@ function TypewriterBubble({ text, onDone }) {
         clearInterval(interval)
         onDone?.()
       }
-    }, 14)
+    }, 6)
     return () => clearInterval(interval)
   }, [text])
 
