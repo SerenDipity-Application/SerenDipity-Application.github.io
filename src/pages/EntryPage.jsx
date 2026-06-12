@@ -47,9 +47,7 @@ export default function EntryPage() {
 
       {/* ── SKYLINE + ENVELOPE ── */}
       <div className="entry-skyline-wrap">
-        <img src="/gate.svg" className="entry-gate-img" alt="Venue" />
-
-        <div className="env-wrap" ref={envRef}>
+<div className="env-wrap" ref={envRef}>
           <div className="env-back" />
           <div className="env-body">
             <div className="env-left"  />
