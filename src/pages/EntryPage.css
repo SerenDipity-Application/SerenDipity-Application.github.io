@@ -88,24 +88,14 @@
   margin-bottom: 28px;
 }
 
-/* Large gold 4-pointed star */
-.entry-star {
-  font-size: 52px;
-  color: #C9A84C;
-  line-height: 1;
-  margin-bottom: 20px;
-  filter: drop-shadow(0 0 18px rgba(201,168,76,0.5));
-  text-shadow: 0 0 32px rgba(201,168,76,0.6);
-}
-
-/* SERENDIPITY wordmark */
-.entry-brand {
-  font-size: 13px;
-  letter-spacing: 4px;
-  color: rgba(255,255,255,0.7);
-  text-transform: uppercase;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
+/* Real logo image — blend mode removes gradient on dark bg */
+.entry-logo {
+  width: 140px;
+  height: 140px;
+  border-radius: 28px;
+  object-fit: cover;
+  mix-blend-mode: lighten;
+  filter: drop-shadow(0 0 20px rgba(201,168,76,0.4));
   margin-bottom: 20px;
 }
 

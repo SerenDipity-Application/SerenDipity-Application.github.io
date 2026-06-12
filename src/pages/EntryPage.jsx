@@ -34,8 +34,7 @@ export default function EntryPage() {
       {/* ── HERO ── */}
       <div className="entry-hero">
         <div className="entry-invite-pill">{s.entryBadge}</div>
-        <div className="entry-star">✦</div>
-        <p className="entry-brand">SerenDipity</p>
+        <img src="/logo.jpg" className="entry-logo" alt="SerenDipity" />
         <h1 className="entry-event-title serif">{s.entryEventTitle}</h1>
         <p className="entry-event-desc">{s.entryDesc1}</p>
         <div className="entry-meta">
