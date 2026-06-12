@@ -19,15 +19,49 @@ function getUserId() {
   return id
 }
 
-// ── Write own profile ─────────────────────────────────────────────────────────
+// ── Start onboarding — called immediately when Q1 appears ────────────────────
+// Creates the Firestore record so the user shows up in the admin panel right away.
+export async function startOnboarding() {
+  const uid = getUserId()
+  await setDoc(doc(db, COLLECTION, uid), {
+    uid,
+    onboardingStatus: 'started',
+    onboardingProgress: {
+      currentQ: 1,
+      currentChapter: 'YOUR WORLD',
+      completed: false,
+    },
+    startedAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  }, { merge: true })   // merge so we don't overwrite if they return mid-flow
+}
+
+// ── Update progress after each answer ────────────────────────────────────────
+// Writes partial answers + current position so admin can see live progress.
+export async function updateOnboardingProgress(partialProfile, progressState) {
+  const uid = getUserId()
+  await updateDoc(doc(db, COLLECTION, uid), {
+    ...partialProfile,
+    uid,
+    onboardingProgress: progressState,
+    onboardingStatus: progressState.completed ? 'completed' : 'in_progress',
+    updatedAt: serverTimestamp(),
+  })
+  if (progressState.completed) {
+    sessionStorage.setItem('serendipity_profile', JSON.stringify(partialProfile))
+  }
+}
+
+// ── Write own profile (final save — kept for backward compat) ─────────────────
 export async function saveUserToFirestore(profile) {
   const uid = getUserId()
   await setDoc(doc(db, COLLECTION, uid), {
     ...profile,
     uid,
+    onboardingStatus: 'completed',
+    onboardingProgress: { currentQ: 9, currentChapter: 'YOUR SIGNALS', completed: true },
     updatedAt: serverTimestamp(),
-  })
-  // Also cache in sessionStorage so My Card works without a Firestore round-trip
+  }, { merge: true })
   sessionStorage.setItem('serendipity_profile', JSON.stringify(profile))
 }
 

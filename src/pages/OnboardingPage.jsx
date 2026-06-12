@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { saveUser } from '../userStorage'
-import { saveUserToFirestore } from '../firestoreUsers'
+import { startOnboarding, updateOnboardingProgress, saveUserToFirestore } from '../firestoreUsers'
 import './OnboardingPage.css'
 
 // ── Concierge script ──────────────────────────────────────────────────────────
@@ -112,6 +112,11 @@ export default function OnboardingPage() {
     5:'profession', 6:'credentials', 7:'intents', 8:'quote', 9:'signals',
   }
 
+  // ── Fire-and-forget: create Firestore record the moment onboarding starts ──
+  useEffect(() => {
+    startOnboarding().catch(e => console.warn('Firestore start failed:', e))
+  }, [])
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping, isDone])
@@ -149,26 +154,45 @@ export default function OnboardingPage() {
     setSelectedTags([])
 
     const nextQ = q + 1
+    const chapterMap = CHAPTERS['en']  // always store EN chapter names in Firestore
+    const isComplete = nextQ > 9
 
-    if (nextQ > 9) {
+    // Build the canonical profile object from current answers
+    const profile = {
+      zhName:      newAnswers.name,
+      enName:      newAnswers.name,
+      city:        newAnswers.city,
+      school:      newAnswers.institution,
+      industry:    newAnswers.profession,
+      intents:     newAnswers.intents,
+      quote:       newAnswers.quote,
+      credentials: newAnswers.credentials,
+      hiddenSignals: newAnswers.signals,
+    }
+
+    // Progress object written to Firestore after every answer
+    const progressState = {
+      currentQ:       isComplete ? 9 : nextQ,
+      currentChapter: isComplete ? 'YOUR SIGNALS' : (chapterMap[nextQ] || 'YOUR SIGNALS'),
+      questionsAnswered: q,      // how many answered so far
+      totalQuestions: 9,
+      completed: isComplete,
+    }
+
+    if (isComplete) {
       setTimeout(() => {
         setIsDone(true)
-        const profile = {
-          zhName: newAnswers.name, enName: newAnswers.name,
-          city: newAnswers.city, school: newAnswers.institution,
-          industry: newAnswers.profession,
-          intents: newAnswers.intents,
-          quote: newAnswers.quote,
-          credentials: newAnswers.credentials,
-          hiddenSignals: newAnswers.signals,
-        }
         saveUser(profile)
-        saveUserToFirestore(profile).catch(e => console.warn('Firestore save failed:', e))
+        saveUserToFirestore(profile).catch(e => console.warn('Firestore final save failed:', e))
       }, 600)
       return
     }
 
-    // Show typing → add next concierge message (stores q, not text)
+    // Write partial progress to Firestore after each answer (fire-and-forget)
+    updateOnboardingProgress(profile, progressState)
+      .catch(e => console.warn('Firestore progress update failed:', e))
+
+    // Show typing → add next concierge message
     setIsTyping(true)
     setTimeout(() => {
       setIsTyping(false)

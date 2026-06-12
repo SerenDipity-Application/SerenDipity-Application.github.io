@@ -117,13 +117,24 @@ function EditModal({ user, onSave, onClose }) {
   )
 }
 
+// ── Progress label helper ─────────────────────────────────────────────────────
+function getProgressLabel(u) {
+  const status = u.onboardingStatus
+  if (!status || status === 'started') return null   // shown in status column instead
+  const p = u.onboardingProgress || {}
+  if (status === 'completed') return 'Complete'
+  const q = p.questionsAnswered ?? (p.currentQ ? p.currentQ - 1 : 0)
+  const chapter = p.currentChapter || ''
+  return `Q${q}/9 · ${chapter}`
+}
+
 // ── Main admin panel ──────────────────────────────────────────────────────────
 export default function AdminPage() {
   const navigate = useNavigate()
   const [authed, setAuthed] = useState(!!sessionStorage.getItem('sd_admin'))
   const [users, setUsers] = useState([])
   const [search, setSearch] = useState('')
-  const [filter, setFilter] = useState('all') // all | verified | unverified | flagged
+  const [filter, setFilter] = useState('all') // all | verified | unverified | flagged | started | in_progress | completed
   const [editingUser, setEditingUser] = useState(null)
   const [saving, setSaving] = useState({}) // uid → bool
   const [toast, setToast] = useState('')
@@ -214,18 +225,23 @@ export default function AdminPage() {
       || (u.city || '').toLowerCase().includes(q)
     const matchFilter =
       filter === 'all' ||
-      (filter === 'verified'   && u.verified) ||
-      (filter === 'unverified' && !u.verified && !u.flagged) ||
-      (filter === 'flagged'    && u.flagged)
+      (filter === 'verified'    && u.verified) ||
+      (filter === 'unverified'  && !u.verified && !u.flagged) ||
+      (filter === 'flagged'     && u.flagged) ||
+      (filter === 'started'     && u.onboardingStatus === 'started') ||
+      (filter === 'in_progress' && u.onboardingStatus === 'in_progress') ||
+      (filter === 'completed'   && u.onboardingStatus === 'completed')
     return matchSearch && matchFilter
   })
 
   const stats = {
-    total:      users.length,
-    verified:   users.filter(u => u.verified).length,
-    unverified: users.filter(u => !u.verified && !u.flagged).length,
-    flagged:    users.filter(u => u.flagged).length,
-    numbered:   users.filter(u => u.checkInNumber).length,
+    total:       users.length,
+    verified:    users.filter(u => u.verified).length,
+    completed:   users.filter(u => u.onboardingStatus === 'completed').length,
+    inProgress:  users.filter(u => u.onboardingStatus === 'in_progress').length,
+    started:     users.filter(u => u.onboardingStatus === 'started').length,
+    flagged:     users.filter(u => u.flagged).length,
+    numbered:    users.filter(u => u.checkInNumber).length,
   }
 
   if (!authed) return <AdminLogin onSuccess={() => setAuthed(true)} />
@@ -254,11 +270,13 @@ export default function AdminPage() {
       {/* Stats strip */}
       <div className="adm-stats">
         {[
-          { label: 'Total',      value: stats.total,      color: '#6B21A8' },
-          { label: 'Verified',   value: stats.verified,   color: '#059669' },
-          { label: 'Pending',    value: stats.unverified, color: '#D97706' },
-          { label: 'Flagged',    value: stats.flagged,    color: '#DC2626' },
-          { label: 'Numbered',   value: stats.numbered,   color: '#C9A84C' },
+          { label: 'Total',       value: stats.total,      color: '#6B21A8' },
+          { label: 'Completed',   value: stats.completed,  color: '#059669' },
+          { label: 'In Progress', value: stats.inProgress, color: '#D97706' },
+          { label: 'Just Started',value: stats.started,    color: '#9B7FA6' },
+          { label: 'Verified',    value: stats.verified,   color: '#3D1A47' },
+          { label: 'Flagged',     value: stats.flagged,    color: '#DC2626' },
+          { label: 'Numbered',    value: stats.numbered,   color: '#C9A84C' },
         ].map(s => (
           <div key={s.label} className="adm-stat">
             <span className="adm-stat-value" style={{ color: s.color }}>{s.value}</span>
@@ -273,10 +291,17 @@ export default function AdminPage() {
           value={search} onChange={e => setSearch(e.target.value)} />
 
         <div className="adm-filters">
-          {['all','verified','unverified','flagged'].map(f => (
-            <button key={f} className={`adm-filter ${filter === f ? 'active' : ''}`}
-              onClick={() => setFilter(f)}>
-              {f.charAt(0).toUpperCase() + f.slice(1)}
+          {[
+            { key: 'all',         label: 'All' },
+            { key: 'completed',   label: '✓ Completed' },
+            { key: 'in_progress', label: '◑ In Progress' },
+            { key: 'started',     label: '○ Started' },
+            { key: 'verified',    label: 'Verified' },
+            { key: 'flagged',     label: '⚑ Flagged' },
+          ].map(f => (
+            <button key={f.key} className={`adm-filter ${filter === f.key ? 'active' : ''}`}
+              onClick={() => setFilter(f.key)}>
+              {f.label}
             </button>
           ))}
         </div>
@@ -305,18 +330,21 @@ export default function AdminPage() {
               <th>City</th>
               <th>Industry</th>
               <th>Intents</th>
+              <th>Progress</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 && (
-              <tr><td colSpan={8} className="adm-empty">No registrants yet — data will appear here as people complete onboarding</td></tr>
+              <tr><td colSpan={9} className="adm-empty">No registrants yet — data will appear here as people begin onboarding</td></tr>
             )}
-            {filtered.map((u, i) => {
+            {filtered.map((u) => {
               const uid  = u.uid || u._docId
               const name = u.zhName || u.enName || '—'
               const isSaving = saving[uid]
+              const obStatus = u.onboardingStatus || 'started'
+              const progressLabel = getProgressLabel(u)
 
               return (
                 <tr key={uid} className={u.flagged ? 'adm-row-flagged' : u.verified ? 'adm-row-verified' : ''}>
@@ -333,26 +361,43 @@ export default function AdminPage() {
 
                   {/* Name */}
                   <td>
-                    <div className="adm-name">{name}</div>
+                    <div className="adm-name">{name || <span style={{color:'#D1D5DB',fontStyle:'italic'}}>Not yet provided</span>}</div>
                     {u.enName && u.enName !== name && (
                       <div className="adm-name-sub">{u.enName}</div>
                     )}
                   </td>
 
-                  <td>{u.school || '—'}</td>
-                  <td>{u.city   || '—'}</td>
-                  <td>{u.industry || '—'}</td>
+                  <td>{u.school || <span className="adm-cell-empty">—</span>}</td>
+                  <td>{u.city   || <span className="adm-cell-empty">—</span>}</td>
+                  <td>{u.industry || <span className="adm-cell-empty">—</span>}</td>
 
                   {/* Intents */}
                   <td>
-                    <div className="adm-tags">
-                      {(u.intents || []).slice(0,3).map(t => (
-                        <span key={t} className="adm-tag">{t}</span>
-                      ))}
-                    </div>
+                    {(u.intents || []).length > 0
+                      ? <div className="adm-tags">
+                          {(u.intents || []).slice(0,3).map(t => (
+                            <span key={t} className="adm-tag">{t}</span>
+                          ))}
+                        </div>
+                      : <span className="adm-cell-empty">—</span>
+                    }
                   </td>
 
-                  {/* Status badge */}
+                  {/* Onboarding progress */}
+                  <td>
+                    {obStatus === 'started' && (
+                      <span className="adm-progress adm-progress-started">Just opened</span>
+                    )}
+                    {obStatus === 'in_progress' && progressLabel && (
+                      <span className="adm-progress adm-progress-active">{progressLabel}</span>
+                    )}
+                    {obStatus === 'completed' && (
+                      <span className="adm-progress adm-progress-done">✓ Complete</span>
+                    )}
+                    {!obStatus && <span className="adm-cell-empty">—</span>}
+                  </td>
+
+                  {/* Admin verification status badge */}
                   <td>
                     {u.verified
                       ? <span className="adm-badge adm-badge-verified">Verified</span>
