@@ -1,105 +1,193 @@
-.my-page { min-height: 100%; background: var(--ivory); display: flex; flex-direction: column; padding: 0 20px 32px; }
+/* ══════════════════════════════════════════════
+   MY CARD — cream background with plum accents
+══════════════════════════════════════════════ */
+.my-page {
+  min-height: 100%;
+  background: var(--cream);
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 40px;
+}
+
 .my-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 0 0;
+  padding: 28px 24px 0;
 }
-.my-logo { font-size: 18px; color: var(--navy); font-weight: 600; }
-.my-grid-btn {
-  background: #F0EAE0; border: none; width: 36px; height: 36px;
-  border-radius: 8px; cursor: pointer; font-size: 18px; color: var(--navy);
+.my-eyebrow {
+  font-size: 10px; letter-spacing: 2px; color: var(--text-muted);
+  text-transform: uppercase; font-family: 'Inter', sans-serif;
 }
-.my-page-title { font-size: 28px; color: var(--navy); margin-top: 16px; margin-bottom: 6px; }
-.my-page-rule { width: 28px; height: 2px; background: var(--rose); margin-bottom: 6px; }
-.my-page-sub { font-size: 13px; color: var(--text-light); margin-bottom: 20px; }
+.my-header-star { font-size: 14px; color: var(--gold); }
 
-.my-card {
-  background: var(--white); border-radius: 20px;
-  padding: 28px 20px 20px; margin-bottom: 12px;
-  display: flex; flex-direction: column; align-items: center;
-  position: relative; overflow: hidden;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+.my-page-title {
+  font-size: 34px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  color: var(--text-dark);
+  margin: 4px 24px 4px;
+  line-height: 1.1;
 }
-.my-card-sparkle { position: absolute; color: var(--rose-light); font-size: 14px; }
-.my-card-sparkle-1 { top: 20px; right: 24px; }
-.my-card-sparkle-2 { top: 40px; right: 40px; font-size: 10px; }
-.my-card-bg-wave {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
-  background: repeating-linear-gradient(
-    -45deg, rgba(196,133,122,0.04) 0px, rgba(196,133,122,0.04) 1px,
-    transparent 1px, transparent 8px
-  );
+.my-page-rule { width: 28px; height: 1px; background: rgba(201,168,76,0.5); margin: 0 24px 4px; }
+.my-page-sub { font-size: 12px; color: var(--text-muted); margin: 0 24px 20px; font-family: 'Inter', sans-serif; }
+
+/* ── Profile card ── */
+.my-card {
+  background: var(--plum);
+  margin: 0 24px 16px;
+  border-radius: 18px;
+  padding: 28px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+/* Subtle star watermark */
+.my-card::before {
+  content: '✦';
+  position: absolute;
+  font-size: 180px;
+  color: rgba(255,255,255,0.03);
+  top: -20px; right: -20px;
+  line-height: 1;
   pointer-events: none;
 }
 
 .my-avatar {
-  width: 80px; height: 80px; border-radius: 50%;
-  border: 3px solid rgba(201,168,76,0.3);
+  width: 84px; height: 84px; border-radius: 50%;
+  border: 2.5px solid rgba(201,168,76,0.6);
   display: flex; align-items: center; justify-content: center;
-  color: var(--white); font-size: 24px; font-weight: 700;
+  color: var(--white); font-size: 26px; font-weight: 700;
   font-family: 'Inter', sans-serif; margin-bottom: 14px;
+  position: relative; z-index: 1;
 }
-.my-zh-name { font-size: 22px; color: var(--navy); letter-spacing: 4px; margin-bottom: 4px; }
-.my-en-name { font-size: 15px; color: var(--rose); font-style: italic; margin-bottom: 12px; }
-.my-card-divider { display: flex; align-items: center; gap: 8px; width: 80%; margin-bottom: 12px; }
-.my-card-divider-line { flex: 1; height: 1px; background: #EDE6D8; }
-.my-card-diamond { color: var(--rose); font-size: 8px; }
-.my-school-row { display: flex; align-items: center; gap: 6px; }
-.my-school-shield { font-size: 16px; }
-.my-school-text { font-size: 13px; color: var(--text-mid); }
+/* Gold ring */
+.my-avatar::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.25);
+  pointer-events: none;
+}
 
+.my-zh-name {
+  font-size: 22px;
+  font-family: 'Cormorant Garamond', serif;
+  color: #FFFFFF;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+  position: relative; z-index: 1;
+}
+.my-en-name {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  font-style: italic;
+  font-family: 'Cormorant Garamond', serif;
+  margin-bottom: 14px;
+  position: relative; z-index: 1;
+}
+.my-card-divider {
+  display: flex; align-items: center; gap: 8px; width: 70%; margin-bottom: 10px;
+  position: relative; z-index: 1;
+}
+.my-card-divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.15); }
+.my-card-diamond { color: rgba(201,168,76,0.6); font-size: 8px; }
+.my-school-row {
+  display: flex; align-items: center; gap: 6px;
+  position: relative; z-index: 1;
+}
+.my-school-text { font-size: 13px; color: rgba(255,255,255,0.6); font-family: 'Inter', sans-serif; }
+
+/* Check-in number badge */
+.my-checkin-badge {
+  margin-top: 12px;
+  background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.35);
+  border-radius: 50px;
+  padding: 5px 16px;
+  font-size: 11px;
+  color: #C9A84C;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 1px;
+  position: relative; z-index: 1;
+}
+
+/* ── Info cards ── */
+.my-section {
+  margin: 0 24px 12px;
+}
+.my-section-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
 .my-info-card {
-  background: var(--white); border-radius: 16px;
-  overflow: hidden; margin-bottom: 12px;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+  background: var(--white);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.05);
 }
 .my-info-row {
   display: flex; align-items: center; gap: 12px;
   padding: 13px 16px; border-bottom: 1px solid #F5F0E8;
 }
 .my-info-row:last-child { border-bottom: none; }
-.my-info-icon { font-size: 16px; width: 24px; text-align: center; color: var(--rose); }
-.my-info-label { font-size: 14px; color: var(--text-mid); flex: 1; }
-.my-info-value { font-size: 14px; color: var(--navy); font-weight: 500; }
+.my-info-icon { font-size: 14px; width: 22px; text-align: center; color: var(--text-muted); }
+.my-info-label { font-size: 13px; color: var(--text-muted); flex: 1; font-family: 'Inter', sans-serif; }
+.my-info-value { font-size: 13px; color: var(--text-dark); font-weight: 500; font-family: 'Inter', sans-serif; }
 
+/* ── Intent card ── */
 .my-intent-card {
-  background: var(--white); border-radius: 16px; padding: 16px;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+  background: var(--white);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.05);
 }
 .my-intent-header {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: var(--rose);
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
 }
-.my-intent-title { font-size: 14px; color: var(--navy); font-weight: 600; flex: 1; }
+.my-intent-star { color: var(--gold); font-size: 14px; }
+.my-intent-title { font-size: 13px; color: var(--text-dark); font-weight: 600; flex: 1; font-family: 'Inter', sans-serif; }
 .my-intent-edit {
-  background: none; border: none; color: var(--rose);
-  font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif;
+  background: none; border: none; color: var(--text-muted);
+  font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif;
 }
 .my-intent-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .my-intent-tag {
-  font-size: 13px; padding: 7px 14px; border-radius: 50px;
-  font-weight: 500; display: flex; align-items: center; gap: 6px;
-  border: 1.5px solid transparent;
+  font-size: 12px; padding: 6px 14px; border-radius: 50px;
+  font-weight: 500; font-family: 'Inter', sans-serif;
+  background: rgba(61,26,71,0.07);
+  color: var(--plum);
+  border: 1px solid rgba(61,26,71,0.12);
 }
 .my-quote-wrap { display: flex; align-items: flex-start; gap: 4px; }
-.my-quote-mark { font-size: 22px; color: var(--rose); line-height: 1; }
+.my-quote-mark { font-size: 20px; color: rgba(201,168,76,0.5); line-height: 1; }
 .my-quote-mark.open { align-self: flex-start; }
 .my-quote-mark.close { align-self: flex-end; }
-.my-quote { font-size: 14px; color: var(--text-mid); line-height: 1.7; flex: 1; }
+.my-quote { font-size: 14px; color: var(--text-mid); line-height: 1.7; flex: 1; font-family: 'Cormorant Garamond', serif; font-style: italic; }
 
 .my-intent-empty {
-  font-size: 13px; color: var(--rose); cursor: pointer;
-  padding: 8px 0; text-align: center;
+  font-size: 13px; color: var(--text-muted); cursor: pointer;
+  padding: 8px 0; text-align: center; font-family: 'Inter', sans-serif;
 }
 
+/* ── Export ── */
 .my-export-card {
-  background: var(--white); border-radius: 16px; padding: 18px 20px;
-  margin-top: 12px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  background: var(--white); border-radius: 14px; padding: 16px 20px;
+  margin: 12px 24px 0; box-shadow: 0 1px 6px rgba(0,0,0,0.05);
 }
-.my-export-label { font-size: 13px; color: var(--text-light); margin-bottom: 12px; text-align: center; }
-.my-export-btns { display: flex; gap: 10px; justify-content: center; }
+.my-export-label { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; text-align: center; font-family: 'Inter', sans-serif; letter-spacing: 0.5px; }
+.my-export-btns { display: flex; gap: 8px; }
 .my-export-btn {
-  flex: 1; padding: 10px 0; border: 1.5px solid var(--navy);
-  border-radius: 8px; background: transparent; color: var(--navy);
-  font-size: 13px; font-weight: 600; cursor: pointer; letter-spacing: 1px;
-  transition: background 0.2s, color 0.2s;
+  flex: 1; padding: 9px 0; border: 1.5px solid #DDD5C8;
+  border-radius: 8px; background: transparent; color: var(--text-mid);
+  font-size: 12px; font-weight: 500; cursor: pointer; letter-spacing: 0.5px;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
-.my-export-btn:hover { background: var(--navy); color: var(--white); }
+.my-export-btn:hover { background: var(--plum); color: var(--white); border-color: var(--plum); }

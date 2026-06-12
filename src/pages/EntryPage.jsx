@@ -8,24 +8,19 @@ export default function EntryPage() {
   const { lang, toggle, s } = useLang()
   const envRef    = useRef(null)
 
-  // phases: idle → flap → rise → expand → done
   const [phase, setPhase]       = useState('idle')
-  const [cardRect, setCardRect] = useState(null)   // envelope bounding box
+  const [cardRect, setCardRect] = useState(null)
 
   const handleEnter = () => {
     if (phase !== 'idle') return
-
-    // Snapshot envelope position before any animation shifts it
     const rect = envRef.current.getBoundingClientRect()
     setCardRect(rect)
-
     setPhase('flap')
-    setTimeout(() => setPhase('rise'),   650)   // card peeks up
-    setTimeout(() => setPhase('expand'), 1050)  // card fills screen
-    setTimeout(() => navigate('/intro'), 1950)  // seamless hand-off
+    setTimeout(() => setPhase('rise'),   650)
+    setTimeout(() => setPhase('expand'), 1050)
+    setTimeout(() => navigate('/intro'), 1950)
   }
 
-  // Inline vars drive the start position of the card overlay
   const cardStyle = cardRect ? {
     '--env-top':    cardRect.top    + 'px',
     '--env-left':   cardRect.left   + 'px',
@@ -41,23 +36,23 @@ export default function EntryPage() {
         {lang === 'zh' ? 'EN' : '中文'}
       </button>
 
-      {/* ── TOP: badge + crest + brand ── */}
-      <div className="entry-top">
-        <div className="entry-top-badge">
-          <span className="crown">♛</span> {s.entryBadge}
+      {/* ── HERO ── */}
+      <div className="entry-hero">
+        <div className="entry-invite-pill">{s.entryBadge}</div>
+        <div className="entry-star">✦</div>
+        <p className="entry-brand">SerenDipity</p>
+        <h1 className="entry-event-title serif">{s.entryEventTitle}</h1>
+        <p className="entry-event-desc">{s.entryDesc1}</p>
+        <div className="entry-meta">
+          <span className="entry-meta-item">📅 {s.entryDate}</span>
+          <div className="entry-meta-dot" />
+          <span className="entry-meta-item">📍 {s.entryCity}</span>
         </div>
-        <img src="/crest.svg" alt="SerenDipity Crest" className="entry-crest-img" />
-        <h1 className="entry-brand serif">SerenDipity</h1>
-        <p className="entry-sub serif">· The Oxbridge Circle ·</p>
-        <div className="entry-divider" />
-        <h2 className="entry-event serif">{s.entryEvent}</h2>
-        <p className="entry-event-en serif">{s.entryEventCN}</p>
-        <p className="entry-date">{s.entryDate}</p>
       </div>
 
-      {/* ── MIDDLE: gate scene + envelope ── */}
-      <div className="env-scene">
-        <img src="/gate.svg" className="entry-gate-img" alt="Oxbridge Gate" />
+      {/* ── SKYLINE + ENVELOPE ── */}
+      <div className="entry-skyline-wrap">
+        <img src="/gate.svg" className="entry-gate-img" alt="Venue" />
 
         <div className="env-wrap" ref={envRef}>
           <div className="env-back" />
@@ -72,74 +67,72 @@ export default function EntryPage() {
         </div>
       </div>
 
-      {/* ── BOTTOM: description + button ── */}
+      {/* ── BOTTOM CTA ── */}
       <div className="entry-bottom">
-        <div className="entry-footer-text">
-          <p>{s.entryDesc1}</p>
-          <p>{s.entryDesc2}</p>
-        </div>
         <button className="entry-btn serif" onClick={handleEnter} disabled={phase !== 'idle'}>
-          {phase !== 'idle' ? (lang === 'zh' ? '正在进入…' : 'Opening…') : s.entryBtn}
+          {phase !== 'idle'
+            ? (lang === 'zh' ? '正在进入…' : 'Opening…')
+            : <>{s.entryBtn} <span className="entry-btn-arrow">→</span></>}
         </button>
-        <p className="entry-wechat-note">{s.entryWechat}</p>
+        <p className="entry-invitation-only">{s.entryInvitationOnly}</p>
       </div>
 
-      {/* ── CARD OVERLAY: rises from envelope → expands to fill screen ── */}
+      {/* ── CARD OVERLAY ── */}
       {cardRect && (
         <div className="entry-card-overlay" style={cardStyle}>
-          {/* IntroPage content embedded verbatim */}
-          <div className="intro-page">
-            <div className="intro-watercolor" />
-
-            <div className="intro-logo-wrap">
-              <div className="intro-logo-icon">
-                <span className="serif" style={{fontSize:22,color:'#C4857A',fontStyle:'italic'}}>S</span>
-                <span className="serif" style={{fontSize:22,color:'#C4857A',fontStyle:'italic',marginLeft:-4}}>D</span>
-              </div>
-              <span className="intro-logo-text serif">SerenDipity</span>
-            </div>
-
-            <div className="intro-divider-line" />
-
-            <h1 className="intro-title serif">{s.introTitle}</h1>
-            <div className="intro-title-rule" />
-
-            <p className="intro-desc">
-              {s.introDesc.split('\n').map((line, i, arr) => (
-                <span key={i}>{line}{i < arr.length - 1 && <br/>}</span>
-              ))}
-            </p>
-
-            <div className="intro-features">
-              <div className="intro-feature">
-                <div className="feature-icon">✉</div>
-                <span>{s.introFeature1}</span>
-              </div>
-              <div className="intro-feature">
-                <div className="feature-icon">📖</div>
-                <span>{s.introFeature2}</span>
-              </div>
-              <div className="intro-feature">
-                <div className="feature-icon">✦</div>
-                <span>{s.introFeature3}</span>
-              </div>
-            </div>
-
-            <div className="intro-event-badge">
-              <span className="leaf">❧</span>
-              {s.introBadge}
-              <span className="leaf">❧</span>
-            </div>
-
-            <div className="intro-watercolor-bottom" />
-
-            <button className="intro-btn serif" onClick={() => navigate('/onboarding')}>
-              {s.introBtn}
-            </button>
-          </div>
+          <IntroContent navigate={navigate} s={s} lang={lang} toggle={toggle} />
         </div>
       )}
 
+    </div>
+  )
+}
+
+/* Inline intro content for the envelope reveal animation */
+function IntroContent({ navigate, s, lang, toggle }) {
+  return (
+    <div className="intro-page">
+      <button className="intro-lang-toggle" onClick={toggle}>
+        {lang === 'zh' ? 'EN' : '中文'}
+      </button>
+
+      <div className="intro-app-icon">
+        <span className="intro-app-star">✦</span>
+      </div>
+
+      <p className="intro-eyebrow">SerenDipity</p>
+      <h1 className="intro-title serif">{s.introTitle}</h1>
+      <p className="intro-subtitle">{s.introSubtitle}</p>
+
+      <div className="intro-divider" />
+
+      <div className="intro-features">
+        <div className="intro-feature-row">
+          <div className="intro-feature-icon">🔒</div>
+          <div className="intro-feature-text">
+            <span className="intro-feature-label">{s.introFeature1Title}</span>
+            <span className="intro-feature-desc">{s.introFeature1Desc}</span>
+          </div>
+        </div>
+        <div className="intro-feature-row">
+          <div className="intro-feature-icon">✦</div>
+          <div className="intro-feature-text">
+            <span className="intro-feature-label">{s.introFeature2Title}</span>
+            <span className="intro-feature-desc">{s.introFeature2Desc}</span>
+          </div>
+        </div>
+        <div className="intro-feature-row">
+          <div className="intro-feature-icon">🛡</div>
+          <div className="intro-feature-text">
+            <span className="intro-feature-label">{s.introFeature3Title}</span>
+            <span className="intro-feature-desc">{s.introFeature3Desc}</span>
+          </div>
+        </div>
+      </div>
+
+      <button className="intro-btn serif" onClick={() => navigate('/onboarding')}>
+        {s.introBtn} <span style={{marginLeft:6}}>→</span>
+      </button>
     </div>
   )
 }

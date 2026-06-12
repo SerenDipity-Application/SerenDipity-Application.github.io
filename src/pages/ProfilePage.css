@@ -53,6 +53,13 @@
   padding: 16px 20px 24px;
   background: var(--ivory);
 }
+.profile-footer-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 8px;
+}
+
 .profile-greet-btn {
   width: 100%;
   background: var(--navy);

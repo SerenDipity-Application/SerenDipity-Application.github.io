@@ -8,55 +8,46 @@ export default function IntroPage() {
 
   return (
     <div className="intro-page">
-      <div className="intro-watercolor" />
       <button className="intro-lang-toggle" onClick={toggle}>
         {lang === 'zh' ? 'EN' : '中文'}
       </button>
 
-      <div className="intro-logo-wrap">
-        <div className="intro-logo-icon">
-          <span className="serif" style={{fontSize:22,color:'#C4857A',fontStyle:'italic'}}>S</span>
-          <span className="serif" style={{fontSize:22,color:'#C4857A',fontStyle:'italic',marginLeft:-4}}>D</span>
-        </div>
-        <span className="intro-logo-text serif">SerenDipity</span>
+      <div className="intro-app-icon">
+        <span className="intro-app-star">✦</span>
       </div>
 
-      <div className="intro-divider-line" />
-
+      <p className="intro-eyebrow">SerenDipity</p>
       <h1 className="intro-title serif">{s.introTitle}</h1>
-      <div className="intro-title-rule" />
+      <p className="intro-subtitle">{s.introSubtitle}</p>
 
-      <p className="intro-desc">
-        {s.introDesc.split('\n').map((line, i) => (
-          <span key={i}>{line}{i < s.introDesc.split('\n').length - 1 && <br/>}</span>
-        ))}
-      </p>
+      <div className="intro-divider" />
 
       <div className="intro-features">
-        <div className="intro-feature">
-          <div className="feature-icon">✉</div>
-          <span>{s.introFeature1}</span>
+        <div className="intro-feature-row">
+          <div className="intro-feature-icon">🔒</div>
+          <div className="intro-feature-text">
+            <span className="intro-feature-label">{s.introFeature1Title}</span>
+            <span className="intro-feature-desc">{s.introFeature1Desc}</span>
+          </div>
         </div>
-        <div className="intro-feature">
-          <div className="feature-icon">📖</div>
-          <span>{s.introFeature2}</span>
+        <div className="intro-feature-row">
+          <div className="intro-feature-icon">✦</div>
+          <div className="intro-feature-text">
+            <span className="intro-feature-label">{s.introFeature2Title}</span>
+            <span className="intro-feature-desc">{s.introFeature2Desc}</span>
+          </div>
         </div>
-        <div className="intro-feature">
-          <div className="feature-icon">✦</div>
-          <span>{s.introFeature3}</span>
+        <div className="intro-feature-row">
+          <div className="intro-feature-icon">🛡</div>
+          <div className="intro-feature-text">
+            <span className="intro-feature-label">{s.introFeature3Title}</span>
+            <span className="intro-feature-desc">{s.introFeature3Desc}</span>
+          </div>
         </div>
       </div>
-
-      <div className="intro-event-badge">
-        <span className="leaf">❧</span>
-        {s.introBadge}
-        <span className="leaf">❧</span>
-      </div>
-
-      <div className="intro-watercolor-bottom" />
 
       <button className="intro-btn serif" onClick={() => navigate('/onboarding')}>
-        {s.introBtn}
+        {s.introBtn} <span style={{marginLeft:6}}>→</span>
       </button>
     </div>
   )

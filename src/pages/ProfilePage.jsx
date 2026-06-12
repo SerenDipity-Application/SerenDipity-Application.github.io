@@ -79,6 +79,11 @@ export default function ProfilePage() {
         <button className="profile-greet-btn" onClick={() => navigate(`/icebreaker/${member.id}`)}>
           {s.profileGreetBtn}
         </button>
+        <p className="profile-footer-hint">
+          {lang === 'en'
+            ? '✏ Choose an AI opener or write your own on the next screen'
+            : '✏ 下一页可选 AI 开场白，或自己写一条'}
+        </p>
       </div>
     </div>
   )

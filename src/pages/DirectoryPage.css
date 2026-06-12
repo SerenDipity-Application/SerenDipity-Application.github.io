@@ -1,21 +1,53 @@
+/* ══════════════════════════════════════════════
+   DIRECTORY — cream background, member cards
+══════════════════════════════════════════════ */
 .dir-page {
   min-height: 100%;
-  background: var(--ivory);
+  background: var(--cream);
   display: flex;
   flex-direction: column;
 }
-.dir-header {
-  padding: 20px 20px 12px;
-  background: var(--ivory);
-}
-.dir-header-top { display: flex; align-items: center; margin-bottom: 8px; }
-.dir-logo { display: flex; align-items: center; gap: 6px; }
-.dir-logo-circles { font-size: 16px; color: var(--rose); }
-.dir-title { font-size: 30px; color: var(--navy); margin-bottom: 4px; }
-.dir-sub { font-size: 13px; color: var(--text-light); }
 
+/* ── Header ── */
+.dir-header {
+  padding: 28px 24px 12px;
+  background: var(--cream);
+}
+.dir-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.dir-eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+.dir-logo-star {
+  font-size: 14px;
+  color: var(--gold);
+}
+.dir-title {
+  font-size: 34px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+.dir-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Search ── */
 .dir-search-wrap {
-  margin: 0 20px 12px;
+  margin: 8px 24px 12px;
   background: var(--white);
   border: 1px solid #DDD5C8;
   border-radius: 50px;
@@ -24,17 +56,19 @@
   padding: 10px 16px;
   gap: 8px;
 }
-.dir-search-icon { font-size: 14px; color: var(--text-light); }
+.dir-search-icon { font-size: 13px; color: var(--text-light); }
 .dir-search {
   border: none; outline: none; background: none;
   font-size: 14px; color: var(--text-dark);
   font-family: 'Inter', sans-serif; flex: 1;
 }
+.dir-search::placeholder { color: var(--text-light); }
 
+/* ── Filters ── */
 .dir-filters {
   display: flex;
   gap: 8px;
-  padding: 0 20px 16px;
+  padding: 0 24px 16px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -45,86 +79,149 @@
   border: 1px solid #DDD5C8;
   border-radius: 50px;
   padding: 7px 16px;
-  font-size: 13px;
-  color: var(--navy);
+  font-size: 12px;
+  color: var(--text-mid);
   cursor: pointer;
   font-family: 'Inter', sans-serif;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .dir-filter.active {
-  background: var(--navy);
+  background: var(--plum);
   color: var(--white);
-  border-color: var(--navy);
+  border-color: var(--plum);
 }
 
+/* ── Member cards ── */
 .dir-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 0 20px 20px;
+  gap: 10px;
+  padding: 0 24px 24px;
 }
+
 .dir-card {
   background: var(--white);
   border-radius: 14px;
   overflow: hidden;
   display: flex;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.05);
 }
-.dir-card-left-bar {
-  width: 4px;
-  background: linear-gradient(180deg, var(--navy), var(--teal));
-  flex-shrink: 0;
-}
-.dir-card-inner { flex: 1; padding: 14px 14px 12px; }
-.dir-card-top { display: flex; gap: 12px; margin-bottom: 12px; }
+.dir-card:active { transform: scale(0.99); }
 
+/* Avatar — left side */
 .dir-avatar {
-  width: 52px; height: 52px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--white);
-  font-size: 16px;
-  font-weight: 700;
+  width: 76px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
   font-family: 'Inter', sans-serif;
+  color: var(--white);
+  background: #4A3A5A;
+  min-height: 110px;
+  border-radius: 0;
 }
-.dir-card-info { flex: 1; }
-.dir-name-row { margin-bottom: 3px; }
-.dir-zh-name { font-size: 16px; color: var(--navy); font-weight: 600; }
-.dir-en-name { font-size: 13px; color: var(--text-light); font-style: italic; }
-.dir-dot { color: var(--navy); margin-right: 2px; }
-.dir-school { font-size: 12px; color: var(--text-light); margin-bottom: 2px; }
-.dir-company { font-size: 13px; color: var(--navy); font-weight: 600; margin-bottom: 8px; }
 
-.dir-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-.dir-tag {
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 50px;
+/* Card content — right side */
+.dir-card-inner {
+  flex: 1;
+  padding: 14px 14px 12px;
+}
+.dir-name-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 2px;
+  flex-wrap: wrap;
+}
+.dir-zh-name {
+  font-size: 16px;
+  font-family: 'Cormorant Garamond', serif;
   font-weight: 500;
+  color: var(--text-dark);
+  line-height: 1.2;
+}
+.dir-en-name {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  font-family: 'Cormorant Garamond', serif;
+}
+.dir-role-line {
+  font-size: 12px;
+  color: var(--text-mid);
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dir-school-line {
+  font-size: 11px;
+  color: var(--text-light);
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 8px;
+}
+
+/* "Looking for" tags */
+.dir-tags-row {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
 }
+.dir-tags-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.dir-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  background: rgba(139,90,158,0.1);
+  color: var(--plum-mid);
+  border: 1px solid rgba(139,90,158,0.15);
+}
+
 .dir-quote {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-style: italic;
+  font-family: 'Cormorant Garamond', serif;
   font-size: 13px;
-  color: var(--text-mid);
-  line-height: 1.6;
-  border-left: 2px solid var(--gold-light);
-  padding-left: 8px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
+
+/* Action row */
 .dir-card-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 4px;
+  margin-top: 8px;
 }
 .dir-greet-btn {
-  background: var(--navy);
+  background: var(--plum);
   color: var(--white);
   border: none;
   border-radius: 50px;
-  padding: 9px 18px;
-  font-size: 13px;
+  padding: 7px 16px;
+  font-size: 12px;
   font-family: 'Inter', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
+  letter-spacing: 0.3px;
 }

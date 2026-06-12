@@ -1,173 +1,182 @@
 /* ══════════════════════════════════════════════
-   ROOT PAGE
+   ENTRY PAGE — dark plum, gold star, skyline
 ══════════════════════════════════════════════ */
 .entry-root {
   min-height: 100%;
-  background: linear-gradient(170deg, #0A1520 0%, #1A2E42 55%, #0D2035 100%);
+  background: #2A1040;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 36px 24px 40px;
   position: relative;
   overflow: hidden;
 }
 
-/* Fade-out whole page when navigating */
-.phase-done .entry-root { opacity: 0; }
-.entry-root { transition: opacity 0.4s ease; }
+/* Subtle radial glow behind the star */
+.entry-root::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 320px; height: 320px;
+  background: radial-gradient(ellipse at center, rgba(201,168,76,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Fade transition */
+.phase-done .entry-root { opacity: 0; transition: opacity 0.4s ease; }
 
 /* ── Language toggle ── */
 .entry-lang-toggle {
   position: fixed;
   top: 16px; right: 16px;
-  background: rgba(201,168,76,0.15);
-  border: 1px solid rgba(201,168,76,0.4);
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.35);
   color: #C9A84C;
   border-radius: 50px;
-  padding: 5px 12px;
-  font-size: 12px;
+  padding: 5px 14px;
+  font-size: 11px;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   cursor: pointer;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   z-index: 200;
+  text-transform: uppercase;
 }
 
 /* ══════════════════════════════════════════════
-   TOP SECTION — invitation header
+   HERO SECTION
 ══════════════════════════════════════════════ */
-.entry-top {
+.entry-hero {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 340px;
-  background: linear-gradient(160deg, #0D1B2A 0%, #1A2E42 40%, #0D2035 100%);
-  border: 1px solid rgba(201,168,76,0.35);
-  border-radius: 4px 4px 0 0;
-  border-bottom: none;
-  padding: 28px 24px 20px;
+  padding: 56px 32px 0;
   position: relative;
-}
-.entry-top::before {
-  content: '◆';
-  color: #C9A84C;
-  font-size: 10px;
-  position: absolute;
-  top: -7px; left: 50%;
-  transform: translateX(-50%);
+  z-index: 2;
 }
 
-.entry-top-badge {
-  font-size: 11px;
-  letter-spacing: 2px;
+/* "INVITE ONLY" pill */
+.entry-invite-pill {
+  background: transparent;
+  border: 1px solid rgba(201,168,76,0.45);
+  border-radius: 50px;
+  padding: 5px 16px;
+  font-size: 10px;
+  letter-spacing: 2.5px;
   color: #C9A84C;
   text-transform: uppercase;
-  margin-bottom: 18px;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
-}
-.crown { margin-right: 6px; }
-
-.entry-crest-img {
-  width: 80px;
-  height: auto;
-  margin-bottom: 14px;
-  filter: drop-shadow(0 4px 12px rgba(201,168,76,0.3));
+  margin-bottom: 28px;
 }
 
+/* Large gold 4-pointed star */
+.entry-star {
+  font-size: 52px;
+  color: #C9A84C;
+  line-height: 1;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 18px rgba(201,168,76,0.5));
+  text-shadow: 0 0 32px rgba(201,168,76,0.6);
+}
+
+/* SERENDIPITY wordmark */
 .entry-brand {
-  font-size: 26px;
-  color: #ffffff;
-  letter-spacing: 1px;
-  margin-bottom: 3px;
-  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+/* Event title — large serif */
+.entry-event-title {
+  font-size: 36px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  color: #FFFFFF;
   text-align: center;
+  line-height: 1.15;
+  margin-bottom: 16px;
 }
-.entry-sub {
-  font-size: 12px;
-  color: #C9A84C;
-  letter-spacing: 2px;
-  margin-bottom: 14px;
-  text-align: center;
-}
-.entry-divider {
-  width: 60px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #C9A84C, transparent);
-  margin-bottom: 14px;
-}
-.entry-event {
-  font-size: 30px;
-  color: #C9A84C;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin-bottom: 4px;
-  text-align: center;
-  width: 100%;
-}
-.entry-event-en {
+
+/* Description */
+.entry-event-desc {
   font-size: 14px;
-  color: rgba(201,168,76,0.85);
-  font-style: italic;
-  margin-bottom: 4px;
-  text-align: center;
-}
-.entry-date {
-  font-size: 12px;
   color: rgba(255,255,255,0.55);
-  letter-spacing: 1px;
   text-align: center;
+  line-height: 1.7;
+  margin-bottom: 18px;
+  max-width: 260px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Date / location row */
+.entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+.entry-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+}
+.entry-meta-dot {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.4);
 }
 
 /* ══════════════════════════════════════════════
-   ENVELOPE SCENE — connects top card to bottom card
+   SKYLINE — Shanghai cityscape photo strip
 ══════════════════════════════════════════════ */
-.env-scene {
-  position: relative;
+.entry-skyline-wrap {
   width: 100%;
-  max-width: 340px;
-  height: 180px;           /* envelope height + gate illustration */
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  /* left+right gold borders continuing from top card */
-  border-left:  1px solid rgba(201,168,76,0.35);
-  border-right: 1px solid rgba(201,168,76,0.35);
-  background: linear-gradient(180deg, #0D1B2A, #091520);
+  position: relative;
+  flex: 1;
+  min-height: 220px;
   overflow: hidden;
 }
 
-/* Gate illustration fills scene, centred */
+/* Gate SVG sits inside skyline */
 .entry-gate-img {
   position: absolute;
   bottom: 0; left: 50%;
   transform: translateX(-50%);
-  width: 140%;          /* wider than the card so buildings bleed to edges */
-  max-width: 560px;
+  width: 130%;
+  max-width: 520px;
   height: auto;
-  display: block;
-  opacity: 0.88;
+  opacity: 0.65;
 }
 
-/* ── Envelope ── */
+/* Envelope floats in center of skyline */
 .env-wrap {
-  position: relative;
+  position: absolute;
+  bottom: 56px;
+  left: 50%; transform: translateX(-50%);
   z-index: 10;
-  width: 160px;
-  height: 104px;
-  margin-bottom: 12px;     /* floats slightly above skyline baseline */
+  width: 140px;
+  height: 90px;
   flex-shrink: 0;
 }
 
 .env-back {
   position: absolute;
   inset: 0;
-  background: linear-gradient(160deg, #112030, #1E3448);
-  border: 1.5px solid rgba(201,168,76,0.5);
-  border-radius: 2px 2px 5px 5px;
+  background: linear-gradient(160deg, #1E1030, #2A1840);
+  border: 1.5px solid rgba(201,168,76,0.45);
+  border-radius: 2px 2px 4px 4px;
   z-index: 1;
 }
-
 .env-body {
   position: absolute;
   inset: 0;
@@ -178,21 +187,21 @@
   position: absolute;
   top: 0; left: 0;
   width: 50%; height: 100%;
-  background: linear-gradient(135deg, #0D1E30, #183048);
+  background: linear-gradient(135deg, #1A0A28, #2A1840);
   clip-path: polygon(0 0, 0 100%, 100% 50%);
 }
 .env-right {
   position: absolute;
   top: 0; right: 0;
   width: 50%; height: 100%;
-  background: linear-gradient(225deg, #0D1E30, #183048);
+  background: linear-gradient(225deg, #1A0A28, #2A1840);
   clip-path: polygon(100% 0, 100% 100%, 0 50%);
 }
 .env-bottom {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   height: 55%;
-  background: linear-gradient(0deg, #091520, #183048);
+  background: linear-gradient(0deg, #0D0820, #2A1840);
   clip-path: polygon(0 100%, 50% 0, 100% 100%);
 }
 
@@ -203,38 +212,35 @@
   height: 55%;
   transform-origin: top center;
   transform: rotateX(0deg);
-  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.65s cubic-bezier(0.4,0,0.2,1);
   z-index: 8;
-  perspective: 600px;
 }
 .env-flap-inner {
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, #1A3050, #0D2035);
-  border: 1.5px solid rgba(201,168,76,0.45);
+  background: linear-gradient(180deg, #261040, #1A0A28);
+  border: 1.5px solid rgba(201,168,76,0.4);
   border-bottom: none;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
-/* Wax seal */
 .env-flap::after {
   content: 'S';
   position: absolute;
   bottom: 4px; left: 50%;
   transform: translateX(-50%);
-  width: 22px; height: 22px;
+  width: 20px; height: 20px;
   background: radial-gradient(circle, #D4B060, #B8922A);
   border-radius: 50%;
-  font-family: 'Playfair Display', serif;
-  font-size: 12px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px;
   font-style: italic;
   color: #1A1000;
-  line-height: 22px;
+  line-height: 20px;
   text-align: center;
   z-index: 9;
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
-/* Open flap during flap, rise, expand, done */
 .phase-flap   .env-flap,
 .phase-rise   .env-flap,
 .phase-expand .env-flap,
@@ -243,13 +249,54 @@
 }
 
 /* ══════════════════════════════════════════════
+   BOTTOM CTA
+══════════════════════════════════════════════ */
+.entry-bottom {
+  width: 100%;
+  padding: 20px 28px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(0deg, #1A0830 0%, transparent 100%);
+  position: relative;
+  z-index: 2;
+}
+
+.entry-btn {
+  width: 100%;
+  background: #FFFFFF;
+  border: none;
+  border-radius: 50px;
+  padding: 15px 24px;
+  font-size: 16px;
+  font-family: 'Cormorant Garamond', serif;
+  color: #1A1020;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s;
+}
+.entry-btn:disabled { opacity: 0.6; cursor: default; }
+.entry-btn-arrow { font-size: 18px; }
+
+.entry-invitation-only {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ══════════════════════════════════════════════
    CARD OVERLAY
-   Starts as a tiny rect exactly over the envelope,
-   rises, then snaps to full-screen.
 ══════════════════════════════════════════════ */
 .entry-card-overlay {
   position: fixed;
-  /* Start: match envelope position exactly */
   top:    var(--env-top);
   left:   var(--env-left);
   width:  var(--env-width);
@@ -257,13 +304,10 @@
   z-index: 300;
   overflow: hidden;
   border-radius: 6px;
-  /* The intro page inside is full-size; the overflow:hidden clips it */
   pointer-events: none;
   opacity: 0;
-  /* no transition in idle/flap — we snap it in on 'rise' */
 }
 
-/* Phase rise: card peeks up out of envelope */
 .phase-rise .entry-card-overlay {
   opacity: 1;
   top:    calc(var(--env-top) - 40px);
@@ -272,96 +316,32 @@
   height: calc(var(--env-height) + 40px);
   border-radius: 6px;
   transition:
-    top     0.38s cubic-bezier(0.34, 1.4, 0.64, 1),
-    height  0.38s cubic-bezier(0.34, 1.4, 0.64, 1),
+    top     0.38s cubic-bezier(0.34,1.4,0.64,1),
+    height  0.38s cubic-bezier(0.34,1.4,0.64,1),
     opacity 0.2s ease;
 }
 
-/* Phase expand: card fills the entire viewport */
 .phase-expand .entry-card-overlay,
 .phase-done   .entry-card-overlay {
   opacity: 1;
   pointer-events: auto;
-  top:    0;
-  left:   0;
-  width:  100vw;
-  height: 100vh;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   border-radius: 0;
   transition:
-    top          0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    left         0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    width        0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    height       0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    top          0.7s cubic-bezier(0.22,1,0.36,1),
+    left         0.7s cubic-bezier(0.22,1,0.36,1),
+    width        0.7s cubic-bezier(0.22,1,0.36,1),
+    height       0.7s cubic-bezier(0.22,1,0.36,1),
     border-radius 0.5s ease,
     opacity      0.2s ease;
 }
 
-/* The intro-page inside the overlay fills the overlay */
 .entry-card-overlay .intro-page {
   position: absolute;
-  /* anchor to top-center so content appears to rise from the envelope */
-  top: 0;
-  left: 50%;
+  top: 0; left: 50%;
   transform: translateX(-50%);
   width: 100vw;
   min-height: 100vh;
   overflow: hidden;
-}
-
-/* ══════════════════════════════════════════════
-   BOTTOM SECTION — description + button
-══════════════════════════════════════════════ */
-.entry-bottom {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 340px;
-  background: linear-gradient(160deg, #0D1B2A 0%, #1A2E42 40%, #0D2035 100%);
-  border: 1px solid rgba(201,168,76,0.35);
-  border-radius: 0 0 4px 4px;
-  border-top: none;
-  padding: 20px 24px 24px;
-  position: relative;
-}
-.entry-bottom::after {
-  content: '◆';
-  color: #C9A84C;
-  font-size: 10px;
-  position: absolute;
-  bottom: -7px; left: 50%;
-  transform: translateX(-50%);
-}
-
-.entry-footer-text {
-  text-align: center;
-  margin-bottom: 18px;
-}
-.entry-footer-text p {
-  font-size: 13px;
-  color: rgba(255,255,255,0.65);
-  line-height: 1.8;
-}
-
-.entry-btn {
-  width: 100%;
-  background: linear-gradient(135deg, #B8922A, #C9A84C, #D4B86A);
-  border: none;
-  border-radius: 6px;
-  padding: 15px;
-  font-size: 16px;
-  color: #1A1000;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: 1px;
-  margin-bottom: 14px;
-  transition: opacity 0.3s;
-}
-.entry-btn:disabled { opacity: 0.7; cursor: default; }
-
-.entry-wechat-note {
-  font-size: 11px;
-  color: rgba(255,255,255,0.3);
-  letter-spacing: 1px;
-  text-align: center;
 }
