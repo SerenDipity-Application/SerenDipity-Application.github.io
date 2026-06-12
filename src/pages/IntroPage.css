@@ -61,22 +61,14 @@
   margin-bottom: 24px;
 }
 .intro-app-icon {
-  width: 72px;
-  height: 72px;
-  background: linear-gradient(145deg, #2E1550, #3D1A60);
-  border-radius: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow:
-    0 8px 24px rgba(0,0,0,0.4),
-    inset 0 1px 0 rgba(201,168,76,0.15);
-  border: 1px solid rgba(201,168,76,0.18);
-}
-.intro-app-star {
-  font-size: 30px;
-  color: #C9A84C;
-  filter: drop-shadow(0 0 10px rgba(201,168,76,0.7));
+  width: 88px;
+  height: 88px;
+  border-radius: 22px;
+  object-fit: cover;
+  /* lighten blend removes the amber gradient where it hits the dark page bg,
+     leaving only the bright star & text visible — no box conflict */
+  mix-blend-mode: lighten;
+  filter: drop-shadow(0 0 16px rgba(201,168,76,0.35));
 }
 
 /* ── Headline ── */
