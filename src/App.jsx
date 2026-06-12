@@ -9,11 +9,13 @@ import ChatPage from './pages/ChatPage'
 import AIChatPage from './pages/AIChatPage'
 import MyProfilePage from './pages/MyProfilePage'
 import IcebreakerPage from './pages/IcebreakerPage'
+import AdminPage from './pages/AdminPage'
 
 function GlobalLangToggle() {
   const { lang, toggle } = useLang()
   const location = useLocation()
   // Dark-background pages: use gold/white tint. Light pages: use plum.
+  if (location.pathname === '/admin') return null
   const darkPages = ['/', '/intro', '/onboarding']
   const isDark = darkPages.includes(location.pathname)
 
@@ -45,7 +47,7 @@ function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
   const { lang, toggle, s } = useLang()
-  const noNav = ['/', '/intro', '/onboarding']
+  const noNav = ['/', '/intro', '/onboarding', '/admin']
   if (noNav.some(p => location.pathname === p)) return null
 
   const active = location.pathname
@@ -81,11 +83,13 @@ function BottomNav() {
   )
 }
 
-export default function App() {
+function AppShell() {
+  const location = useLocation()
+  const isAdmin = location.pathname === '/admin'
   return (
-    <div className="phone-shell">
-      <GlobalLangToggle />
-      <div className="screen">
+    <div className={isAdmin ? '' : 'phone-shell'}>
+      {!isAdmin && <GlobalLangToggle />}
+      <div className={isAdmin ? '' : 'screen'}>
         <Routes>
           <Route path="/" element={<EntryPage />} />
           <Route path="/intro" element={<IntroPage />} />
@@ -96,9 +100,14 @@ export default function App() {
           <Route path="/ai-chat" element={<AIChatPage />} />
           <Route path="/my-profile" element={<MyProfilePage />} />
           <Route path="/icebreaker/:id" element={<IcebreakerPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </div>
       <BottomNav />
     </div>
   )
+}
+
+export default function App() {
+  return <AppShell />
 }

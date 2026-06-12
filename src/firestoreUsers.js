@@ -1,5 +1,5 @@
 import {
-  doc, setDoc, getDoc, getDocs,
+  doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc,
   collection, onSnapshot, serverTimestamp,
 } from 'firebase/firestore'
 import { db } from './firebase'
@@ -47,9 +47,29 @@ export async function loadAllUsers() {
 }
 
 // ── Real-time listener for all users ─────────────────────────────────────────
-// Returns an unsubscribe function — call it on component unmount.
 export function subscribeToUsers(callback) {
   return onSnapshot(collection(db, COLLECTION), snap => {
-    callback(snap.docs.map(d => d.data()))
+    callback(snap.docs.map(d => ({ ...d.data(), _docId: d.id })))
+  })
+}
+
+// ── Admin: update any fields on a user record ─────────────────────────────────
+export async function adminUpdateUser(uid, fields) {
+  await updateDoc(doc(db, COLLECTION, uid), {
+    ...fields,
+    adminUpdatedAt: serverTimestamp(),
+  })
+}
+
+// ── Admin: delete a user record ───────────────────────────────────────────────
+export async function adminDeleteUser(uid) {
+  await deleteDoc(doc(db, COLLECTION, uid))
+}
+
+// ── Admin: assign sequential check-in number ─────────────────────────────────
+export async function assignCheckInNumber(uid, number) {
+  await updateDoc(doc(db, COLLECTION, uid), {
+    checkInNumber: number,
+    adminUpdatedAt: serverTimestamp(),
   })
 }
