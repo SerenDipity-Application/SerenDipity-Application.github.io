@@ -31,11 +31,6 @@ export default function EntryPage() {
   return (
     <div className={`entry-root phase-${phase}`}>
 
-      {/* Language toggle */}
-      <button className="entry-lang-toggle" onClick={toggle}>
-        {lang === 'zh' ? 'EN' : '中文'}
-      </button>
-
       {/* ── HERO ── */}
       <div className="entry-hero">
         <div className="entry-invite-pill">{s.entryBadge}</div>
@@ -92,10 +87,6 @@ export default function EntryPage() {
 function IntroContent({ navigate, s, lang, toggle }) {
   return (
     <div className="intro-page">
-      <button className="intro-lang-toggle" onClick={toggle}>
-        {lang === 'zh' ? 'EN' : '中文'}
-      </button>
-
       <div className="intro-app-icon">
         <span className="intro-app-star">✦</span>
       </div>

@@ -8,10 +8,6 @@ export default function IntroPage() {
 
   return (
     <div className="intro-page">
-      <button className="intro-lang-toggle" onClick={toggle}>
-        {lang === 'zh' ? 'EN' : '中文'}
-      </button>
-
       <div className="intro-app-icon">
         <span className="intro-app-star">✦</span>
       </div>

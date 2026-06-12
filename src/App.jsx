@@ -10,6 +10,37 @@ import AIChatPage from './pages/AIChatPage'
 import MyProfilePage from './pages/MyProfilePage'
 import IcebreakerPage from './pages/IcebreakerPage'
 
+function GlobalLangToggle() {
+  const { lang, toggle } = useLang()
+  const location = useLocation()
+  // Dark-background pages: use gold/white tint. Light pages: use plum.
+  const darkPages = ['/', '/intro', '/onboarding']
+  const isDark = darkPages.includes(location.pathname)
+
+  return (
+    <button onClick={toggle} style={{
+      position: 'fixed',
+      top: 16, right: 16,
+      zIndex: 500,
+      background: isDark ? 'rgba(201,168,76,0.12)' : 'rgba(61,26,71,0.07)',
+      backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
+      border: `1px solid ${isDark ? 'rgba(201,168,76,0.4)' : 'rgba(61,26,71,0.2)'}`,
+      borderRadius: 50,
+      padding: '5px 14px',
+      fontSize: 11,
+      fontFamily: "'Inter', sans-serif",
+      fontWeight: 600,
+      letterSpacing: '1.5px',
+      color: isDark ? '#C9A84C' : '#3D1A47',
+      cursor: 'pointer',
+      textTransform: 'uppercase',
+    }}>
+      {lang === 'zh' ? 'EN' : '中文'}
+    </button>
+  )
+}
+
 function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -53,6 +84,7 @@ function BottomNav() {
 export default function App() {
   return (
     <div className="phone-shell">
+      <GlobalLangToggle />
       <div className="screen">
         <Routes>
           <Route path="/" element={<EntryPage />} />
