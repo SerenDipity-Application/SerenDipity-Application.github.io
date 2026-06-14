@@ -27,7 +27,7 @@ export default function IntroPage() {
 
       {/* ── App icon ── */}
       <div className="intro-icon-wrap">
-        <img src="/logo.jpg" className="intro-app-icon" alt="SerenDipity" />
+        <img src="/logo-star.jpg" className="intro-app-icon" alt="SerenDipity" />
       </div>
 
       {/* ── Headline ── */}
