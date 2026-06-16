@@ -26,9 +26,10 @@
   align-items: center;
   gap: 8px;
 }
-.intro-topbar-star {
-  color: #C9A84C;
-  font-size: 16px;
+.intro-topbar-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
   filter: drop-shadow(0 0 4px rgba(201,168,76,0.5));
 }
 .intro-topbar-name {
@@ -61,14 +62,10 @@
   margin-bottom: 24px;
 }
 .intro-app-icon {
-  width: 88px;
-  height: 88px;
-  border-radius: 22px;
-  object-fit: cover;
-  /* lighten blend removes the amber gradient where it hits the dark page bg,
-     leaving only the bright star & text visible — no box conflict */
-  mix-blend-mode: lighten;
-  filter: drop-shadow(0 0 16px rgba(201,168,76,0.35));
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(201,168,76,0.5));
 }
 
 /* ── Headline ── */

@@ -17,7 +17,7 @@ export default function IntroPage() {
       {/* ── Top bar ── */}
       <div className="intro-topbar">
         <div className="intro-topbar-brand">
-          <span className="intro-topbar-star">✦</span>
+          <img src="/logo-star.png" className="intro-topbar-icon" alt="✦" />
           <span className="intro-topbar-name">SERENDIPITY</span>
         </div>
         <div className="intro-topbar-menu">
@@ -27,7 +27,7 @@ export default function IntroPage() {
 
       {/* ── App icon ── */}
       <div className="intro-icon-wrap">
-        <img src="/logo-star.jpg" className="intro-app-icon" alt="SerenDipity" />
+        <img src="/logo-star.png" className="intro-app-icon" alt="SerenDipity" />
       </div>
 
       {/* ── Headline ── */}

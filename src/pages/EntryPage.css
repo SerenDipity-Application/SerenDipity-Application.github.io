@@ -88,15 +88,13 @@
   margin-bottom: 28px;
 }
 
-/* Real logo image — blend mode removes gradient on dark bg */
+/* Real logo — transparent PNG, no crop or blend mode needed */
 .entry-logo {
-  width: 140px;
-  height: 140px;
-  border-radius: 28px;
-  object-fit: cover;
-  mix-blend-mode: lighten;
-  filter: drop-shadow(0 0 20px rgba(201,168,76,0.4));
-  margin-bottom: 20px;
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 28px rgba(201,168,76,0.55));
+  margin-bottom: 16px;
 }
 
 /* Event title — large serif */
