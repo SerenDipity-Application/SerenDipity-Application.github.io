@@ -89,7 +89,16 @@ export default function OnboardingPage() {
       : [...answers.intents, id]
   )
 
+  // Restore draft on mount, then start/update Firestore record
   useEffect(() => {
+    try {
+      const draft = localStorage.getItem('serendipity_ob_draft')
+      if (draft) {
+        const { step: s, answers: a } = JSON.parse(draft)
+        if (typeof s === 'number') setStep(s)
+        if (a) setAnswers(prev => ({ ...prev, ...a }))
+      }
+    } catch (_) {}
     startOnboarding().catch(() => {})
   }, [])
 
@@ -141,12 +150,18 @@ export default function OnboardingPage() {
 
     if (isLast) {
       saveUser(profile)
+      localStorage.removeItem('serendipity_ob_draft')
       await saveUserToFirestore(profile).catch(() => {})
       navigate('/directory')
       return
     }
 
     const nextStep = step + 1
+    // Persist draft so user can resume if they close the browser mid-form
+    try {
+      localStorage.setItem('serendipity_ob_draft', JSON.stringify({ step: nextStep, answers }))
+    } catch (_) {}
+
     await updateOnboardingProgress(profile, {
       currentQ:          nextStep + 1,
       currentChapter:    STEP_CHAPTERS_EN[nextStep],

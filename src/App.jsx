@@ -1,5 +1,9 @@
+import { useEffect } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { useLang } from './LangContext'
+import { getExistingUserId } from './firestoreUsers'
+import { getDoc, doc } from 'firebase/firestore'
+import { db } from './firebase'
 import EntryPage from './pages/EntryPage'
 import IntroPage from './pages/IntroPage'
 import OnboardingPage from './pages/OnboardingPage'
@@ -117,11 +121,44 @@ function BottomNav() {
   )
 }
 
+// Silently routes returning users to where they left off when they land on '/'
+function SessionRestorer() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.pathname !== '/') return
+    const uid = getExistingUserId()
+    if (!uid) return
+
+    // Fast path: completed profile in localStorage
+    if (localStorage.getItem('serendipity_profile')) {
+      navigate('/chat', { replace: true })
+      return
+    }
+    // Mid-onboarding draft in localStorage
+    if (localStorage.getItem('serendipity_ob_draft')) {
+      navigate('/onboarding', { replace: true })
+      return
+    }
+    // Firestore fallback (covers edge cases like cleared localStorage cache)
+    getDoc(doc(db, 'users', uid)).then(snap => {
+      if (!snap.exists()) return
+      const status = snap.data().onboardingStatus
+      if (status === 'completed') navigate('/chat', { replace: true })
+      else if (status === 'in_progress' || status === 'started') navigate('/onboarding', { replace: true })
+    }).catch(() => {})
+  }, [])
+
+  return null
+}
+
 function AppShell() {
   const location = useLocation()
   const isAdmin = location.pathname === '/admin'
   return (
     <div className={isAdmin ? '' : 'phone-shell'}>
+      <SessionRestorer />
       {!isAdmin && <GlobalLangToggle />}
       <div className={isAdmin ? '' : 'screen'}>
         <Routes>

@@ -7,16 +7,19 @@ import { db } from './firebase'
 const COLLECTION = 'users'
 
 // ── User ID ───────────────────────────────────────────────────────────────────
-// A fresh UID is generated each browser session (sessionStorage).
-// sessionStorage is cleared automatically when the tab/browser is closed,
-// so every new visit starts with a clean identity — no bleed between users.
+// UID is persisted in localStorage so returning users keep their identity
+// across browser closes. A new UUID is only generated for first-time visitors.
 function getUserId() {
-  let id = sessionStorage.getItem('serendipity_uid')
+  let id = localStorage.getItem('serendipity_uid')
   if (!id) {
     id = crypto.randomUUID()
-    sessionStorage.setItem('serendipity_uid', id)
+    localStorage.setItem('serendipity_uid', id)
   }
   return id
+}
+
+export function getExistingUserId() {
+  return localStorage.getItem('serendipity_uid')
 }
 
 // ── Start onboarding — called immediately when Q1 appears ────────────────────
@@ -48,7 +51,7 @@ export async function updateOnboardingProgress(partialProfile, progressState) {
     updatedAt: serverTimestamp(),
   })
   if (progressState.completed) {
-    sessionStorage.setItem('serendipity_profile', JSON.stringify(partialProfile))
+    localStorage.setItem('serendipity_profile', JSON.stringify(partialProfile))
   }
 }
 
@@ -62,12 +65,12 @@ export async function saveUserToFirestore(profile) {
     onboardingProgress: { currentQ: 9, currentChapter: 'YOUR SIGNALS', completed: true },
     updatedAt: serverTimestamp(),
   }, { merge: true })
-  sessionStorage.setItem('serendipity_profile', JSON.stringify(profile))
+  localStorage.setItem('serendipity_profile', JSON.stringify(profile))
 }
 
 // ── Read own profile (session cache → Firestore fallback) ─────────────────────
 export async function loadUserFromFirestore() {
-  const cached = sessionStorage.getItem('serendipity_profile')
+  const cached = localStorage.getItem('serendipity_profile')
   if (cached) return JSON.parse(cached)
   const uid = getUserId()
   const snap = await getDoc(doc(db, COLLECTION, uid))
