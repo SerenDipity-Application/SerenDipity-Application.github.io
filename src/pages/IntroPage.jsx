@@ -2,19 +2,24 @@ import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import './IntroPage.css'
 
+const FEATURES = [
+  { img: '/icon-curated.jpg',     labelEn: 'Curated Circle',        labelZh: '精选圈子' },
+  { img: '/icon-concierge.jpg',   labelEn: 'AI Concierge',          labelZh: 'AI 礼宾' },
+  { img: '/icon-connections.jpg', labelEn: 'Meaningful Connections', labelZh: '有意义的连接' },
+  { img: '/icon-private.jpg',     labelEn: 'Private by Design',     labelZh: '隐私至上' },
+]
+
 export default function IntroPage() {
   const navigate = useNavigate()
-  const { lang, s } = useLang()
-
-  // "another" in gold, rest white — language-aware split
-  const titleParts = lang === 'zh'
-    ? { before: '不只是', accent: null, after: '\n社交软件。' }
-    : { before: 'Not ', accent: 'another', after: '\nsocial app.' }
+  const { lang } = useLang()
 
   return (
     <div className="intro-page">
 
-      {/* ── Top bar ── */}
+      {/* Background starfield */}
+      <div className="intro-bg" />
+
+      {/* Top bar */}
       <div className="intro-topbar">
         <div className="intro-topbar-brand">
           <img src="/logo-star.png" className="intro-topbar-icon" alt="✦" />
@@ -25,83 +30,62 @@ export default function IntroPage() {
         </div>
       </div>
 
-      {/* ── App icon ── */}
-      <div className="intro-icon-wrap">
-        <img src="/logo-star.png" className="intro-app-icon" alt="SerenDipity" />
+      {/* App icon with shiny gold border */}
+      <div className="intro-icon-border">
+        <div className="intro-icon-inner">
+          <img src="/logo-star.png" className="intro-icon-img" alt="SerenDipity" />
+        </div>
       </div>
 
-      {/* ── Headline ── */}
-      <h1 className="intro-title serif">
-        {titleParts.before}
-        {titleParts.accent && <span className="intro-title-accent">{titleParts.accent}</span>}
-        {titleParts.after.split('\n').map((line, i) => (
-          i === 0 ? line : <span key={i}><br />{line}</span>
-        ))}
+      {/* Wordmark */}
+      <h1 className="intro-wordmark">
+        {lang === 'zh'
+          ? <><span className="intro-wordmark-white">Seren</span><span className="intro-wordmark-gold">Dipity</span></>
+          : <><span className="intro-wordmark-white">Seren</span><span className="intro-wordmark-gold">Dipity</span></>
+        }
       </h1>
 
-      {/* ── Gold divider with star ── */}
+      {/* Divider */}
       <div className="intro-divider">
-        <span className="intro-divider-line" />
+        <div className="intro-divider-line" />
         <span className="intro-divider-star">✦</span>
-        <span className="intro-divider-line" />
+        <div className="intro-divider-line" />
       </div>
 
-      {/* ── Subtitle ── */}
-      <p className="intro-subtitle serif">{s.introSubtitle.split('.')[0]}.</p>
-
-      {/* ── Body copy ── */}
-      <p className="intro-body">
-        {lang === 'zh'
-          ? '认识未来的联创、合伙人、投资人、导师、朋友——也许还有某个温暖的人。'
-          : 'Meet future co-founders, collaborators, investors, mentors, friends — and maybe something more.'}
+      {/* Headline */}
+      <p className="intro-headline">
+        {lang === 'zh' ? '遇见最好的人。' : 'Meet the best people.'}
       </p>
 
-      {/* ── Feature rows ── */}
+      {/* Subtitle */}
+      <p className="intro-subtitle">
+        {lang === 'zh'
+          ? '一个拥有 AI 礼宾服务的线上社交俱乐部。'
+          : 'An online social club\nwith AI Concierge.'}
+      </p>
+
+      {/* Body */}
+      <p className="intro-body">
+        {lang === 'zh'
+          ? '认识未来的联创、合伙人、投资人、导师、朋友——也许还有某个特别的人。'
+          : 'Meet future co-founders, collaborators, investors, mentors, friends – and maybe something more.'}
+      </p>
+
+      {/* 2×2 feature grid */}
       <div className="intro-features">
-        <div className="intro-feature-row">
-          <div className="intro-feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="18" height="18">
-              <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-            </svg>
+        {FEATURES.map(f => (
+          <div key={f.labelEn} className="intro-feature-cell">
+            <img src={f.img} className="intro-feature-img" alt={f.labelEn} />
+            <span className="intro-feature-label">
+              {lang === 'zh' ? f.labelZh : f.labelEn}
+            </span>
           </div>
-          <div className="intro-feature-text">
-            <span className="intro-feature-label">{s.introFeature1Title}</span>
-            <span className="intro-feature-desc">{s.introFeature1Desc}</span>
-          </div>
-        </div>
-
-        <div className="intro-feature-row">
-          <div className="intro-feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="18" height="18">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <div className="intro-feature-text">
-            <span className="intro-feature-label">{s.introFeature2Title}</span>
-            <span className="intro-feature-desc">{s.introFeature2Desc}</span>
-          </div>
-        </div>
-
-        <div className="intro-feature-row">
-          <div className="intro-feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="18" height="18">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </div>
-          <div className="intro-feature-text">
-            <span className="intro-feature-label">{s.introFeature3Title}</span>
-            <span className="intro-feature-desc">{s.introFeature3Desc}</span>
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* ── CTA ── */}
+      {/* CTA */}
       <button className="intro-btn" onClick={() => navigate('/onboarding')}>
-        {s.introBtn} <span className="intro-btn-arrow">→</span>
+        {lang === 'zh' ? '探索本场圈子' : 'Explore The Circle'} <span className="intro-btn-arrow">→</span>
       </button>
 
     </div>
