@@ -39,8 +39,6 @@ export default function EntryPage() {
         <p className="entry-event-desc">{s.entryDesc1}</p>
         <div className="entry-meta">
           <span className="entry-meta-item">📅 {s.entryDate}</span>
-          <div className="entry-meta-dot" />
-          <span className="entry-meta-item">📍 {s.entryCity}</span>
         </div>
       </div>
 
