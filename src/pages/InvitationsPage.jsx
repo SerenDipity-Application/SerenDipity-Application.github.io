@@ -35,7 +35,7 @@ export default function InvitationsPage() {
       {/* Header */}
       <div className="inv-header">
         <span className="inv-eyebrow">THE OXBRIDGE CIRCLE</span>
-        <span className="inv-star">✦</span>
+        <img src="/logo-star.png" className="inv-logo-star" alt="✦" />
       </div>
 
       <h1 className="inv-title serif">{s.invTitle}</h1>

@@ -26,9 +26,11 @@
   text-transform: uppercase;
   font-weight: 600;
 }
-.inv-star {
-  color: #C9A84C;
-  font-size: 16px;
+.inv-logo-star {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(201,168,76,0.5));
 }
 
 /* ── Title ── */
