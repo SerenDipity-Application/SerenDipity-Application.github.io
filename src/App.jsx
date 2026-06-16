@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
-import { useLang } from './LangContext'
-import { getExistingUserId } from './firestoreUsers'
+import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth'
 import { getDoc, doc } from 'firebase/firestore'
-import { db } from './firebase'
+import { auth, db } from './firebase'
+import { AuthProvider, useAuth } from './AuthContext'
+import { useLang } from './LangContext'
 import EntryPage from './pages/EntryPage'
 import IntroPage from './pages/IntroPage'
+import AuthPage from './pages/AuthPage'
 import OnboardingPage from './pages/OnboardingPage'
 import DirectoryPage from './pages/DirectoryPage'
 import ProfilePage from './pages/ProfilePage'
@@ -16,11 +18,12 @@ import IcebreakerPage from './pages/IcebreakerPage'
 import InvitationsPage from './pages/InvitationsPage'
 import AdminPage from './pages/AdminPage'
 
+// ── Floating language toggle ──────────────────────────────────────────────────
 function GlobalLangToggle() {
   const { lang, toggle } = useLang()
   const location = useLocation()
   if (location.pathname === '/admin') return null
-  const darkPages = ['/', '/intro', '/onboarding']
+  const darkPages = ['/', '/intro', '/onboarding', '/auth']
   const isDark = darkPages.includes(location.pathname)
 
   return (
@@ -47,11 +50,12 @@ function GlobalLangToggle() {
   )
 }
 
+// ── Bottom navigation ─────────────────────────────────────────────────────────
 function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
   const { s } = useLang()
-  const noNav = ['/', '/intro', '/onboarding', '/admin']
+  const noNav = ['/', '/intro', '/onboarding', '/auth', '/admin']
   if (noNav.some(p => location.pathname === p)) return null
 
   const active = location.pathname
@@ -121,38 +125,58 @@ function BottomNav() {
   )
 }
 
-// Silently routes returning users to where they left off when they land on '/'
+// ── Email link completion + session restore ───────────────────────────────────
 function SessionRestorer() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { user, loading } = useAuth()
 
+  // Complete email magic link sign-in (runs on every page load)
   useEffect(() => {
-    if (location.pathname !== '/') return
-    const uid = getExistingUserId()
-    if (!uid) return
+    if (!isSignInWithEmailLink(auth, window.location.href)) return
+    const email = localStorage.getItem('serendipity_email_for_link')
+    const address = email ?? window.prompt('Please confirm your email to sign in:')
+    if (!address) return
 
-    // Fast path: completed profile in localStorage
-    if (localStorage.getItem('serendipity_profile')) {
-      navigate('/chat', { replace: true })
-      return
-    }
-    // Mid-onboarding draft in localStorage
-    if (localStorage.getItem('serendipity_ob_draft')) {
-      navigate('/onboarding', { replace: true })
-      return
-    }
-    // Firestore fallback (covers edge cases like cleared localStorage cache)
-    getDoc(doc(db, 'users', uid)).then(snap => {
-      if (!snap.exists()) return
-      const status = snap.data().onboardingStatus
-      if (status === 'completed') navigate('/chat', { replace: true })
-      else if (status === 'in_progress' || status === 'started') navigate('/onboarding', { replace: true })
-    }).catch(() => {})
+    signInWithEmailLink(auth, address, window.location.href)
+      .then(async result => {
+        localStorage.removeItem('serendipity_email_for_link')
+        // Clean the oobCode params from the URL
+        window.history.replaceState({}, document.title, window.location.pathname)
+        const snap = await getDoc(doc(db, 'users', result.user.uid))
+        if (snap.exists() && snap.data().onboardingStatus === 'completed') {
+          navigate('/chat', { replace: true })
+        } else {
+          navigate('/onboarding', { replace: true })
+        }
+      })
+      .catch(() => navigate('/auth', { replace: true }))
   }, [])
+
+  // Route already-authenticated users away from the entry page
+  useEffect(() => {
+    if (loading || location.pathname !== '/') return
+    if (!user) {
+      // Check for a local onboarding draft (unauthenticated but mid-form)
+      if (localStorage.getItem('serendipity_ob_draft')) {
+        navigate('/onboarding', { replace: true })
+      }
+      return
+    }
+    // Signed in — check their onboarding status
+    getDoc(doc(db, 'users', user.uid)).then(snap => {
+      if (snap.exists() && snap.data().onboardingStatus === 'completed') {
+        navigate('/chat', { replace: true })
+      } else {
+        navigate('/onboarding', { replace: true })
+      }
+    }).catch(() => {})
+  }, [user, loading, location.pathname])
 
   return null
 }
 
+// ── App shell ─────────────────────────────────────────────────────────────────
 function AppShell() {
   const location = useLocation()
   const isAdmin = location.pathname === '/admin'
@@ -162,17 +186,18 @@ function AppShell() {
       {!isAdmin && <GlobalLangToggle />}
       <div className={isAdmin ? '' : 'screen'}>
         <Routes>
-          <Route path="/" element={<EntryPage />} />
-          <Route path="/intro" element={<IntroPage />} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route path="/directory" element={<DirectoryPage />} />
+          <Route path="/"            element={<EntryPage />} />
+          <Route path="/intro"       element={<IntroPage />} />
+          <Route path="/auth"        element={<AuthPage />} />
+          <Route path="/onboarding"  element={<OnboardingPage />} />
+          <Route path="/directory"   element={<DirectoryPage />} />
           <Route path="/profile/:id" element={<ProfilePage />} />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="/ai-chat" element={<AIChatPage />} />
-          <Route path="/my-profile" element={<MyProfilePage />} />
+          <Route path="/chat"        element={<ChatPage />} />
+          <Route path="/ai-chat"     element={<AIChatPage />} />
+          <Route path="/my-profile"  element={<MyProfilePage />} />
           <Route path="/icebreaker/:id" element={<IcebreakerPage />} />
           <Route path="/invitations" element={<InvitationsPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin"       element={<AdminPage />} />
         </Routes>
       </div>
       <BottomNav />
@@ -181,5 +206,9 @@ function AppShell() {
 }
 
 export default function App() {
-  return <AppShell />
+  return (
+    <AuthProvider>
+      <AppShell />
+    </AuthProvider>
+  )
 }

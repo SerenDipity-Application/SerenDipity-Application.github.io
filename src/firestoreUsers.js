@@ -2,14 +2,16 @@ import {
   doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc,
   collection, onSnapshot, serverTimestamp,
 } from 'firebase/firestore'
-import { db } from './firebase'
+import { db, auth } from './firebase'
 
 const COLLECTION = 'users'
 
 // ── User ID ───────────────────────────────────────────────────────────────────
-// UID is persisted in localStorage so returning users keep their identity
-// across browser closes. A new UUID is only generated for first-time visitors.
+// Prefer the Firebase Auth UID (real identity, cross-device).
+// Falls back to a localStorage UUID for unauthenticated flows (e.g. mid-onboarding
+// before sign-in completes), ensuring the admin panel still sees partial progress.
 function getUserId() {
+  if (auth.currentUser) return auth.currentUser.uid
   let id = localStorage.getItem('serendipity_uid')
   if (!id) {
     id = crypto.randomUUID()
@@ -19,7 +21,7 @@ function getUserId() {
 }
 
 export function getExistingUserId() {
-  return localStorage.getItem('serendipity_uid')
+  return auth.currentUser?.uid ?? localStorage.getItem('serendipity_uid')
 }
 
 // ── Start onboarding — called immediately when Q1 appears ────────────────────

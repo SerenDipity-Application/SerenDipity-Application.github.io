@@ -84,7 +84,7 @@ export default function IntroPage() {
       </div>
 
       {/* CTA */}
-      <button className="intro-btn" onClick={() => navigate('/onboarding')}>
+      <button className="intro-btn" onClick={() => navigate('/auth')}>
         {lang === 'zh' ? '探索本场圈子' : 'Explore The Circle'} <span className="intro-btn-arrow">→</span>
       </button>
 
