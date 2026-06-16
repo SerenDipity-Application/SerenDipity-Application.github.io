@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { myProfile } from '../data'
-import { loadUser, exportJSON, exportCSV, exportVCard } from '../userStorage'
+import { loadUser } from '../userStorage'
 import './MyProfilePage.css'
 
 const AVATAR_COLORS = ['#4A3A5A','#3D5A7A','#5A3D7A','#7A4A3D','#3D7A6B','#6B4A7A']
@@ -97,7 +97,6 @@ export default function MyProfilePage() {
           <div className="my-intent-header">
             <span className="my-intent-star">✦</span>
             <span className="my-intent-title">{lang === 'en' ? 'What brings you here' : '我来这里是因为'}</span>
-            <button className="my-intent-edit" onClick={() => navigate('/onboarding')}>{s.myEdit} ✏</button>
           </div>
 
           {intents.length > 0 ? (
@@ -122,14 +121,14 @@ export default function MyProfilePage() {
         </div>
       </div>
 
-      {/* Export */}
-      <div className="my-export-card">
-        <p className="my-export-label">{lang === 'en' ? 'Download your profile' : '导出个人资料'}</p>
-        <div className="my-export-btns">
-          <button className="my-export-btn" onClick={() => exportJSON(p)}>JSON</button>
-          <button className="my-export-btn" onClick={() => exportCSV(p)}>CSV</button>
-          <button className="my-export-btn" onClick={() => exportVCard(p)}>vCard</button>
-        </div>
+      {/* Actions */}
+      <div className="my-actions">
+        <button className="my-edit-btn" onClick={() => navigate('/onboarding')}>
+          ✏ {s.myEdit}
+        </button>
+        <button className="my-inv-link" onClick={() => navigate('/invitations')}>
+          {s.myViewInvitations}
+        </button>
       </div>
 
     </div>

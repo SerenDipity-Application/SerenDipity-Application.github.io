@@ -8,9 +8,10 @@ export const t = {
     close: '✕',
 
     // Bottom Nav
-    navChat: 'Chat',
-    navDirectory: 'Directory',
-    navProfile: 'Mine',
+    navChat: 'Concierge',
+    navDirectory: 'Circle',
+    navProfile: 'My Card',
+    navInvitations: 'Invitations',
 
     // Entry Page
     entryBadge: 'INVITE ONLY',
@@ -72,12 +73,13 @@ export const t = {
     obNext: 'Next Step',
     obFinish: 'Complete & Enter',
 
-    // Directory
-    dirTitle: 'Directory',
+    // Directory / Circle
+    dirTitle: 'The Circle',
+    dirCity: 'Shanghai',
     dirSub: 'Shanghai Oxbridge Gathering · {n} alumni present',
     dirSearchPh: 'Search name, industry, intent…',
-    dirFilters: ['All', 'Make Friends', 'Find Collaborators', 'Business', 'Romance'],
-    dirGreetBtn: 'Say Hi →',
+    dirFilters: ['All', 'Friendship', 'Collaboration', 'Investing', 'Relationship'],
+    dirGreetBtn: 'Say hi with Concierge →',
 
     // Profile
     profileIntents: 'Looking For',
@@ -99,13 +101,14 @@ export const t = {
     ibWriteOwnPh: 'Type your message here…',
     ibWriteOwnHint: 'Tip: use an AI suggestion above as a starting point.',
 
-    // Chat
-    chatTitle: 'Chat',
+    // Concierge (formerly Chat)
+    chatTitle: 'Concierge',
     chatSub: '{n} contacts · SerenDipity online',
-    chatAIRole: 'Your AI Personal Social Concierge',
-    chatAIPreview: 'Ask me who to meet — I\'ll point you to the right person ✦',
+    chatAIName: 'SerenDipity AI Concierge',
+    chatAIRole: 'SerenDipity AI Concierge',
+    chatAIPreview: 'Tell me who you want to message. I\'ll write a warm opener ✦',
     chatAIBadge: 'Pinned',
-    chatConnected: 'Connected',
+    chatConnected: 'Recent Contacts',
 
     // AI Chat
     aiGreeting: 'Hi, I\'m SerenDipity. I\'m keeping an eye out for you at this gathering — you\'re looking to collaborate, so let me name someone for you:',
@@ -117,12 +120,27 @@ export const t = {
     aiIceBtn: '✦ Help me break the ice',
     aiCardBtn: '🪪 Profile',
 
-    // My Profile
+    // My Card
     myTitle: 'My Card',
-    mySubtitle: 'This is how others see you',
+    mySubtitle: 'Your Ball Card',
     myRowLabels: ['Background', 'Industry', 'Role', 'From'],
-    myIntentTitle: 'My Intent',
-    myEdit: 'Edit',
+    myIntentTitle: 'What brings me here',
+    myInterestsTitle: 'Interests',
+    myGuestsTitle: 'My Guests',
+    myEdit: 'Edit My Card',
+    myViewInvitations: 'View My Invitations →',
+
+    // Invitations
+    invTitle: 'Invite 5 Guests',
+    invSubtitle: 'Each registered member receives 5 guest invitations.',
+    invHowTitle: 'How it works',
+    invStep1: 'Share one invitation with a friend',
+    invStep2: 'They enter it during registration',
+    invStep3: 'Once approved, they join your circle',
+    invCopy: 'Copy',
+    invCopied: 'Copied ✓',
+    invShareBtn: 'Share Invitations',
+    invFooter: 'The full SerenDipity app is expected to launch in August. Alumni who register today, along with the guests they invite, will become part of our first VIP user circle. Stay tuned for curated rooms, meaningful connections, and special experiences.',
   },
 
   zh: {
@@ -134,9 +152,10 @@ export const t = {
     close: '✕',
 
     // Bottom Nav
-    navChat: '聊天',
-    navDirectory: '名录',
-    navProfile: '我的',
+    navChat: 'AI礼宾',
+    navDirectory: '圈子',
+    navProfile: '我的卡片',
+    navInvitations: '邀请',
 
     // Entry Page
     entryBadge: 'INVITE ONLY · 邀请制',
@@ -198,12 +217,13 @@ export const t = {
     obNext: '下一步',
     obFinish: '完成并进入',
 
-    // Directory
-    dirTitle: '本场名录',
+    // Directory / Circle
+    dirTitle: '圈子',
+    dirCity: '上海牛剑聚会',
     dirSub: '上海牛剑聚会 · {n} 位校友在场',
     dirSearchPh: '搜索姓名、行业、诉求…',
-    dirFilters: ['全部', '结识朋友', '寻找合作', '商务对接', '寻觅伴侣'],
-    dirGreetBtn: '一键打招呼 →',
+    dirFilters: ['全部', '结识朋友', '寻找合作', '投资', '约会'],
+    dirGreetBtn: '让礼宾帮我开场 →',
 
     // Profile
     profileIntents: '诉求',
@@ -225,13 +245,14 @@ export const t = {
     ibWriteOwnPh: '在这里输入你想说的话…',
     ibWriteOwnHint: '小提示：可以参考上面的 AI 建议再修改。',
 
-    // Chat
-    chatTitle: '聊天',
+    // Concierge (formerly Chat)
+    chatTitle: '礼宾',
     chatSub: '{n} 位联系人 · SerenDipity 在线',
-    chatAIRole: '你的 AI 私人社交礼宾',
-    chatAIPreview: '想认识谁，随时问我，我替你点名 ✦',
+    chatAIName: 'SerenDipity AI 礼宾',
+    chatAIRole: 'SerenDipity AI 礼宾',
+    chatAIPreview: '告诉我你想联系谁，我来帮你写一句自然的开场白 ✦',
     chatAIBadge: '置顶',
-    chatConnected: '已连接的人',
+    chatConnected: '近期联系人',
 
     // AI Chat
     aiGreeting: '你好，我是 SerenDipity。这场聚会我都会帮你留意着 —— 你想找合作，我先给你点个名：',
@@ -243,12 +264,27 @@ export const t = {
     aiIceBtn: '✦ 帮我破冰',
     aiCardBtn: '🪪 名片',
 
-    // My Profile
-    myTitle: '我的名片',
-    mySubtitle: '别人会这样看到你',
+    // My Card
+    myTitle: '我的卡片',
+    mySubtitle: '你的 Ball Card',
     myRowLabels: ['背景', '行业', '身份', '来自'],
-    myIntentTitle: '我的诉求',
-    myEdit: '编辑',
+    myIntentTitle: '我来这里是为了',
+    myInterestsTitle: '兴趣',
+    myGuestsTitle: '我的邀请',
+    myEdit: '编辑我的卡片',
+    myViewInvitations: '查看我的邀请 →',
+
+    // Invitations
+    invTitle: '邀请 5 位好友',
+    invSubtitle: '每位已注册成员可获得 5 个 guest invitations。',
+    invHowTitle: '使用方式',
+    invStep1: '分享一个邀请码给朋友',
+    invStep2: '对方在注册时输入邀请码',
+    invStep3: '审核通过后，对方将加入你的圈子',
+    invCopy: '复制',
+    invCopied: '已复制 ✓',
+    invShareBtn: '分享邀请',
+    invFooter: 'SerenDipity 完整版 App 预计将于 8 月上线。今天注册的校友，以及他们邀请的 guests，都将成为我们的首批 VIP 用户。敬请期待 curated rooms、meaningful connections 与 special experiences。',
   },
 }
 

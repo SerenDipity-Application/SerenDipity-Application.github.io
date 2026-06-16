@@ -1,0 +1,193 @@
+/* ══════════════════════════════════════════════
+   INVITATIONS PAGE
+══════════════════════════════════════════════ */
+.inv-page {
+  min-height: 100%;
+  background: #FAF8F5;
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 48px;
+  font-family: 'Inter', sans-serif;
+  overflow-y: auto;
+}
+
+/* ── Header ── */
+.inv-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+  margin-bottom: 20px;
+}
+.inv-eyebrow {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  color: #9B7FA6;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.inv-star {
+  color: #C9A84C;
+  font-size: 16px;
+}
+
+/* ── Title ── */
+.inv-title {
+  font-size: 32px;
+  font-weight: 400;
+  color: #1A1530;
+  margin: 0 24px 8px;
+  line-height: 1.2;
+}
+.inv-subtitle {
+  font-size: 14px;
+  color: #6B7280;
+  margin: 0 24px 28px;
+  line-height: 1.6;
+}
+
+/* ── Invitation codes ── */
+.inv-codes {
+  background: #fff;
+  border-radius: 16px;
+  margin: 0 16px 24px;
+  overflow: hidden;
+  box-shadow: 0 1px 8px rgba(61,26,71,0.07);
+  border: 1px solid #EDE9E3;
+}
+.inv-code-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #F5F0EB;
+}
+.inv-code-row:last-child { border-bottom: none; }
+.inv-code-num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #F3F0FF;
+  color: #9B7FA6;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.inv-code {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1530;
+  letter-spacing: 1px;
+  font-family: 'Inter', monospace;
+}
+.inv-copy-btn {
+  background: #F3F0FF;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3D1A47;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+}
+.inv-copy-btn.copied {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+/* ── How it works ── */
+.inv-how {
+  background: #fff;
+  border-radius: 16px;
+  margin: 0 16px 24px;
+  padding: 18px 20px;
+  border: 1px solid #EDE9E3;
+}
+.inv-how-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1A1530;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.inv-how-star { color: #C9A84C; font-size: 12px; }
+.inv-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.inv-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.inv-step-num {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #3D1A47;
+  color: #C9A84C;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.inv-step-text {
+  font-size: 13px;
+  color: #4B5563;
+  line-height: 1.5;
+}
+
+/* ── Footer text ── */
+.inv-footer-text {
+  margin: 0 24px 28px;
+  padding: 16px 20px;
+  background: rgba(61,26,71,0.04);
+  border-radius: 12px;
+  border-left: 3px solid #C9A84C;
+}
+.inv-footer-text p {
+  font-size: 12px;
+  color: #6B7280;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Actions ── */
+.inv-actions {
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.inv-share-btn {
+  width: 100%;
+  background: #3D1A47;
+  color: #C9A84C;
+  border: none;
+  border-radius: 50px;
+  padding: 16px 24px;
+  font-size: 17px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.inv-share-btn:active { opacity: 0.85; }
+.inv-my-card-link {
+  background: none;
+  border: none;
+  color: #9B7FA6;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  text-align: center;
+  padding: 4px;
+}

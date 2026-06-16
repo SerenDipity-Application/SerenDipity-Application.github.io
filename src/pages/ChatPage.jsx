@@ -26,7 +26,6 @@ export default function ChatPage() {
           <h1 className="chat-title serif">{s.chatTitle}</h1>
           <p className="chat-sub">{s.chatSub.replace('{n}', connected.length)}</p>
         </div>
-        <button className="chat-edit-btn">✏</button>
       </div>
 
       <div className="chat-ai-card" onClick={() => navigate('/ai-chat')}>
@@ -36,11 +35,10 @@ export default function ChatPage() {
         </div>
         <div className="chat-ai-info">
           <div className="chat-ai-name-row">
-            <span className="chat-ai-name">SerenDipity</span>
+            <span className="chat-ai-name">{s.chatAIName}</span>
             <span className="chat-ai-badge">{s.chatAIBadge}</span>
             <span className="chat-ai-online">{s.online}</span>
           </div>
-          <p className="chat-ai-role">{s.chatAIRole}</p>
           <p className="chat-ai-preview">{s.chatAIPreview}</p>
         </div>
       </div>

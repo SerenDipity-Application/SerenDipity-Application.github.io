@@ -176,18 +176,37 @@
   padding: 8px 0; text-align: center; font-family: 'Inter', sans-serif;
 }
 
-/* ── Export ── */
-.my-export-card {
-  background: var(--white); border-radius: 14px; padding: 16px 20px;
-  margin: 12px 24px 0; box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+/* ── Actions ── */
+.my-actions {
+  padding: 20px 24px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-.my-export-label { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; text-align: center; font-family: 'Inter', sans-serif; letter-spacing: 0.5px; }
-.my-export-btns { display: flex; gap: 8px; }
-.my-export-btn {
-  flex: 1; padding: 9px 0; border: 1.5px solid #DDD5C8;
-  border-radius: 8px; background: transparent; color: var(--text-mid);
-  font-size: 12px; font-weight: 500; cursor: pointer; letter-spacing: 0.5px;
+.my-edit-btn {
+  width: 100%;
+  background: var(--plum);
+  color: var(--gold);
+  border: none;
+  border-radius: 50px;
+  padding: 16px 24px;
+  font-size: 17px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.my-edit-btn:active { opacity: 0.85; }
+.my-inv-link {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
   font-family: 'Inter', sans-serif;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  cursor: pointer;
+  text-align: center;
+  padding: 4px;
+  letter-spacing: 0.3px;
 }
-.my-export-btn:hover { background: var(--plum); color: var(--white); border-color: var(--plum); }
+.my-inv-link:hover { color: var(--plum); }

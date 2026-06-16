@@ -53,22 +53,29 @@ export default function DirectoryPage() {
   const isLoading = firestoreUsers === null && !error
 
   const intentFilterMap = {
-    'Make Friends': ['结识朋友', '寻找合作伙伴'],
-    'Find Collaborators': ['寻找合作', '寻找合作伙伴', 'Find Collaborators'],
-    'Business': ['商业机会', '商务对接', '探索机会', 'Explore Opportunities'],
-    'Romance': ['浪漫邂逅', '寻觅伴侣', 'Meet Someone Special', '遇见特别的人'],
+    // EN filter labels → matching intent strings
+    'Friendship':      ['结识朋友', 'Make Friends', '拓展我的圈子', 'Expand My Circle'],
+    'Collaboration':   ['寻找合作', '寻找合作伙伴', 'Find Collaborators', '创造一些事物', 'Build Something'],
+    'Investing':       ['商业机会', '商务对接', '探索机会', 'Explore Opportunities', '投资'],
+    'Relationship':    ['浪漫邂逅', '寻觅伴侣', 'Meet Someone Special', '遇见特别的人'],
+    // ZH filter labels → same sets
+    '结识朋友':         ['结识朋友', 'Make Friends', '拓展我的圈子', 'Expand My Circle'],
+    '寻找合作':         ['寻找合作', '寻找合作伙伴', 'Find Collaborators', '创造一些事物', 'Build Something'],
+    '投资':             ['商业机会', '商务对接', '探索机会', 'Explore Opportunities', '投资'],
+    '约会':             ['浪漫邂逅', '寻觅伴侣', 'Meet Someone Special', '遇见特别的人'],
   }
 
   const filtered = allUsers.filter(m => {
+    // hide truly incomplete profiles (no display name or "SD" placeholder)
+    const name = m.zhName || m.enName || ''
+    if (!name || name === 'SD') return false
     const filterLabel = s.dirFilters[activeFilter]
     const isAll = activeFilter === 0
     const intents = m.intents || []
+    const variants = intentFilterMap[filterLabel] || []
     const matchFilter = isAll
       || intents.includes(filterLabel)
-      || Object.values(intentFilterMap).some(variants =>
-          variants.includes(filterLabel) &&
-          variants.some(v => intents.includes(v))
-        )
+      || variants.some(v => intents.includes(v))
 
     const q = search.toLowerCase()
     const matchSearch = !q
@@ -103,6 +110,7 @@ export default function DirectoryPage() {
           <span className="dir-logo-star">✦</span>
         </div>
         <h1 className="dir-title serif">{s.dirTitle}</h1>
+        <p className="dir-city-line">{s.dirCity}</p>
         <p className="dir-sub">
           {isLoading
             ? (lang === 'en' ? 'Loading…' : '加载中…')
