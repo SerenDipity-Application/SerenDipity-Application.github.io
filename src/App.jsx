@@ -28,7 +28,7 @@ function GlobalLangToggle() {
 
   return (
     <button onClick={toggle} style={{
-      position: 'fixed',
+      position: 'absolute',
       top: 16, right: 16,
       zIndex: 500,
       background: isDark ? 'rgba(201,168,76,0.12)' : 'rgba(61,26,71,0.07)',
