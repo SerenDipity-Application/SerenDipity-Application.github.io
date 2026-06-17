@@ -79,7 +79,7 @@ export const t = {
     dirSub: 'Shanghai Oxbridge Gathering · {n} alumni present',
     dirSearchPh: 'Search name, industry, intent…',
     dirFilters: ['All', 'Friendship', 'Collaboration', 'Investing', 'Relationship'],
-    dirGreetBtn: 'Say hi with Concierge →',
+    dirGreetBtn: 'Say Hi →',
 
     // Profile
     profileIntents: 'Looking For',
@@ -223,7 +223,7 @@ export const t = {
     dirSub: '上海牛剑聚会 · {n} 位校友在场',
     dirSearchPh: '搜索姓名、行业、诉求…',
     dirFilters: ['全部', '结识朋友', '寻找合作', '投资', '约会'],
-    dirGreetBtn: '让礼宾帮我开场 →',
+    dirGreetBtn: '打个招呼 →',
 
     // Profile
     profileIntents: '诉求',
