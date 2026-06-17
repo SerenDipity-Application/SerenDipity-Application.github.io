@@ -47,7 +47,7 @@ export default function ChatPage() {
 
       <div className="chat-list">
         {connected.map((m, i) => (
-          <div key={m.id} className="chat-item" onClick={() => navigate(`/profile/${m.id}`)}>
+          <div key={m.id} className="chat-item" onClick={() => navigate(`/dm/${m.id}`)}>
             <div className="chat-item-avatar" style={{background: m.color}}>{m.initials}</div>
             <div className="chat-item-info">
               <div className="chat-item-name-row">

@@ -163,7 +163,7 @@ export default function IcebreakerPage() {
           {copied ? s.ibCopied : s.ibCopy}
         </button>
         <button className="ib-send-btn serif"
-          onClick={() => navigate('/chat')}
+          onClick={() => navigate(`/dm/${member.id}`, { state: { firstMessage: activeText } })}
           disabled={mode === 'custom' && !customText.trim()}>
           {s.ibSend}
         </button>

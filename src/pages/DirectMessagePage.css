@@ -1,0 +1,308 @@
+/* ══════════════════════════════════════════════
+   DIRECT MESSAGE PAGE
+══════════════════════════════════════════════ */
+.dm-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.dm-header {
+  background: var(--plum);
+  display: flex;
+  align-items: center;
+  padding: 18px 16px 14px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.dm-back {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.85);
+  font-size: 30px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  font-weight: 300;
+}
+.dm-header-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.dm-header-name {
+  font-size: 20px;
+  color: var(--white);
+  font-weight: 500;
+  letter-spacing: -0.2px;
+}
+.dm-header-star {
+  color: var(--gold);
+  font-size: 13px;
+}
+.dm-more {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 18px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  padding: 0 4px;
+}
+
+/* ── Match banner ── */
+.dm-match-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px 8px;
+  font-size: 12px;
+  color: var(--gold);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+.dm-match-star { font-size: 10px; }
+
+/* ── Messages scroll area ── */
+.dm-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Message row ── */
+.dm-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.dm-row-me { flex-direction: row-reverse; }
+
+/* ── Avatar ── */
+.dm-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.3px;
+}
+.dm-avatar-me {
+  background: var(--plum);
+  font-size: 10px;
+}
+
+/* ── Bubble ── */
+.dm-bubble-wrap {
+  max-width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+.dm-bubble {
+  padding: 11px 15px;
+  border-radius: 18px;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.5;
+  word-break: break-word;
+}
+.dm-bubble-them {
+  background: var(--plum);
+  color: var(--white);
+  border-bottom-left-radius: 4px;
+}
+.dm-bubble-me {
+  background: #EDE8F5;
+  color: var(--text-dark);
+  border-bottom-right-radius: 4px;
+}
+.dm-time {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 4px;
+  font-family: 'Inter', sans-serif;
+}
+.dm-time-me { text-align: right; }
+.dm-time-them { text-align: left; }
+
+/* ── Typing indicator ── */
+.dm-typing {
+  background: var(--plum);
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  padding: 14px 18px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.dm-typing span {
+  width: 7px;
+  height: 7px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 50%;
+  animation: dm-bounce 1.2s infinite;
+}
+.dm-typing span:nth-child(2) { animation-delay: 0.2s; }
+.dm-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dm-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* ── Date divider ── */
+.dm-date-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+  font-size: 12px;
+  color: var(--text-light);
+  font-family: 'Inter', sans-serif;
+}
+.dm-date-line {
+  flex: 1;
+  height: 1px;
+  background: var(--cream-dark);
+}
+
+/* ── SerenDipity Suggests card ── */
+.dm-suggest-card {
+  background: #EDE8F5;
+  border-radius: 18px;
+  padding: 16px;
+  position: relative;
+  margin: 4px 0 2px;
+  flex-shrink: 0;
+}
+.dm-suggest-close {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+}
+.dm-suggest-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.dm-suggest-star { color: var(--gold); font-size: 14px; }
+.dm-suggest-label {
+  font-size: 12px;
+  color: var(--plum);
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
+}
+.dm-suggest-title {
+  font-size: 22px;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.dm-suggest-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+.dm-suggest-btn {
+  width: 100%;
+  background: var(--plum);
+  color: var(--white);
+  border: none;
+  border-radius: 50px;
+  padding: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: opacity 0.15s;
+}
+.dm-suggest-btn:active { opacity: 0.88; }
+
+/* ── Input bar ── */
+.dm-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px 18px;
+  border-top: 1px solid var(--cream-dark);
+  background: var(--white);
+  flex-shrink: 0;
+}
+.dm-input-plus {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid #DDD5C8;
+  background: none;
+  font-size: 20px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.dm-input {
+  flex: 1;
+  border: none;
+  background: var(--cream);
+  border-radius: 22px;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-dark);
+  outline: none;
+  min-width: 0;
+}
+.dm-input::placeholder { color: var(--text-light); }
+.dm-input-mic,
+.dm-send-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+.dm-input-mic {
+  background: none;
+  color: var(--text-muted);
+}
+.dm-send-btn {
+  background: var(--plum);
+  color: var(--white);
+  font-size: 20px;
+  font-weight: 700;
+}
+.dm-send-btn:active { opacity: 0.85; }

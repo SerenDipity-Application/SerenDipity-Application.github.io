@@ -17,12 +17,14 @@ import MyProfilePage from './pages/MyProfilePage'
 import IcebreakerPage from './pages/IcebreakerPage'
 import InvitationsPage from './pages/InvitationsPage'
 import AdminPage from './pages/AdminPage'
+import DirectMessagePage from './pages/DirectMessagePage'
 
 // ── Floating language toggle ──────────────────────────────────────────────────
 function GlobalLangToggle() {
   const { lang, toggle } = useLang()
   const location = useLocation()
   if (location.pathname === '/admin') return null
+  if (location.pathname.startsWith('/dm/')) return null
   const darkPages = ['/', '/intro', '/onboarding', '/auth']
   const isDark = darkPages.includes(location.pathname)
 
@@ -56,7 +58,7 @@ function BottomNav() {
   const location = useLocation()
   const { s } = useLang()
   const noNav = ['/', '/intro', '/onboarding', '/auth', '/admin']
-  if (noNav.some(p => location.pathname === p)) return null
+  if (noNav.some(p => location.pathname === p) || location.pathname.startsWith('/dm/')) return null
 
   const active = location.pathname
 
@@ -196,6 +198,7 @@ function AppShell() {
           <Route path="/ai-chat"     element={<AIChatPage />} />
           <Route path="/my-profile"  element={<MyProfilePage />} />
           <Route path="/icebreaker/:id" element={<IcebreakerPage />} />
+          <Route path="/dm/:id"         element={<DirectMessagePage />} />
           <Route path="/invitations" element={<InvitationsPage />} />
           <Route path="/admin"       element={<AdminPage />} />
         </Routes>
