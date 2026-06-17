@@ -15,12 +15,19 @@ const messagesEN = {
   casual:      (m) => `Hey ${m.enName}, didn't get a chance to say hi at the event — better late than never! Noted your intentions, would love to grab coffee next week.`,
 }
 
+const MEMBER_CACHE_KEY = id => `serendipity_member_${id}`
+
 export default function IcebreakerPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { lang, s } = useLang()
-  const member = location.state?.member
+
+  // Prefer state (normal flow), then sessionStorage (page reload), then static data
+  const stateMember = location.state?.member
+  if (stateMember) sessionStorage.setItem(MEMBER_CACHE_KEY(id), JSON.stringify(stateMember))
+  const member = stateMember
+    || (() => { try { return JSON.parse(sessionStorage.getItem(MEMBER_CACHE_KEY(id))) } catch { return null } })()
     || members.find(m => String(m.id) === id || String(m.uid) === id)
     || members[0]
 

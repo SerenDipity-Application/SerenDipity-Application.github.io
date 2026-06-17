@@ -27,16 +27,21 @@ function nowTime() {
   return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
+const MEMBER_CACHE_KEY = id => `serendipity_member_${id}`
+
 export default function DirectMessagePage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { lang } = useLang()
 
-  const member = location.state?.member
+  const stateMember = location.state?.member
+  if (stateMember) sessionStorage.setItem(MEMBER_CACHE_KEY(id), JSON.stringify(stateMember))
+  const member = stateMember
+    || (() => { try { return JSON.parse(sessionStorage.getItem(MEMBER_CACHE_KEY(id))) } catch { return null } })()
     || members.find(m => String(m.id) === id || String(m.uid) === id)
     || members[0]
-  const name = lang === 'zh' ? member.zhName : member.enName
+  const name = (lang === 'zh' ? member.zhName : member.enName) || member.enName || member.zhName || 'Member'
 
   const [messages, setMessages] = useState(() => {
     try {

@@ -86,10 +86,12 @@ export async function loadAllUsers() {
 }
 
 // ── Real-time listener for all users ─────────────────────────────────────────
-export function subscribeToUsers(callback) {
-  return onSnapshot(collection(db, COLLECTION), snap => {
-    callback(snap.docs.map(d => ({ ...d.data(), _docId: d.id })))
-  })
+export function subscribeToUsers(callback, onError) {
+  return onSnapshot(
+    collection(db, COLLECTION),
+    snap => callback(snap.docs.map(d => ({ ...d.data(), _docId: d.id }))),
+    err => { console.warn('Firestore snapshot error:', err); onError?.(err) }
+  )
 }
 
 // ── Admin: update any fields on a user record ─────────────────────────────────

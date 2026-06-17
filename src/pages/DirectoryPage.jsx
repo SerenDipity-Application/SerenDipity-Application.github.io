@@ -35,19 +35,21 @@ export default function DirectoryPage() {
   useEffect(() => {
     let unsub
     try {
-      unsub = subscribeToUsers(users => {
-        setFirestoreUsers(users)
-        setError(false)
-      })
+      unsub = subscribeToUsers(
+        users => { setFirestoreUsers(users); setError(false) },
+        () => { setError(true); setFirestoreUsers([]) }
+      )
     } catch (e) {
       console.warn('Firestore unavailable, using demo data', e)
       setError(true)
+      setFirestoreUsers([])
     }
     return () => unsub?.()
   }, [])
 
-  const allUsers = firestoreUsers !== null
-    ? firestoreUsers.length > 0 ? firestoreUsers : demoMembers
+  // Show Firestore users when loaded, fall back to demo members
+  const allUsers = (firestoreUsers && firestoreUsers.length > 0)
+    ? firestoreUsers
     : demoMembers
 
   const isLoading = firestoreUsers === null && !error
@@ -111,11 +113,7 @@ export default function DirectoryPage() {
         </div>
         <h1 className="dir-title serif">{s.dirTitle}</h1>
         <p className="dir-city-line">{s.dirCity}</p>
-        <p className="dir-sub">
-          {isLoading
-            ? (lang === 'en' ? 'Loading…' : '加载中…')
-            : s.dirSub.replace('{n}', filtered.length)}
-        </p>
+        <p className="dir-sub">{s.dirSub.replace('{n}', filtered.length)}</p>
       </div>
 
       {/* Search */}
@@ -135,12 +133,6 @@ export default function DirectoryPage() {
 
       {/* List */}
       <div className="dir-list">
-        {isLoading && (
-          <p style={{textAlign:'center',color:'#aaa',padding:'40px 0'}}>
-            {lang === 'en' ? 'Loading members…' : '正在加载成员…'}
-          </p>
-        )}
-
         {filtered.map((m, idx) => {
           const id       = m.uid || m.id || idx
           const initials = getInitials(m)
