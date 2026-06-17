@@ -66,7 +66,7 @@ export default function DirectMessagePage() {
     const unsub = subscribeToMessages(tid, msgs => {
       unsub()
       if (msgs.length === 0) {
-        sendMessage(tid, first, myUid).catch(() => {})
+        sendMessage(tid, first, myUid, theirUid).catch(() => {})
       }
     })
   }, [tid, useFirestore])
@@ -98,7 +98,7 @@ export default function DirectMessagePage() {
     if (!text) return
     setInput('')
     if (useFirestore) {
-      await sendMessage(tid, text, myUid)
+      await sendMessage(tid, text, myUid, theirUid)
     } else {
       setMessages(prev => [...prev, { id: Date.now(), side: 'me', text, time: nowTime(), day: today() }])
     }

@@ -210,3 +210,59 @@
   letter-spacing: 0.3px;
 }
 .my-inv-link:hover { color: var(--plum); }
+
+/* ── Invitations section ── */
+.my-inv-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 18px 16px;
+  margin: 0 0 8px;
+}
+.my-inv-desc {
+  font-size: 13px;
+  color: var(--text-light);
+  font-family: 'Inter', sans-serif;
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+.my-inv-codes { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.my-inv-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F7F3EE;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.my-inv-code {
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  color: var(--plum);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.my-inv-copy {
+  background: none;
+  border: 1px solid #DDD5C8;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.my-inv-copy.copied { background: var(--plum); color: #fff; border-color: var(--plum); }
+.my-inv-share {
+  width: 100%;
+  background: var(--plum);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 13px;
+  font-size: 16px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: opacity 0.15s;
+}
+.my-inv-share:active { opacity: 0.85; }

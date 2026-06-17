@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { myProfile } from '../data'
 import { loadUser } from '../userStorage'
 import './MyProfilePage.css'
+
+const INV_CODES = ['SD-MB-7A21', 'SD-MB-7A22', 'SD-MB-7A23', 'SD-MB-7A24', 'SD-MB-7A25']
 
 const AVATAR_COLORS = ['#4A3A5A','#3D5A7A','#5A3D7A','#7A4A3D','#3D7A6B','#6B4A7A']
 
@@ -22,6 +25,26 @@ function getColor(name) {
 export default function MyProfilePage() {
   const navigate = useNavigate()
   const { lang, s } = useLang()
+  const [copied, setCopied] = useState(null)
+
+  const handleCopy = (code) => {
+    navigator.clipboard.writeText(code).catch(() => {})
+    setCopied(code)
+    setTimeout(() => setCopied(null), 2000)
+  }
+
+  const handleShare = () => {
+    const text = lang === 'zh'
+      ? `我邀请你加入 SerenDipity。\n\n我的邀请码：\n${INV_CODES.join('\n')}`
+      : `Join me on SerenDipity.\n\nMy invitation codes:\n${INV_CODES.join('\n')}`
+    if (navigator.share) {
+      navigator.share({ title: 'SerenDipity Invitation', text })
+    } else {
+      navigator.clipboard.writeText(text).catch(() => {})
+      setCopied('all')
+      setTimeout(() => setCopied(null), 2000)
+    }
+  }
 
   const saved = loadUser()
   const p = saved || myProfile
@@ -121,14 +144,41 @@ export default function MyProfilePage() {
         </div>
       </div>
 
-      {/* Actions */}
+      {/* Edit action */}
       <div className="my-actions">
         <button className="my-edit-btn" onClick={() => navigate('/onboarding')}>
           ✏ {s.myEdit}
         </button>
-        <button className="my-inv-link" onClick={() => navigate('/invitations')}>
-          {s.myViewInvitations}
-        </button>
+      </div>
+
+      {/* Invitations section */}
+      <div className="my-section">
+        <p className="my-section-label">{lang === 'zh' ? '邀请好友' : 'Invite Friends'}</p>
+        <div className="my-inv-card">
+          <p className="my-inv-desc">
+            {lang === 'zh'
+              ? '将以下邀请码发给你想带入圈子的朋友。'
+              : 'Share these codes with friends you want to bring into the Circle.'}
+          </p>
+          <div className="my-inv-codes">
+            {INV_CODES.map((code) => (
+              <div key={code} className="my-inv-row">
+                <span className="my-inv-code">{code}</span>
+                <button
+                  className={`my-inv-copy ${copied === code ? 'copied' : ''}`}
+                  onClick={() => handleCopy(code)}
+                >
+                  {copied === code ? (lang === 'zh' ? '已复制' : 'Copied') : (lang === 'zh' ? '复制' : 'Copy')}
+                </button>
+              </div>
+            ))}
+          </div>
+          <button className="my-inv-share serif" onClick={handleShare}>
+            {copied === 'all'
+              ? (lang === 'zh' ? '已复制 ✓' : 'Copied ✓')
+              : (lang === 'zh' ? '✦ 一键分享所有' : '✦ Share All Codes')}
+          </button>
+        </div>
       </div>
 
     </div>

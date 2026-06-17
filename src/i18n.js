@@ -11,6 +11,7 @@ export const t = {
     navChat: 'Concierge',
     navDirectory: 'Circle',
     navProfile: 'My Card',
+    navMessages: 'Messages',
     navInvitations: 'Invitations',
 
     // Entry Page
@@ -155,6 +156,7 @@ export const t = {
     navChat: 'AI礼宾',
     navDirectory: '圈子',
     navProfile: '我的卡片',
+    navMessages: '消息',
     navInvitations: '邀请',
 
     // Entry Page
