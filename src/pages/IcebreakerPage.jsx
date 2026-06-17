@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { members } from '../data'
+import { sendDmRequest } from '../firestoreNotifications'
+import { loadUserFromFirestore } from '../firestoreUsers'
 import './IcebreakerPage.css'
 
 const messagesZH = {
@@ -173,7 +175,16 @@ export default function IcebreakerPage() {
           {copied ? s.ibCopied : s.ibCopy}
         </button>
         <button className="ib-send-btn serif"
-          onClick={() => navigate(`/dm/${member.uid || member.id}`, { state: { member, firstMessage: activeText } })}
+          onClick={async () => {
+            // If target is a real Firestore user, write a notification to their inbox
+            if (member.uid) {
+              try {
+                const myProfile = await loadUserFromFirestore()
+                await sendDmRequest({ toUid: member.uid, message: activeText, senderProfile: myProfile })
+              } catch (e) { console.warn('Could not send notification:', e) }
+            }
+            navigate(`/dm/${member.uid || member.id}`, { state: { member, firstMessage: activeText } })
+          }}
           disabled={mode === 'custom' && !customText.trim()}>
           {s.ibSend}
         </button>
