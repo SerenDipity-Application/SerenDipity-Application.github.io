@@ -66,6 +66,8 @@
 .chat-item-time { font-size: 12px; color: var(--text-light); }
 .chat-item-school { font-size: 12px; color: var(--text-light); margin-bottom: 3px; }
 .chat-item-preview { font-size: 13px; color: var(--text-mid); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+.chat-match-stars { font-size: 11px; color: var(--gold); letter-spacing: 1px; }
+.chat-empty { padding: 24px 20px; color: var(--text-light); font-family: 'Inter', sans-serif; font-size: 14px; }
 .chat-unread {
   background: var(--rose); color: var(--white);
   width: 20px; height: 20px; border-radius: 50%;
