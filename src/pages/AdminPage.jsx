@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { subscribeToUsers, adminUpdateUser, adminDeleteUser, assignCheckInNumber } from '../firestoreUsers'
+import { clearAllNotifications } from '../firestoreNotifications'
 import './AdminPage.css'
 
 // ── Change this passcode before the event ─────────────────────────────────────
@@ -205,6 +206,22 @@ export default function AdminPage() {
     showToast('Registrant deleted')
   }
 
+  const handleResetTestData = async () => {
+    if (!window.confirm('This will delete ALL Firestore notification docs and clear DM messages from this browser. Continue?')) return
+    try {
+      await clearAllNotifications()
+      Object.keys(localStorage)
+        .filter(k => k.startsWith('serendipity_'))
+        .forEach(k => localStorage.removeItem(k))
+      Object.keys(sessionStorage)
+        .filter(k => k.startsWith('serendipity_'))
+        .forEach(k => sessionStorage.removeItem(k))
+      showToast('✓ All test data cleared')
+    } catch (e) {
+      showToast('Error: ' + e.message)
+    }
+  }
+
   const handleSaveEdit = async (form) => {
     const uid = editingUser.uid || editingUser._docId
     setSaving(s => ({ ...s, [uid]: true }))
@@ -315,6 +332,9 @@ export default function AdminPage() {
           </button>
           <button className="adm-btn-secondary" onClick={() => downloadJSON(users)}>
             ↓ JSON
+          </button>
+          <button className="adm-btn-danger" onClick={handleResetTestData}>
+            ↺ Reset test data
           </button>
         </div>
       </div>

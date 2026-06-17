@@ -1,6 +1,6 @@
 import {
   collection, addDoc, updateDoc, doc,
-  onSnapshot, serverTimestamp,
+  onSnapshot, serverTimestamp, getDocs, deleteDoc,
 } from 'firebase/firestore'
 import { db, auth } from './firebase'
 
@@ -49,4 +49,15 @@ export async function rejectNotification(uid, notifId) {
   await updateDoc(doc(db, 'notifications', uid, 'items', notifId), {
     status: 'rejected', read: true,
   })
+}
+
+// Delete every notification item across all users (admin reset only).
+export async function clearAllNotifications() {
+  const topSnap = await getDocs(collection(db, 'notifications'))
+  const deletes = []
+  for (const userDoc of topSnap.docs) {
+    const itemsSnap = await getDocs(collection(db, 'notifications', userDoc.id, 'items'))
+    itemsSnap.docs.forEach(d => deletes.push(deleteDoc(d.ref)))
+  }
+  await Promise.all(deletes)
 }
