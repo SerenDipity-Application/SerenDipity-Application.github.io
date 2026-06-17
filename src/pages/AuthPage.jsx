@@ -132,6 +132,7 @@ export default function AuthPage() {
             <div className="auth-sent-icon">✦</div>
             <p className="auth-sent-title">{t.sentTitle}</p>
             <p className="auth-sent-sub">{t.sentSub}</p>
+            <p className="auth-spam-note">{lang === 'zh' ? '如果没有收到，请检查垃圾邮件文件夹。' : "If you don't see it, please check your spam folder."}</p>
             <p className="auth-sent-email">{email}</p>
             <button className="auth-resend" onClick={() => setSent(false)}>{t.resend}</button>
           </div>
