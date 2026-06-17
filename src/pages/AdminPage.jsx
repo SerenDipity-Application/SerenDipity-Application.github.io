@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { subscribeToUsers, adminUpdateUser, adminDeleteUser, assignCheckInNumber } from '../firestoreUsers'
-import { clearAllNotifications } from '../firestoreNotifications'
+import { clearAllTestData } from '../firestoreNotifications'
 import './AdminPage.css'
 
 // ── Change this passcode before the event ─────────────────────────────────────
@@ -209,7 +209,7 @@ export default function AdminPage() {
   const handleResetTestData = async () => {
     if (!window.confirm('This will delete ALL Firestore notification docs and clear DM messages from this browser. Continue?')) return
     try {
-      await clearAllNotifications()
+      await clearAllTestData()
       Object.keys(localStorage)
         .filter(k => k.startsWith('serendipity_'))
         .forEach(k => localStorage.removeItem(k))

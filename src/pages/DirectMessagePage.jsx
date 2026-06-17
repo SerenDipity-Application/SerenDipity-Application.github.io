@@ -1,57 +1,79 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useLang } from '../LangContext'
+import { useAuth } from '../AuthContext'
 import { members } from '../data'
+import { threadId, sendMessage, subscribeToMessages } from '../firestoreDms'
 import './DirectMessagePage.css'
 
-const storageKey = id => `serendipity_dm_${id}`
-const MEMBER_CACHE_KEY = id => `serendipity_member_${id}`
+const localKey   = id => `serendipity_dm_${id}`
+const MEMBER_KEY = id => `serendipity_member_${id}`
 
 function nowTime() {
   return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
-
-function today() {
-  return new Date().toDateString()
-}
+function today() { return new Date().toDateString() }
 
 export default function DirectMessagePage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { lang } = useLang()
+  const { user } = useAuth()
 
+  // ── Resolve the other person ──────────────────────────────────────────────
   const stateMember = location.state?.member
-  if (stateMember) sessionStorage.setItem(MEMBER_CACHE_KEY(id), JSON.stringify(stateMember))
+  if (stateMember) sessionStorage.setItem(MEMBER_KEY(id), JSON.stringify(stateMember))
   const member = stateMember
-    || (() => { try { return JSON.parse(sessionStorage.getItem(MEMBER_CACHE_KEY(id))) } catch { return null } })()
+    || (() => { try { return JSON.parse(sessionStorage.getItem(MEMBER_KEY(id))) } catch { return null } })()
     || members.find(m => String(m.id) === id || String(m.uid) === id)
     || members[0]
-  const name = (lang === 'zh' ? member.zhName : member.enName) || member.enName || member.zhName || 'Member'
 
+  const name = (lang === 'zh' ? member?.zhName : member?.enName)
+    || member?.enName || member?.zhName || 'Member'
+
+  // ── Determine mode ────────────────────────────────────────────────────────
+  // Both sides need real UIDs to use Firestore real-time chat.
+  const myUid    = user?.uid
+  const theirUid = member?.uid
+  const useFirestore = !!(myUid && theirUid)
+  const tid = useFirestore ? threadId(myUid, theirUid) : null
+
+  // ── Message state ─────────────────────────────────────────────────────────
   const [messages, setMessages] = useState(() => {
-    try {
-      const stored = localStorage.getItem(storageKey(id))
-      if (stored) return JSON.parse(stored)
-    } catch {}
-    return []
+    if (useFirestore) return [] // will be populated by onSnapshot
+    try { return JSON.parse(localStorage.getItem(localKey(id)) || '[]') } catch { return [] }
   })
-  const [input, setInput] = useState('')
+  const [input, setInput]       = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const [suggestionDismissed, setSuggestionDismissed] = useState(false)
   const messagesEndRef = useRef(null)
-  const inputRef = useRef(null)
-  const seededRef = useRef(false)
+  const seededRef      = useRef(false)
 
-  function clearChat() {
-    localStorage.removeItem(storageKey(id))
-    sessionStorage.removeItem(MEMBER_CACHE_KEY(id))
-    setMessages([])
-    setMenuOpen(false)
-  }
-
-  // Seed icebreaker as the first sent message — no auto-reply
+  // ── Firestore real-time listener ──────────────────────────────────────────
   useEffect(() => {
+    if (!useFirestore) return
+    return subscribeToMessages(tid, setMessages)
+  }, [tid, useFirestore])
+
+  // ── Seed icebreaker as first message (Firestore path) ─────────────────────
+  useEffect(() => {
+    if (!useFirestore) return
+    const first = location.state?.firstMessage
+    if (!first || seededRef.current) return
+    seededRef.current = true
+    // Only seed once — check if thread already has messages after first snapshot
+    const unsub = subscribeToMessages(tid, msgs => {
+      unsub()
+      if (msgs.length === 0) {
+        sendMessage(tid, first, myUid).catch(() => {})
+      }
+    })
+  }, [tid, useFirestore])
+
+  // ── Seed icebreaker (localStorage fallback path) ──────────────────────────
+  useEffect(() => {
+    if (useFirestore) return
     const first = location.state?.firstMessage
     if (first && messages.length === 0 && !seededRef.current) {
       seededRef.current = true
@@ -59,27 +81,46 @@ export default function DirectMessagePage() {
     }
   }, [])
 
-  // Persist to localStorage
+  // ── Persist localStorage messages ─────────────────────────────────────────
   useEffect(() => {
-    localStorage.setItem(storageKey(id), JSON.stringify(messages))
-  }, [messages, id])
+    if (useFirestore) return
+    localStorage.setItem(localKey(id), JSON.stringify(messages))
+  }, [messages, id, useFirestore])
 
-  // Auto-scroll to bottom
+  // ── Auto-scroll ───────────────────────────────────────────────────────────
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  function send() {
+  // ── Send ──────────────────────────────────────────────────────────────────
+  async function send() {
     const text = input.trim()
     if (!text) return
-    setMessages(prev => [
-      ...prev,
-      { id: Date.now(), side: 'me', text, time: nowTime(), day: today() },
-    ])
     setInput('')
+    if (useFirestore) {
+      await sendMessage(tid, text, myUid)
+    } else {
+      setMessages(prev => [...prev, { id: Date.now(), side: 'me', text, time: nowTime(), day: today() }])
+    }
+  }
+
+  // ── Clear chat ────────────────────────────────────────────────────────────
+  function clearChat() {
+    // For localStorage path only — Firestore messages would need batch delete.
+    if (!useFirestore) {
+      localStorage.removeItem(localKey(id))
+      setMessages([])
+    }
+    setMenuOpen(false)
   }
 
   const showSuggestion = messages.length >= 4 && !suggestionDismissed
+
+  // ── Render helpers ────────────────────────────────────────────────────────
+  // In Firestore mode, determine side by comparing senderUid to myUid.
+  const sideOf = msg => useFirestore
+    ? (msg.senderUid === myUid ? 'me' : 'them')
+    : msg.side
 
   return (
     <div className="dm-page">
@@ -94,7 +135,8 @@ export default function DirectMessagePage() {
           <button className="dm-more" onClick={() => setMenuOpen(o => !o)}>···</button>
           {menuOpen && (
             <div className="dm-menu">
-              <button className="dm-menu-item dm-menu-danger" onClick={clearChat}>
+              <button className="dm-menu-item dm-menu-danger" onClick={clearChat}
+                title={useFirestore ? 'Clears your local view only' : undefined}>
                 {lang === 'zh' ? '清除对话' : 'Clear chat'}
               </button>
             </div>
@@ -111,6 +153,7 @@ export default function DirectMessagePage() {
       {/* Messages */}
       <div className="dm-messages">
         {messages.map((msg, i) => {
+          const side = sideOf(msg)
           const showDivider = i > 0 && messages[i - 1].day !== msg.day
           return (
             <div key={msg.id}>
@@ -121,19 +164,19 @@ export default function DirectMessagePage() {
                   <div className="dm-date-line" />
                 </div>
               )}
-              <div className={`dm-row dm-row-${msg.side}`}>
-                {msg.side === 'them' && (
-                  <div className="dm-avatar" style={{ background: member.color || '#4A3A5A' }}>
-                    {member.initials || name.slice(0, 2).toUpperCase()}
+              <div className={`dm-row dm-row-${side}`}>
+                {side === 'them' && (
+                  <div className="dm-avatar" style={{ background: member?.color || '#4A3A5A' }}>
+                    {member?.initials || name.slice(0, 2).toUpperCase()}
                   </div>
                 )}
                 <div className="dm-bubble-wrap">
-                  <div className={`dm-bubble dm-bubble-${msg.side}`}>{msg.text}</div>
-                  <div className={`dm-time dm-time-${msg.side}`}>
-                    {msg.time}{msg.side === 'me' && ' ✓✓'}
+                  <div className={`dm-bubble dm-bubble-${side}`}>{msg.text}</div>
+                  <div className={`dm-time dm-time-${side}`}>
+                    {msg.time}{side === 'me' && ' ✓✓'}
                   </div>
                 </div>
-                {msg.side === 'me' && (
+                {side === 'me' && (
                   <div className="dm-avatar dm-avatar-me">
                     {lang === 'zh' ? '你' : 'Me'}
                   </div>
@@ -143,7 +186,7 @@ export default function DirectMessagePage() {
           )
         })}
 
-        {/* SerenDipity Suggests card — appears after a few messages */}
+        {/* SerenDipity Suggests card */}
         {showSuggestion && (
           <div className="dm-suggest-card">
             <button className="dm-suggest-close" onClick={() => setSuggestionDismissed(true)}>✕</button>
@@ -172,7 +215,6 @@ export default function DirectMessagePage() {
       <div className="dm-input-bar">
         <button className="dm-input-plus">+</button>
         <input
-          ref={inputRef}
           className="dm-input"
           placeholder={lang === 'zh' ? `发消息给${name}…` : `Message ${name}…`}
           value={input}

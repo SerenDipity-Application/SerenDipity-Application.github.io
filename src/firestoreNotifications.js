@@ -51,13 +51,23 @@ export async function rejectNotification(uid, notifId) {
   })
 }
 
-// Delete every notification item across all users (admin reset only).
-export async function clearAllNotifications() {
-  const topSnap = await getDocs(collection(db, 'notifications'))
+// Delete every notification and DM message across all users (admin reset only).
+export async function clearAllTestData() {
   const deletes = []
-  for (const userDoc of topSnap.docs) {
+
+  // Clear all notification items
+  const notifSnap = await getDocs(collection(db, 'notifications'))
+  for (const userDoc of notifSnap.docs) {
     const itemsSnap = await getDocs(collection(db, 'notifications', userDoc.id, 'items'))
     itemsSnap.docs.forEach(d => deletes.push(deleteDoc(d.ref)))
   }
+
+  // Clear all DM messages
+  const dmsSnap = await getDocs(collection(db, 'dms'))
+  for (const threadDoc of dmsSnap.docs) {
+    const msgsSnap = await getDocs(collection(db, 'dms', threadDoc.id, 'messages'))
+    msgsSnap.docs.forEach(d => deletes.push(deleteDoc(d.ref)))
+  }
+
   await Promise.all(deletes)
 }
