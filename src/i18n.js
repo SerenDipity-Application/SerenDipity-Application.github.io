@@ -9,7 +9,7 @@ export const t = {
 
     // Bottom Nav
     navChat: 'Concierge',
-    navDirectory: 'Circle',
+    navDirectory: 'Directory',
     navProfile: 'My Card',
     navMessages: 'Messages',
     navInvitations: 'Invitations',
