@@ -45,6 +45,9 @@
   color: var(--gold);
   font-size: 13px;
 }
+.dm-more-wrap {
+  position: relative;
+}
 .dm-more {
   background: none;
   border: none;
@@ -54,6 +57,28 @@
   letter-spacing: 2px;
   padding: 0 4px;
 }
+.dm-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  min-width: 160px;
+  overflow: hidden;
+  z-index: 100;
+}
+.dm-menu-item {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 14px 18px;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+.dm-menu-danger { color: #D94F4F; }
 
 /* ── Match banner ── */
 .dm-match-banner {

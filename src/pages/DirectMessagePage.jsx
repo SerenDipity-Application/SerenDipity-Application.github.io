@@ -37,10 +37,18 @@ export default function DirectMessagePage() {
     return []
   })
   const [input, setInput] = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
   const [suggestionDismissed, setSuggestionDismissed] = useState(false)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const seededRef = useRef(false)
+
+  function clearChat() {
+    localStorage.removeItem(storageKey(id))
+    sessionStorage.removeItem(MEMBER_CACHE_KEY(id))
+    setMessages([])
+    setMenuOpen(false)
+  }
 
   // Seed icebreaker as the first sent message — no auto-reply
   useEffect(() => {
@@ -82,7 +90,16 @@ export default function DirectMessagePage() {
           <span className="dm-header-name serif">{name}</span>
           <span className="dm-header-star">✦</span>
         </div>
-        <button className="dm-more">···</button>
+        <div className="dm-more-wrap">
+          <button className="dm-more" onClick={() => setMenuOpen(o => !o)}>···</button>
+          {menuOpen && (
+            <div className="dm-menu">
+              <button className="dm-menu-item dm-menu-danger" onClick={clearChat}>
+                {lang === 'zh' ? '清除对话' : 'Clear chat'}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Match banner */}
