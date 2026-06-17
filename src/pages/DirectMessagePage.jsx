@@ -33,7 +33,9 @@ export default function DirectMessagePage() {
   const location = useLocation()
   const { lang } = useLang()
 
-  const member = members.find(m => m.id === parseInt(id)) || members[0]
+  const member = location.state?.member
+    || members.find(m => String(m.id) === id || String(m.uid) === id)
+    || members[0]
   const name = lang === 'zh' ? member.zhName : member.enName
 
   const [messages, setMessages] = useState(() => {

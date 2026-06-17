@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { members } from '../data'
 import './IcebreakerPage.css'
@@ -18,8 +18,11 @@ const messagesEN = {
 export default function IcebreakerPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { lang, s } = useLang()
-  const member = members.find(m => m.id === parseInt(id)) || members[0]
+  const member = location.state?.member
+    || members.find(m => String(m.id) === id || String(m.uid) === id)
+    || members[0]
 
   const [activeTone, setActiveTone] = useState('recommended')
   const [mode, setMode] = useState('ai')          // 'ai' | 'custom'
@@ -163,7 +166,7 @@ export default function IcebreakerPage() {
           {copied ? s.ibCopied : s.ibCopy}
         </button>
         <button className="ib-send-btn serif"
-          onClick={() => navigate(`/dm/${member.id}`, { state: { firstMessage: activeText } })}
+          onClick={() => navigate(`/dm/${member.uid || member.id}`, { state: { member, firstMessage: activeText } })}
           disabled={mode === 'custom' && !customText.trim()}>
           {s.ibSend}
         </button>

@@ -154,7 +154,7 @@ export default function DirectoryPage() {
 
           return (
             <div key={id} className="dir-card"
-              onClick={() => navigate(m.uid ? `/profile/uid/${m.uid}` : `/profile/${m.id}`)}>
+              onClick={() => navigate(`/profile/${m.uid || m.id}`, { state: { member: m } })}>
 
               {/* Avatar */}
               <div className="dir-avatar" style={{background: color}}>
@@ -185,7 +185,7 @@ export default function DirectoryPage() {
                   <button className="dir-greet-btn"
                     onClick={e => {
                       e.stopPropagation()
-                      navigate(m.uid ? `/icebreaker/uid/${m.uid}` : `/icebreaker/${m.id}`)
+                      navigate(`/icebreaker/${m.uid || m.id}`, { state: { member: m } })
                     }}>
                     {s.dirGreetBtn}
                   </button>
