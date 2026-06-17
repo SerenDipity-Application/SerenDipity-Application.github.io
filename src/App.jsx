@@ -28,40 +28,10 @@ function useOverlayProps() {
   return { hidden, isDark }
 }
 
-// ── Floating language toggle (top-left) ───────────────────────────────────────
-function GlobalLangToggle() {
-  const { lang, toggle } = useLang()
-  const { hidden, isDark } = useOverlayProps()
-  if (hidden) return null
-
-  return (
-    <button onClick={toggle} style={{
-      position: 'absolute',
-      top: 14, left: 14,
-      zIndex: 500,
-      background: isDark ? 'rgba(201,168,76,0.12)' : 'rgba(61,26,71,0.07)',
-      backdropFilter: 'blur(8px)',
-      WebkitBackdropFilter: 'blur(8px)',
-      border: `1px solid ${isDark ? 'rgba(201,168,76,0.4)' : 'rgba(61,26,71,0.2)'}`,
-      borderRadius: 50,
-      padding: '5px 14px',
-      fontSize: 11,
-      fontFamily: "'Inter', sans-serif",
-      fontWeight: 600,
-      letterSpacing: '1.5px',
-      color: isDark ? '#C9A84C' : '#3D1A47',
-      cursor: 'pointer',
-      textTransform: 'uppercase',
-    }}>
-      {lang === 'zh' ? 'EN' : '中文'}
-    </button>
-  )
-}
-
-// ── Notification bell (top-right) ─────────────────────────────────────────────
-function GlobalNotificationBell() {
+// ── Top-right overlay: lang toggle + notification bell ────────────────────────
+function GlobalOverlayButtons() {
   const navigate = useNavigate()
-  const { lang } = useLang()
+  const { lang, toggle } = useLang()
   const { hidden, isDark } = useOverlayProps()
   const [open, setOpen] = useState(false)
   const [notifs, setNotifs] = useState(() => {
@@ -75,6 +45,13 @@ function GlobalNotificationBell() {
   const iconColor = isDark ? '#C9A84C' : '#3D1A47'
   const bg        = isDark ? 'rgba(201,168,76,0.12)' : 'rgba(61,26,71,0.07)'
   const border    = isDark ? 'rgba(201,168,76,0.4)'  : 'rgba(61,26,71,0.2)'
+  const btnBase   = {
+    background: bg,
+    backdropFilter: 'blur(8px)',
+    WebkitBackdropFilter: 'blur(8px)',
+    border: `1px solid ${border}`,
+    cursor: 'pointer',
+  }
 
   const toggleOpen = () => {
     const next = !open
@@ -87,16 +64,29 @@ function GlobalNotificationBell() {
   }
 
   return (
-    <div style={{ position: 'absolute', top: 12, right: 14, zIndex: 500 }}>
+    <div style={{ position: 'absolute', top: 12, right: 14, zIndex: 500, display: 'flex', alignItems: 'center', gap: 8 }}>
+      {/* Lang toggle */}
+      <button onClick={toggle} style={{
+        ...btnBase,
+        borderRadius: 50,
+        padding: '5px 14px',
+        fontSize: 11,
+        fontFamily: "'Inter', sans-serif",
+        fontWeight: 600,
+        letterSpacing: '1.5px',
+        color: isDark ? '#C9A84C' : '#3D1A47',
+        textTransform: 'uppercase',
+      }}>
+        {lang === 'zh' ? 'EN' : '中文'}
+      </button>
+
+      {/* Bell */}
+      <div style={{ position: 'relative' }}>
       {/* Bell button */}
       <button onClick={toggleOpen} style={{
+        ...btnBase,
         width: 34, height: 34,
         borderRadius: '50%',
-        background: bg,
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        border: `1px solid ${border}`,
-        cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         position: 'relative',
       }}>
@@ -171,6 +161,7 @@ function GlobalNotificationBell() {
           )}
         </div>
       )}
+      </div>{/* end bell wrapper */}
     </div>
   )
 }
@@ -308,8 +299,7 @@ function AppShell() {
   return (
     <div className={isAdmin ? '' : 'phone-shell'}>
       <SessionRestorer />
-      {!isAdmin && <GlobalLangToggle />}
-      {!isAdmin && <GlobalNotificationBell />}
+      {!isAdmin && <GlobalOverlayButtons />}
       <div className={isAdmin ? '' : 'screen'}>
         <Routes>
           <Route path="/"            element={<EntryPage />} />
