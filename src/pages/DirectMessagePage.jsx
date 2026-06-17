@@ -221,16 +221,7 @@ export default function DirectMessagePage() {
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && send()}
         />
-        {input.trim() ? (
-          <button className="dm-send-btn" onClick={send}>↑</button>
-        ) : (
-          <button className="dm-input-mic">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18">
-              <rect x="9" y="2" width="6" height="12" rx="3"/>
-              <path d="M5 10a7 7 0 0 0 14 0M12 19v3M8 22h8"/>
-            </svg>
-          </button>
-        )}
+        <button className="dm-send-btn" onClick={send} disabled={!input.trim()}>↑</button>
       </div>
     </div>
   )

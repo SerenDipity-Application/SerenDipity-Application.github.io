@@ -331,3 +331,4 @@
   font-weight: 700;
 }
 .dm-send-btn:active { opacity: 0.85; }
+.dm-send-btn:disabled { opacity: 0.35; cursor: default; }
