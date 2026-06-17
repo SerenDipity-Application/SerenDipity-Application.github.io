@@ -5,29 +5,15 @@ import { members } from '../data'
 import './DirectMessagePage.css'
 
 const storageKey = id => `serendipity_dm_${id}`
-
-const repliesEN = [
-  "Hi! So glad you reached out — I was hoping we'd connect. 😊",
-  "That's really interesting! Would love to hear more about what you're working on.",
-  "Definitely feel the same way. We should grab coffee sometime!",
-  "Ha, small world! Oxford really does bring people together.",
-  "Absolutely — when are you free next week?",
-  "That sounds amazing. Let's make it happen!",
-]
-const repliesZH = [
-  "你好！很高兴你主动联系，我也一直想和你聊聊 😊",
-  "太有意思了！很想了解更多你在做的事情。",
-  "完全一致！我们找个时间喝杯咖啡吧！",
-  "哈，圈子真小！牛津真的把大家聚在一起了。",
-  "好的，下周你什么时候有空？",
-  "听起来很棒，一定要实现！",
-]
+const MEMBER_CACHE_KEY = id => `serendipity_member_${id}`
 
 function nowTime() {
   return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-const MEMBER_CACHE_KEY = id => `serendipity_member_${id}`
+function today() {
+  return new Date().toDateString()
+}
 
 export default function DirectMessagePage() {
   const { id } = useParams()
@@ -51,21 +37,17 @@ export default function DirectMessagePage() {
     return []
   })
   const [input, setInput] = useState('')
-  const [typing, setTyping] = useState(false)
   const [suggestionDismissed, setSuggestionDismissed] = useState(false)
-  const replyIndexRef = useRef(0)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const seededRef = useRef(false)
 
-  // Seed icebreaker as first message
+  // Seed icebreaker as the first sent message — no auto-reply
   useEffect(() => {
     const first = location.state?.firstMessage
     if (first && messages.length === 0 && !seededRef.current) {
       seededRef.current = true
-      const msg = { id: Date.now(), side: 'me', text: first, time: nowTime(), day: today() }
-      setMessages([msg])
-      scheduleAutoReply()
+      setMessages([{ id: Date.now(), side: 'me', text: first, time: nowTime(), day: today() }])
     }
   }, [])
 
@@ -77,21 +59,7 @@ export default function DirectMessagePage() {
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, typing])
-
-  function scheduleAutoReply() {
-    const replies = lang === 'zh' ? repliesZH : repliesEN
-    const text = replies[replyIndexRef.current % replies.length]
-    replyIndexRef.current++
-    setTyping(true)
-    setTimeout(() => {
-      setTyping(false)
-      setMessages(prev => [
-        ...prev,
-        { id: Date.now(), side: 'them', text, time: nowTime(), day: today() },
-      ])
-    }, 1400 + Math.random() * 600)
-  }
+  }, [messages])
 
   function send() {
     const text = input.trim()
@@ -101,7 +69,6 @@ export default function DirectMessagePage() {
       { id: Date.now(), side: 'me', text, time: nowTime(), day: today() },
     ])
     setInput('')
-    scheduleAutoReply()
   }
 
   const showSuggestion = messages.length >= 4 && !suggestionDismissed
@@ -121,7 +88,7 @@ export default function DirectMessagePage() {
       {/* Match banner */}
       <div className="dm-match-banner">
         <span className="dm-match-star">✦</span>
-        <span>{lang === 'zh' ? '你们2天前完成了配对' : 'You matched 2 days ago'}</span>
+        <span>{lang === 'zh' ? '你们通过 SerenDipity 取得了联系' : 'Connected via SerenDipity'}</span>
       </div>
 
       {/* Messages */}
@@ -139,8 +106,8 @@ export default function DirectMessagePage() {
               )}
               <div className={`dm-row dm-row-${msg.side}`}>
                 {msg.side === 'them' && (
-                  <div className="dm-avatar" style={{ background: member.color }}>
-                    {member.initials}
+                  <div className="dm-avatar" style={{ background: member.color || '#4A3A5A' }}>
+                    {member.initials || name.slice(0, 2).toUpperCase()}
                   </div>
                 )}
                 <div className="dm-bubble-wrap">
@@ -150,24 +117,16 @@ export default function DirectMessagePage() {
                   </div>
                 </div>
                 {msg.side === 'me' && (
-                  <div className="dm-avatar dm-avatar-me">你</div>
+                  <div className="dm-avatar dm-avatar-me">
+                    {lang === 'zh' ? '你' : 'Me'}
+                  </div>
                 )}
               </div>
             </div>
           )
         })}
 
-        {/* Typing indicator */}
-        {typing && (
-          <div className="dm-row dm-row-them">
-            <div className="dm-avatar" style={{ background: member.color }}>{member.initials}</div>
-            <div className="dm-typing">
-              <span /><span /><span />
-            </div>
-          </div>
-        )}
-
-        {/* SerenDipity Suggests card */}
+        {/* SerenDipity Suggests card — appears after a few messages */}
         {showSuggestion && (
           <div className="dm-suggest-card">
             <button className="dm-suggest-close" onClick={() => setSuggestionDismissed(true)}>✕</button>
@@ -216,8 +175,4 @@ export default function DirectMessagePage() {
       </div>
     </div>
   )
-}
-
-function today() {
-  return new Date().toDateString()
 }
