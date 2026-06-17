@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth'
 import { getDoc, doc } from 'firebase/firestore'
@@ -19,19 +19,25 @@ import InvitationsPage from './pages/InvitationsPage'
 import AdminPage from './pages/AdminPage'
 import DirectMessagePage from './pages/DirectMessagePage'
 
-// ── Floating language toggle ──────────────────────────────────────────────────
-function GlobalLangToggle() {
-  const { lang, toggle } = useLang()
+// ── Shared helper ─────────────────────────────────────────────────────────────
+function useOverlayProps() {
   const location = useLocation()
-  if (location.pathname === '/admin') return null
-  if (location.pathname.startsWith('/dm/')) return null
+  const hidden = location.pathname === '/admin' || location.pathname.startsWith('/dm/')
   const darkPages = ['/', '/intro', '/onboarding', '/auth']
   const isDark = darkPages.includes(location.pathname)
+  return { hidden, isDark }
+}
+
+// ── Floating language toggle (top-left) ───────────────────────────────────────
+function GlobalLangToggle() {
+  const { lang, toggle } = useLang()
+  const { hidden, isDark } = useOverlayProps()
+  if (hidden) return null
 
   return (
     <button onClick={toggle} style={{
       position: 'absolute',
-      top: 16, right: 16,
+      top: 14, left: 14,
       zIndex: 500,
       background: isDark ? 'rgba(201,168,76,0.12)' : 'rgba(61,26,71,0.07)',
       backdropFilter: 'blur(8px)',
@@ -49,6 +55,123 @@ function GlobalLangToggle() {
     }}>
       {lang === 'zh' ? 'EN' : '中文'}
     </button>
+  )
+}
+
+// ── Notification bell (top-right) ─────────────────────────────────────────────
+function GlobalNotificationBell() {
+  const navigate = useNavigate()
+  const { lang } = useLang()
+  const { hidden, isDark } = useOverlayProps()
+  const [open, setOpen] = useState(false)
+  const [notifs, setNotifs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('serendipity_notifications') || '[]') }
+    catch { return [] }
+  })
+
+  if (hidden) return null
+
+  const unread = notifs.filter(n => !n.read).length
+  const iconColor = isDark ? '#C9A84C' : '#3D1A47'
+  const bg        = isDark ? 'rgba(201,168,76,0.12)' : 'rgba(61,26,71,0.07)'
+  const border    = isDark ? 'rgba(201,168,76,0.4)'  : 'rgba(61,26,71,0.2)'
+
+  const toggleOpen = () => {
+    const next = !open
+    setOpen(next)
+    if (next && unread > 0) {
+      const updated = notifs.map(n => ({ ...n, read: true }))
+      setNotifs(updated)
+      localStorage.setItem('serendipity_notifications', JSON.stringify(updated))
+    }
+  }
+
+  return (
+    <div style={{ position: 'absolute', top: 12, right: 14, zIndex: 500 }}>
+      {/* Bell button */}
+      <button onClick={toggleOpen} style={{
+        width: 34, height: 34,
+        borderRadius: '50%',
+        background: bg,
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        border: `1px solid ${border}`,
+        cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative',
+      }}>
+        <svg viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="1.8" width="16" height="16">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        {unread > 0 && (
+          <span style={{
+            position: 'absolute', top: -3, right: -3,
+            minWidth: 16, height: 16, borderRadius: 8,
+            background: '#D94F4F', color: '#fff',
+            fontSize: 10, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: "'Inter', sans-serif",
+            padding: '0 3px',
+          }}>{unread > 9 ? '9+' : unread}</span>
+        )}
+      </button>
+
+      {/* Dropdown panel */}
+      {open && (
+        <div style={{
+          position: 'absolute', top: 42, right: 0,
+          width: 270,
+          background: '#FFFFFF',
+          borderRadius: 16,
+          boxShadow: '0 6px 28px rgba(0,0,0,0.14)',
+          overflow: 'hidden',
+          zIndex: 600,
+        }}>
+          <div style={{ padding: '14px 16px 10px', borderBottom: '1px solid #EDE6D8', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 17, fontWeight: 600, color: '#3D1A47' }}>
+              {lang === 'zh' ? '通知' : 'Notifications'}
+            </span>
+            {notifs.length > 0 && (
+              <button onClick={() => { setNotifs([]); localStorage.removeItem('serendipity_notifications') }}
+                style={{ background: 'none', border: 'none', fontSize: 11, color: '#9B7FA6', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+                {lang === 'zh' ? '清除全部' : 'Clear all'}
+              </button>
+            )}
+          </div>
+
+          {notifs.length === 0 ? (
+            <div style={{ padding: '28px 16px', textAlign: 'center' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.5" width="32" height="32" style={{ marginBottom: 10 }}>
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              <p style={{ fontSize: 14, color: '#4A3A5A', fontFamily: "'Inter', sans-serif", fontWeight: 500, margin: 0 }}>
+                {lang === 'zh' ? '暂无通知' : "You're all caught up"}
+              </p>
+              <p style={{ fontSize: 12, color: '#B8A8C8', fontFamily: "'Inter', sans-serif", marginTop: 6, lineHeight: 1.5 }}>
+                {lang === 'zh' ? '有人向你发出打招呼请求时，会在这里显示。' : 'DM requests and new messages from others will appear here.'}
+              </p>
+            </div>
+          ) : (
+            notifs.map(n => (
+              <div key={n.id}
+                onClick={() => { navigate(`/dm/${n.fromId}`, { state: { member: n.member } }); setOpen(false) }}
+                style={{ padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid #F5F0EB', display: 'flex', gap: 10, alignItems: 'flex-start', background: n.read ? '#fff' : '#FAF7FF' }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: n.color || '#4A3A5A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', fontFamily: "'Inter', sans-serif", flexShrink: 0 }}>
+                  {n.initials || '?'}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: '#1A1020', fontFamily: "'Inter', sans-serif", margin: 0 }}>{n.fromName}</p>
+                  <p style={{ fontSize: 12, color: '#9B7FA6', fontFamily: "'Inter', sans-serif", marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.preview}</p>
+                </div>
+                {!n.read && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3D1A47', marginTop: 4, flexShrink: 0 }} />}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -186,6 +309,7 @@ function AppShell() {
     <div className={isAdmin ? '' : 'phone-shell'}>
       <SessionRestorer />
       {!isAdmin && <GlobalLangToggle />}
+      {!isAdmin && <GlobalNotificationBell />}
       <div className={isAdmin ? '' : 'screen'}>
         <Routes>
           <Route path="/"            element={<EntryPage />} />
