@@ -19,7 +19,7 @@ async function redirectAfterAuth(uid, navigate) {
   try {
     const snap = await getDoc(doc(db, 'users', uid))
     if (snap.exists() && snap.data().onboardingStatus === 'completed') {
-      navigate('/chat', { replace: true })
+      navigate('/directory', { replace: true })
     } else {
       navigate('/onboarding', { replace: true })
     }

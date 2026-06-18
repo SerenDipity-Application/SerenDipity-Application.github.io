@@ -289,7 +289,7 @@ function SessionRestorer() {
         window.history.replaceState({}, document.title, window.location.pathname)
         const snap = await getDoc(doc(db, 'users', result.user.uid))
         if (snap.exists() && snap.data().onboardingStatus === 'completed') {
-          navigate('/chat', { replace: true })
+          navigate('/directory', { replace: true })
         } else {
           navigate('/onboarding', { replace: true })
         }
@@ -310,7 +310,7 @@ function SessionRestorer() {
     // Signed in — check their onboarding status
     getDoc(doc(db, 'users', user.uid)).then(snap => {
       if (snap.exists() && snap.data().onboardingStatus === 'completed') {
-        navigate('/chat', { replace: true })
+        navigate('/directory', { replace: true })
       } else {
         navigate('/onboarding', { replace: true })
       }
