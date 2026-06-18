@@ -2,8 +2,7 @@ import {
   doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc,
   collection, onSnapshot, serverTimestamp,
 } from 'firebase/firestore'
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { db, auth, storage } from './firebase'
+import { db, auth } from './firebase'
 
 const COLLECTION = 'users'
 
@@ -108,21 +107,40 @@ export async function adminDeleteUser(uid) {
   await deleteDoc(doc(db, COLLECTION, uid))
 }
 
-// ── Upload profile photo → Storage, save URL to Firestore ────────────────────
+// ── Compress image with Canvas, save data URL directly to Firestore ──────────
+// Avoids Firebase Storage entirely — no Storage rules or setup needed.
+function compressImage(file, maxPx = 300, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const blobUrl = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(blobUrl)
+      const size = Math.min(img.width, img.height)
+      const canvas = document.createElement('canvas')
+      canvas.width = maxPx
+      canvas.height = maxPx
+      const ctx = canvas.getContext('2d')
+      // Centre-crop to a square, then scale to maxPx × maxPx
+      const sx = (img.width  - size) / 2
+      const sy = (img.height - size) / 2
+      ctx.drawImage(img, sx, sy, size, size, 0, 0, maxPx, maxPx)
+      resolve(canvas.toDataURL('image/jpeg', quality))
+    }
+    img.onerror = reject
+    img.src = blobUrl
+  })
+}
+
 export async function uploadProfilePhoto(file) {
   const uid = getUserId()
-  const storageRef = ref(storage, `avatars/${uid}/profile`)
-  await uploadBytes(storageRef, file, { contentType: file.type })
-  const url = await getDownloadURL(storageRef)
-  // setDoc with merge works whether or not the document exists yet
-  await setDoc(doc(db, COLLECTION, uid), { photoURL: url, updatedAt: serverTimestamp() }, { merge: true })
-  // Update local cache
+  const dataUrl = await compressImage(file)
+  await setDoc(doc(db, COLLECTION, uid), { photoURL: dataUrl, updatedAt: serverTimestamp() }, { merge: true })
   try {
     const cached = localStorage.getItem('serendipity_profile')
     const profile = cached ? JSON.parse(cached) : {}
-    localStorage.setItem('serendipity_profile', JSON.stringify({ ...profile, photoURL: url }))
+    localStorage.setItem('serendipity_profile', JSON.stringify({ ...profile, photoURL: dataUrl }))
   } catch {}
-  return url
+  return dataUrl
 }
 
 // ── Admin: assign sequential check-in number ─────────────────────────────────
