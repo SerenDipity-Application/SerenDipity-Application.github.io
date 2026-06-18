@@ -116,7 +116,6 @@ export default function MyProfilePage() {
           ref={fileInputRef}
           type="file"
           accept="image/*"
-          capture="user"
           style={{ display: 'none' }}
           onChange={handlePhotoChange}
         />
