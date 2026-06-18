@@ -111,23 +111,28 @@ export async function adminDeleteUser(uid) {
 // Avoids Firebase Storage entirely — no Storage rules or setup needed.
 function compressImage(file, maxPx = 300, quality = 0.82) {
   return new Promise((resolve, reject) => {
-    const img = new Image()
-    const blobUrl = URL.createObjectURL(file)
-    img.onload = () => {
-      URL.revokeObjectURL(blobUrl)
-      const size = Math.min(img.width, img.height)
-      const canvas = document.createElement('canvas')
-      canvas.width = maxPx
-      canvas.height = maxPx
-      const ctx = canvas.getContext('2d')
-      // Centre-crop to a square, then scale to maxPx × maxPx
-      const sx = (img.width  - size) / 2
-      const sy = (img.height - size) / 2
-      ctx.drawImage(img, sx, sy, size, size, 0, 0, maxPx, maxPx)
-      resolve(canvas.toDataURL('image/jpeg', quality))
+    const timer = setTimeout(() => reject(new Error('Image load timed out')), 15000)
+
+    const reader = new FileReader()
+    reader.onerror = (err) => { clearTimeout(timer); reject(err) }
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onerror = (err) => { clearTimeout(timer); reject(err) }
+      img.onload = () => {
+        clearTimeout(timer)
+        const size = Math.min(img.width, img.height)
+        const canvas = document.createElement('canvas')
+        canvas.width = maxPx
+        canvas.height = maxPx
+        const ctx = canvas.getContext('2d')
+        const sx = (img.width  - size) / 2
+        const sy = (img.height - size) / 2
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, maxPx, maxPx)
+        resolve(canvas.toDataURL('image/jpeg', quality))
+      }
+      img.src = e.target.result
     }
-    img.onerror = reject
-    img.src = blobUrl
+    reader.readAsDataURL(file)
   })
 }
 
