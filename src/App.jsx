@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
-import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth'
+import { isSignInWithEmailLink, signInWithEmailLink, getRedirectResult } from 'firebase/auth'
 import { getDoc, doc } from 'firebase/firestore'
 import { auth, db } from './firebase'
 import { AuthProvider, useAuth } from './AuthContext'
@@ -274,6 +274,19 @@ function SessionRestorer() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, loading } = useAuth()
+
+  // Handle any pending Google redirect result (safety net for redirect flows)
+  useEffect(() => {
+    getRedirectResult(auth).then(async result => {
+      if (!result?.user) return
+      const snap = await getDoc(doc(db, 'users', result.user.uid))
+      if (snap.exists() && snap.data().onboardingStatus === 'completed') {
+        navigate('/directory', { replace: true })
+      } else {
+        navigate('/onboarding', { replace: true })
+      }
+    }).catch(() => {})
+  }, [])
 
   // Complete email magic link sign-in (runs on every page load)
   useEffect(() => {

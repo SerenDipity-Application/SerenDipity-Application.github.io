@@ -5,15 +5,12 @@ import {
   GoogleAuthProvider,
   OAuthProvider,
   signInWithPopup,
-  signInWithRedirect,
 } from 'firebase/auth'
 import { auth } from '../firebase'
 import { useLang } from '../LangContext'
 import { getDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase'
 import './AuthPage.css'
-
-const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent)
 
 async function redirectAfterAuth(uid, navigate) {
   try {
@@ -75,13 +72,7 @@ export default function AuthPage() {
     setError('')
     try {
       const provider = new GoogleAuthProvider()
-      let result
-      if (isMobile) {
-        await signInWithRedirect(auth, provider)
-        return
-      } else {
-        result = await signInWithPopup(auth, provider)
-      }
+      const result = await signInWithPopup(auth, provider)
       await redirectAfterAuth(result.user.uid, navigate)
     } catch (e) {
       if (e.code !== 'auth/popup-closed-by-user') {
