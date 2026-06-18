@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { myProfile } from '../data'
-import { loadUser } from '../userStorage'
-import { uploadProfilePhoto } from '../firestoreUsers'
+import { loadUser, saveUser } from '../userStorage'
+import { uploadProfilePhoto, fetchOwnPhotoURL } from '../firestoreUsers'
 import './MyProfilePage.css'
 
 const INV_CODES = ['SD-MB-7A21', 'SD-MB-7A22', 'SD-MB-7A23', 'SD-MB-7A24', 'SD-MB-7A25']
@@ -38,6 +38,18 @@ export default function MyProfilePage() {
   const [uploading, setUploading] = useState(false)
   const [uploadToast, setUploadToast] = useState('') // '' | 'uploading' | 'done' | 'error'
   const fileInputRef = useRef(null)
+
+  // Fetch from Firestore on mount so the photo persists after refresh even if
+  // localStorage was written with a different key or on a different device.
+  useEffect(() => {
+    fetchOwnPhotoURL().then(url => {
+      if (url) {
+        setPhotoURL(url)
+        const existing = loadUser() || {}
+        if (!existing.photoURL) saveUser({ ...existing, photoURL: url })
+      }
+    }).catch(() => {})
+  }, [])
 
   const handlePhotoChange = async (e) => {
     const file = e.target.files?.[0]

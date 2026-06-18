@@ -140,12 +140,25 @@ export async function uploadProfilePhoto(file) {
   const uid = getUserId()
   const dataUrl = await compressImage(file)
   await setDoc(doc(db, COLLECTION, uid), { photoURL: dataUrl, updatedAt: serverTimestamp() }, { merge: true })
+  // Update both localStorage keys so loadUser() and loadUserFromFirestore() both see the photo
+  try {
+    const { loadUser, saveUser } = await import('./userStorage')
+    const existing = loadUser() || {}
+    saveUser({ ...existing, photoURL: dataUrl })
+  } catch {}
   try {
     const cached = localStorage.getItem('serendipity_profile')
     const profile = cached ? JSON.parse(cached) : {}
     localStorage.setItem('serendipity_profile', JSON.stringify({ ...profile, photoURL: dataUrl }))
   } catch {}
   return dataUrl
+}
+
+export async function fetchOwnPhotoURL() {
+  const uid = getUserId()
+  if (!uid) return null
+  const snap = await getDoc(doc(db, COLLECTION, uid))
+  return snap.exists() ? (snap.data().photoURL || null) : null
 }
 
 // ── Admin: assign sequential check-in number ─────────────────────────────────
