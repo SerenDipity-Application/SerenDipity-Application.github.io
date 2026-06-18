@@ -46,7 +46,6 @@ export default function DirectMessagePage() {
   })
   const [input, setInput]       = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
-  const [suggestionDismissed, setSuggestionDismissed] = useState(false)
   const messagesEndRef = useRef(null)
   const seededRef      = useRef(false)
 
@@ -113,8 +112,6 @@ export default function DirectMessagePage() {
     }
     setMenuOpen(false)
   }
-
-  const showSuggestion = messages.length >= 4 && !suggestionDismissed
 
   // ── Render helpers ────────────────────────────────────────────────────────
   // In Firestore mode, determine side by comparing senderUid to myUid.
@@ -185,28 +182,6 @@ export default function DirectMessagePage() {
             </div>
           )
         })}
-
-        {/* SerenDipity Suggests card */}
-        {showSuggestion && (
-          <div className="dm-suggest-card">
-            <button className="dm-suggest-close" onClick={() => setSuggestionDismissed(true)}>✕</button>
-            <div className="dm-suggest-header">
-              <span className="dm-suggest-star">✦</span>
-              <span className="dm-suggest-label">
-                {lang === 'zh' ? 'SerenDipity 建议' : 'SerenDipity Suggests'}
-              </span>
-            </div>
-            <p className="dm-suggest-title serif">
-              {lang === 'zh' ? '线上转线下 ✦' : 'Take it from chat to IRL ✦'}
-            </p>
-            <p className="dm-suggest-sub">
-              {lang === 'zh' ? '规划一次精心策划的见面。' : 'Plan a thoughtfully curated meetup.'}
-            </p>
-            <button className="dm-suggest-btn serif">
-              {lang === 'zh' ? '安排见面' : 'Plan a Date'}
-            </button>
-          </div>
-        )}
 
         <div ref={messagesEndRef} />
       </div>
