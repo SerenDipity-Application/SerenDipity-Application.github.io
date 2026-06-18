@@ -2,7 +2,8 @@ import {
   doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc,
   collection, onSnapshot, serverTimestamp,
 } from 'firebase/firestore'
-import { db, auth } from './firebase'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { db, auth, storage } from './firebase'
 
 const COLLECTION = 'users'
 
@@ -105,6 +106,22 @@ export async function adminUpdateUser(uid, fields) {
 // ── Admin: delete a user record ───────────────────────────────────────────────
 export async function adminDeleteUser(uid) {
   await deleteDoc(doc(db, COLLECTION, uid))
+}
+
+// ── Upload profile photo → Storage, save URL to Firestore ────────────────────
+export async function uploadProfilePhoto(file) {
+  const uid = getUserId()
+  const storageRef = ref(storage, `avatars/${uid}/profile`)
+  await uploadBytes(storageRef, file, { contentType: file.type })
+  const url = await getDownloadURL(storageRef)
+  await updateDoc(doc(db, COLLECTION, uid), { photoURL: url, updatedAt: serverTimestamp() })
+  // Update local cache
+  const cached = localStorage.getItem('serendipity_profile')
+  if (cached) {
+    const profile = JSON.parse(cached)
+    localStorage.setItem('serendipity_profile', JSON.stringify({ ...profile, photoURL: url }))
+  }
+  return url
 }
 
 // ── Admin: assign sequential check-in number ─────────────────────────────────

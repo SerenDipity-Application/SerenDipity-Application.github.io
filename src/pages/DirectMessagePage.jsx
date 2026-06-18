@@ -163,9 +163,11 @@ export default function DirectMessagePage() {
               )}
               <div className={`dm-row dm-row-${side}`}>
                 {side === 'them' && (
-                  <div className="dm-avatar" style={{ background: member?.color || '#4A3A5A' }}>
-                    {member?.initials || name.slice(0, 2).toUpperCase()}
-                  </div>
+                  member?.photoURL
+                    ? <img src={member.photoURL} className="dm-avatar" style={{ objectFit: 'cover' }} alt="" />
+                    : <div className="dm-avatar" style={{ background: member?.color || '#4A3A5A' }}>
+                        {member?.initials || name.slice(0, 2).toUpperCase()}
+                      </div>
                 )}
                 <div className="dm-bubble-wrap">
                   <div className={`dm-bubble dm-bubble-${side}`}>{msg.text}</div>

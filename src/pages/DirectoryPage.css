@@ -132,6 +132,14 @@
   min-height: 110px;
   border-radius: 0;
 }
+.dir-avatar-photo {
+  width: 76px;
+  min-height: 110px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 0;
+  display: block;
+}
 
 /* Card content — right side */
 .dir-card-inner {

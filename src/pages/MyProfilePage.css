@@ -53,13 +53,26 @@
   pointer-events: none;
 }
 
+.my-avatar-wrap {
+  position: relative;
+  width: 84px; height: 84px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  z-index: 1;
+}
 .my-avatar {
   width: 84px; height: 84px; border-radius: 50%;
   border: 2.5px solid rgba(201,168,76,0.6);
   display: flex; align-items: center; justify-content: center;
   color: var(--white); font-size: 26px; font-weight: 700;
-  font-family: 'Inter', sans-serif; margin-bottom: 14px;
-  position: relative; z-index: 1;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+.my-avatar-photo {
+  width: 84px; height: 84px; border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid rgba(201,168,76,0.6);
+  display: block;
 }
 /* Gold ring */
 .my-avatar::after {
@@ -69,6 +82,16 @@
   border-radius: 50%;
   border: 1px solid rgba(201,168,76,0.25);
   pointer-events: none;
+}
+.my-avatar-overlay {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--plum);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
 .my-zh-name {

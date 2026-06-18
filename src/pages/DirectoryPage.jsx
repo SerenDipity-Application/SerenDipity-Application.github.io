@@ -149,9 +149,10 @@ export default function DirectoryPage() {
               onClick={() => navigate(`/profile/${m.uid || m.id}`, { state: { member: m } })}>
 
               {/* Avatar */}
-              <div className="dir-avatar" style={{background: color}}>
-                {initials}
-              </div>
+              {m.photoURL
+                ? <img src={m.photoURL} className="dir-avatar dir-avatar-photo" alt={initials} />
+                : <div className="dir-avatar" style={{background: color}}>{initials}</div>
+              }
 
               {/* Info */}
               <div className="dir-card-inner">

@@ -102,9 +102,10 @@ export default function MessagesPage() {
                 className="msg-item"
                 onClick={() => navigate(`/dm/${otherUid}`, { state: { member: other.uid ? other : undefined } })}
               >
-                <div className="msg-avatar" style={{ background: color }}>
-                  {initials}
-                </div>
+                {other.photoURL
+                  ? <img src={other.photoURL} className="msg-avatar" style={{ objectFit: 'cover' }} alt={initials} />
+                  : <div className="msg-avatar" style={{ background: color }}>{initials}</div>
+                }
                 <div className="msg-item-body">
                   <div className="msg-item-top">
                     <span className="msg-item-name">{name}</span>

@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { myProfile } from '../data'
 import { loadUser } from '../userStorage'
+import { uploadProfilePhoto } from '../firestoreUsers'
 import './MyProfilePage.css'
 
 const INV_CODES = ['SD-MB-7A21', 'SD-MB-7A22', 'SD-MB-7A23', 'SD-MB-7A24', 'SD-MB-7A25']
@@ -26,6 +27,23 @@ export default function MyProfilePage() {
   const navigate = useNavigate()
   const { lang, s } = useLang()
   const [copied, setCopied] = useState(null)
+  const [photoURL, setPhotoURL] = useState(p.photoURL || null)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef(null)
+
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const url = await uploadProfilePhoto(file)
+      setPhotoURL(url)
+    } catch (err) {
+      console.error('Photo upload failed:', err)
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const handleCopy = (code) => {
     navigator.clipboard.writeText(code).catch(() => {})
@@ -77,7 +95,29 @@ export default function MyProfilePage() {
 
       {/* Identity card — dark plum */}
       <div className="my-card">
-        <div className="my-avatar" style={{background: color}}>{initials}</div>
+        {/* Tappable avatar — opens camera/photo picker */}
+        <div className="my-avatar-wrap" onClick={() => fileInputRef.current?.click()}>
+          {photoURL
+            ? <img src={photoURL} className="my-avatar my-avatar-photo" alt="profile" />
+            : <div className="my-avatar" style={{ background: color }}>{initials}</div>
+          }
+          <div className="my-avatar-overlay">
+            {uploading ? '…' : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            )}
+          </div>
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="user"
+          style={{ display: 'none' }}
+          onChange={handlePhotoChange}
+        />
         <h2 className="my-zh-name serif">{primaryName}</h2>
         {secondaryName && <p className="my-en-name serif">{secondaryName}</p>}
         <div className="my-card-divider">
