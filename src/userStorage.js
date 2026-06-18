@@ -13,7 +13,17 @@ export function saveUser(profile) {
 export function loadUser() {
   try {
     const raw = localStorage.getItem(KEY)
-    return raw ? JSON.parse(raw) : null
+    const main = raw ? JSON.parse(raw) : null
+    // If the main entry has a real name, it's complete — return it
+    if (main && (main.zhName || main.enName)) return main
+    // Fall back to serendipity_profile (written by Firestore onboarding functions)
+    const fb = localStorage.getItem('serendipity_profile')
+    if (fb) {
+      const parsed = JSON.parse(fb)
+      // Merge: prefer main's values (e.g. a newly-uploaded photoURL) over fallback
+      return main ? { ...parsed, ...main } : parsed
+    }
+    return main
   } catch (e) {
     return null
   }

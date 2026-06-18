@@ -140,11 +140,13 @@ export async function uploadProfilePhoto(file) {
   const uid = getUserId()
   const dataUrl = await compressImage(file)
   await setDoc(doc(db, COLLECTION, uid), { photoURL: dataUrl, updatedAt: serverTimestamp() }, { merge: true })
-  // Update both localStorage keys so loadUser() and loadUserFromFirestore() both see the photo
+  // Merge photoURL into serendipity_user only if a real profile already exists there
   try {
     const { loadUser, saveUser } = await import('./userStorage')
-    const existing = loadUser() || {}
-    saveUser({ ...existing, photoURL: dataUrl })
+    const existing = loadUser()
+    if (existing && (existing.zhName || existing.enName)) {
+      saveUser({ ...existing, photoURL: dataUrl })
+    }
   } catch {}
   try {
     const cached = localStorage.getItem('serendipity_profile')
