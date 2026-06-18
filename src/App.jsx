@@ -297,17 +297,18 @@ function SessionRestorer() {
       .catch(() => navigate('/auth', { replace: true }))
   }, [])
 
-  // Route already-authenticated users away from the entry page
+  // Route already-authenticated users away from pre-login pages
+  const guestOnlyPages = ['/', '/intro', '/auth']
   useEffect(() => {
-    if (loading || location.pathname !== '/') return
+    if (loading || !guestOnlyPages.includes(location.pathname)) return
     if (!user) {
       // Check for a local onboarding draft (unauthenticated but mid-form)
-      if (localStorage.getItem('serendipity_ob_draft')) {
+      if (location.pathname === '/' && localStorage.getItem('serendipity_ob_draft')) {
         navigate('/onboarding', { replace: true })
       }
       return
     }
-    // Signed in — check their onboarding status
+    // Signed in — skip straight to directory (or onboarding if not finished)
     getDoc(doc(db, 'users', user.uid)).then(snap => {
       if (snap.exists() && snap.data().onboardingStatus === 'completed') {
         navigate('/directory', { replace: true })
