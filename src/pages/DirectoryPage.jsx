@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
+import { useAuth } from '../AuthContext'
 import { members as demoMembers } from '../data'
 import { subscribeToUsers } from '../firestoreUsers'
 import './DirectoryPage.css'
@@ -27,6 +28,7 @@ function getColor(u) {
 export default function DirectoryPage() {
   const navigate = useNavigate()
   const { lang, s } = useLang()
+  const { user } = useAuth()
   const [activeFilter, setActiveFilter] = useState(0)
   const [search, setSearch] = useState('')
   const [firestoreUsers, setFirestoreUsers] = useState(null)
@@ -68,6 +70,8 @@ export default function DirectoryPage() {
   }
 
   const filtered = allUsers.filter(m => {
+    // hide own profile
+    if (user?.uid && (m.uid === user.uid)) return false
     // hide truly incomplete profiles (no display name or "SD" placeholder)
     const name = m.zhName || m.enName || ''
     if (!name || name === 'SD') return false
