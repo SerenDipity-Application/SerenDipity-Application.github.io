@@ -114,13 +114,14 @@ export async function uploadProfilePhoto(file) {
   const storageRef = ref(storage, `avatars/${uid}/profile`)
   await uploadBytes(storageRef, file, { contentType: file.type })
   const url = await getDownloadURL(storageRef)
-  await updateDoc(doc(db, COLLECTION, uid), { photoURL: url, updatedAt: serverTimestamp() })
+  // setDoc with merge works whether or not the document exists yet
+  await setDoc(doc(db, COLLECTION, uid), { photoURL: url, updatedAt: serverTimestamp() }, { merge: true })
   // Update local cache
-  const cached = localStorage.getItem('serendipity_profile')
-  if (cached) {
-    const profile = JSON.parse(cached)
+  try {
+    const cached = localStorage.getItem('serendipity_profile')
+    const profile = cached ? JSON.parse(cached) : {}
     localStorage.setItem('serendipity_profile', JSON.stringify({ ...profile, photoURL: url }))
-  }
+  } catch {}
   return url
 }
 

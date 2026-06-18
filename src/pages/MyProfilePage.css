@@ -289,3 +289,23 @@
   transition: opacity 0.15s;
 }
 .my-inv-share:active { opacity: 0.85; }
+
+/* ── Photo upload toast ── */
+.my-upload-toast {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 200;
+  color: #fff;
+  pointer-events: none;
+}
+.my-upload-toast-uploading { background: rgba(61,26,71,0.85); }
+.my-upload-toast-done      { background: #3A7A5A; }
+.my-upload-toast-error     { background: #D94F4F; }

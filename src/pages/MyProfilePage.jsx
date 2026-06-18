@@ -36,17 +36,23 @@ export default function MyProfilePage() {
   const [copied, setCopied] = useState(null)
   const [photoURL, setPhotoURL] = useState(p.photoURL || null)
   const [uploading, setUploading] = useState(false)
+  const [uploadToast, setUploadToast] = useState('') // '' | 'uploading' | 'done' | 'error'
   const fileInputRef = useRef(null)
 
   const handlePhotoChange = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
     setUploading(true)
+    setUploadToast('uploading')
     try {
       const url = await uploadProfilePhoto(file)
       setPhotoURL(url)
+      setUploadToast('done')
+      setTimeout(() => setUploadToast(''), 2500)
     } catch (err) {
       console.error('Photo upload failed:', err)
+      setUploadToast('error')
+      setTimeout(() => setUploadToast(''), 3000)
     } finally {
       setUploading(false)
     }
@@ -84,6 +90,15 @@ export default function MyProfilePage() {
 
   return (
     <div className="my-page">
+
+      {/* Photo upload toast */}
+      {uploadToast && (
+        <div className={`my-upload-toast my-upload-toast-${uploadToast}`}>
+          {uploadToast === 'uploading' && (lang === 'zh' ? '上传中…' : 'Uploading photo…')}
+          {uploadToast === 'done'      && (lang === 'zh' ? '✓ 头像已更新' : '✓ Photo updated')}
+          {uploadToast === 'error'     && (lang === 'zh' ? '上传失败，请重试' : 'Upload failed — try again')}
+        </div>
+      )}
 
       {/* Header */}
       <div className="my-header">
