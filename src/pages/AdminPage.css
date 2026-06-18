@@ -275,6 +275,7 @@
 .adm-action-btn.flag     { background: #FEF3C7; color: #D97706; }
 .adm-action-btn.flag.flagged { background: #FEE2E2; color: #DC2626; }
 .adm-action-btn.edit     { background: #EDE9F8; color: #6B21A8; }
+.adm-action-btn.impersonate { background: #FEF3C7; color: #D97706; }
 .adm-action-btn.delete   { background: #FEE2E2; color: #DC2626; }
 
 /* ── Edit modal ── */

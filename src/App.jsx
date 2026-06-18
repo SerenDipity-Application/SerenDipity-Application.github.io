@@ -321,6 +321,32 @@ function SessionRestorer() {
   return null
 }
 
+// ── Impersonation banner ──────────────────────────────────────────────────────
+function ImpersonationBanner() {
+  const { impersonated, exitImpersonation } = useAuth()
+  const navigate = useNavigate()
+  if (!impersonated) return null
+  const name = impersonated.enName || impersonated.zhName || impersonated.uid
+  return (
+    <div style={{
+      position: 'absolute', top: 0, left: 0, right: 0, zIndex: 9999,
+      background: '#D97706', color: '#fff',
+      padding: '6px 12px',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      fontSize: 11, fontFamily: "'Inter', sans-serif", fontWeight: 600,
+      letterSpacing: '0.3px',
+    }}>
+      <span>👤 Viewing as {name}</span>
+      <button
+        onClick={() => { exitImpersonation(); navigate('/admin') }}
+        style={{ background: 'rgba(0,0,0,0.25)', border: 'none', color: '#fff', borderRadius: 4, padding: '2px 8px', fontSize: 11, cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontWeight: 600 }}
+      >
+        Exit ✕
+      </button>
+    </div>
+  )
+}
+
 // ── App shell ─────────────────────────────────────────────────────────────────
 function AppShell() {
   const location = useLocation()
@@ -328,6 +354,7 @@ function AppShell() {
   return (
     <div className={isAdmin ? '' : 'phone-shell'}>
       <SessionRestorer />
+      {!isAdmin && <ImpersonationBanner />}
       {!isAdmin && <GlobalOverlayButtons />}
       <div className={isAdmin ? '' : 'screen'}>
         <Routes>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { subscribeToUsers, adminUpdateUser, adminDeleteUser, assignCheckInNumber } from '../firestoreUsers'
 import { clearAllTestData } from '../firestoreNotifications'
+import { useAuth } from '../AuthContext'
 import './AdminPage.css'
 
 // ── Change this passcode before the event ─────────────────────────────────────
@@ -132,6 +133,7 @@ function getProgressLabel(u) {
 // ── Main admin panel ──────────────────────────────────────────────────────────
 export default function AdminPage() {
   const navigate = useNavigate()
+  const { startImpersonation } = useAuth()
   const [authed, setAuthed] = useState(!!sessionStorage.getItem('sd_admin'))
   const [users, setUsers] = useState([])
   const [search, setSearch] = useState('')
@@ -443,6 +445,15 @@ export default function AdminPage() {
 
                       <button className="adm-action-btn edit"
                         onClick={() => setEditingUser(u)} title="Edit">✏</button>
+
+                      <button className="adm-action-btn impersonate"
+                        title="Log in as this user"
+                        onClick={() => {
+                          startImpersonation({ uid, enName: u.enName, zhName: u.zhName, email: u.email })
+                          navigate('/directory')
+                        }}>
+                        👤
+                      </button>
 
                       <button className="adm-action-btn delete"
                         onClick={() => handleDelete(uid, name)} title="Delete">✕</button>
