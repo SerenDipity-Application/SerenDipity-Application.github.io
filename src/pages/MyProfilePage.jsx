@@ -26,6 +26,13 @@ function getColor(name) {
 export default function MyProfilePage() {
   const navigate = useNavigate()
   const { lang, s } = useLang()
+
+  // Resolve profile first — used to initialise state below
+  const saved = loadUser()
+  const p = saved || myProfile
+  const initials = saved ? getInitials(p.enName, p.zhName) : myProfile.initials
+  const color    = saved ? getColor(p.enName || p.zhName)  : myProfile.color
+
   const [copied, setCopied] = useState(null)
   const [photoURL, setPhotoURL] = useState(p.photoURL || null)
   const [uploading, setUploading] = useState(false)
@@ -63,11 +70,6 @@ export default function MyProfilePage() {
       setTimeout(() => setCopied(null), 2000)
     }
   }
-
-  const saved = loadUser()
-  const p = saved || myProfile
-  const initials = saved ? getInitials(p.enName, p.zhName) : myProfile.initials
-  const color    = saved ? getColor(p.enName || p.zhName)  : myProfile.color
 
   const primaryName   = p.zhName || p.enName || '—'
   const secondaryName = p.enName && p.enName !== primaryName ? p.enName : ''
