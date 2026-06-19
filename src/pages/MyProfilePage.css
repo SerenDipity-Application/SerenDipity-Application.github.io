@@ -290,6 +290,16 @@
 }
 .my-inv-share:active { opacity: 0.85; }
 
+.my-inv-launch-note {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.7;
+  text-align: center;
+  white-space: pre-line;
+}
+
 /* ── Photo upload toast ── */
 .my-upload-toast {
   position: absolute;

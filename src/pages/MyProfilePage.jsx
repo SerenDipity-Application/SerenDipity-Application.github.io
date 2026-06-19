@@ -246,6 +246,11 @@ export default function MyProfilePage() {
               ? (lang === 'zh' ? '已复制 ✓' : 'Copied ✓')
               : (lang === 'zh' ? '✦ 一键分享所有' : '✦ Share All Codes')}
           </button>
+          <p className="my-inv-launch-note">
+            {lang === 'zh'
+              ? 'SerenDipity App 完整版预计 8 月上线。\n感谢大家成为我们的初始用户，欢迎继续和我们一起链接更多有趣的人！'
+              : 'The full SerenDipity App launches in August.\nThank you for being an early member — we look forward to connecting you with even more remarkable people!'}
+          </p>
         </div>
       </div>
 
