@@ -91,6 +91,20 @@ export default function DirectMessagePage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // ── Keyboard resize (iOS Safari) ──────────────────────────────────────────
+  // visualViewport shrinks when the soft keyboard opens; set a CSS var so the
+  // page height tracks it and the blank gap below the input bar disappears.
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+    const update = () => {
+      document.documentElement.style.setProperty('--vvh', `${vv.height}px`)
+    }
+    vv.addEventListener('resize', update)
+    update()
+    return () => vv.removeEventListener('resize', update)
+  }, [])
+
   // ── Send ──────────────────────────────────────────────────────────────────
   async function send() {
     const text = input.trim()
