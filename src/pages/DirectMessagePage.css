@@ -2,10 +2,8 @@
    DIRECT MESSAGE PAGE
 ══════════════════════════════════════════════ */
 .dm-page {
-  height: 100%;
-  /* --vvh is set by JS when the iOS soft keyboard resizes the visual viewport;
-     falls back to 100dvh which also tracks keyboard height on modern iOS. */
-  max-height: var(--vvh, 100dvh);
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--cream);
