@@ -74,7 +74,7 @@ html, body {
   display: flex;
   background: var(--white);
   border-top: 1px solid #EDE6D8;
-  padding: 10px 0 16px;
+  padding: 10px 0 max(16px, env(safe-area-inset-bottom));
   flex-shrink: 0;
   z-index: 100;
 }
