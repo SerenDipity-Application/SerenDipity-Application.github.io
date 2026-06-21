@@ -188,6 +188,21 @@
 
 .auth-apple-btn { color: rgba(255,255,255,0.85); }
 
+/* ── Phone section ── */
+.auth-phone-section { display: flex; flex-direction: column; gap: 10px; }
+.auth-recaptcha { display: flex; justify-content: center; margin: 4px 0; }
+.auth-phone-back {
+  background: none; border: none;
+  color: rgba(255,255,255,0.4); font-size: 13px;
+  font-family: 'Inter', sans-serif; cursor: pointer;
+  text-align: center; padding: 4px;
+}
+.auth-phone-back:hover { color: rgba(255,255,255,0.7); }
+.auth-phone-hint {
+  font-size: 13px; color: rgba(255,255,255,0.5);
+  text-align: center; font-family: 'Inter', sans-serif;
+}
+
 /* ── Confirmation sent state ── */
 .auth-sent {
   display: flex;

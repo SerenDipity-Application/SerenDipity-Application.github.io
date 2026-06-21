@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   sendSignInLinkToEmail,
@@ -36,8 +36,30 @@ export default function AuthPage() {
   const [phoneStep, setPhoneStep] = useState('idle') // 'idle' | 'enter-phone' | 'enter-otp'
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
+  const [recaptchaReady, setRecaptchaReady] = useState(false)
   const recaptchaRef = useRef(null)
   const confirmationRef = useRef(null)
+
+  // Render visible reCAPTCHA widget as soon as phone step opens
+  useEffect(() => {
+    if (phoneStep !== 'enter-phone') return
+    setRecaptchaReady(false)
+    if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
+    const timer = setTimeout(() => {
+      try {
+        recaptchaRef.current = new RecaptchaVerifier(auth, 'phone-recaptcha', {
+          size: 'normal',
+          callback: () => setRecaptchaReady(true),
+          'expired-callback': () => setRecaptchaReady(false),
+        })
+        recaptchaRef.current.render()
+      } catch (e) { console.error('reCAPTCHA init error:', e) }
+    }, 100)
+    return () => {
+      clearTimeout(timer)
+      if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
+    }
+  }, [phoneStep])
 
   const t = {
     heading:     lang === 'zh' ? '欢迎加入圈子' : 'Welcome to the Circle',
@@ -101,19 +123,12 @@ export default function AuthPage() {
   // Match reCAPTCHA and SMS language to the current app language
   auth.languageCode = lang === 'zh' ? 'zh-CN' : 'en'
 
-  const clearRecaptcha = () => {
-    if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
-  }
-
   const handleSendCode = async () => {
     if (!phone.trim()) { setError('phone-required'); return }
-    // Normalise to E.164: keep leading +, strip spaces and dashes
     const normalised = phone.trim().replace(/[\s\-()]/g, '')
     if (!normalised.startsWith('+')) { setError('phone-no-plus'); return }
     setLoading(true); setError('')
     try {
-      clearRecaptcha()
-      recaptchaRef.current = new RecaptchaVerifier(auth, 'phone-recaptcha', { size: 'invisible' })
       const result = await signInWithPhoneNumber(auth, normalised, recaptchaRef.current)
       confirmationRef.current = result
       setPhoneStep('enter-otp')
@@ -123,7 +138,9 @@ export default function AuthPage() {
       else if (e.code === 'auth/invalid-phone-number')  setError('phone-invalid')
       else if (e.code === 'auth/too-many-requests')     setError('phone-throttled')
       else setError('phone-failed')
-      clearRecaptcha()
+      // Reset reCAPTCHA so user can try again
+      if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
+      setRecaptchaReady(false)
     } finally { setLoading(false) }
   }
 
@@ -139,7 +156,7 @@ export default function AuthPage() {
   }
 
   const resetPhone = () => {
-    setPhoneStep('idle'); setPhone(''); setOtp(''); setError(''); clearRecaptcha()
+    setPhoneStep('idle'); setPhone(''); setOtp(''); setError(''); setRecaptchaReady(false)
   }
 
   return (
@@ -229,13 +246,14 @@ export default function AuthPage() {
                     placeholder={lang === 'zh' ? '+86 138 0000 0000' : '+1 650 555 1234'}
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleSendCode()}
+                    onKeyDown={e => recaptchaReady && handleSendCode()}
                     autoFocus
                   />
-                  <button className="auth-send-btn" onClick={handleSendCode} disabled={loading}>
-                    {loading ? (lang === 'zh' ? '发送中…' : 'Sending…') : (lang === 'zh' ? '发送验证码' : 'Send Code')}
-                  </button>
                 </div>
+                <div id="phone-recaptcha" className="auth-recaptcha" />
+                <button className="auth-send-btn" onClick={handleSendCode} disabled={loading || !recaptchaReady}>
+                  {loading ? (lang === 'zh' ? '发送中…' : 'Sending…') : (lang === 'zh' ? '发送验证码' : 'Send Code')}
+                </button>
                 <button className="auth-phone-back" onClick={resetPhone}>
                   {lang === 'zh' ? '← 返回' : '← Back'}
                 </button>
@@ -269,7 +287,6 @@ export default function AuthPage() {
               </div>
             )}
 
-            <div id="phone-recaptcha" />
           </>
         )}
       </div>
