@@ -59,10 +59,14 @@ export default function AuthPage() {
     'email-required':  lang === 'zh' ? '请输入邮箱' : 'Please enter your email',
     'email-failed':    lang === 'zh' ? '发送失败，请检查邮箱地址。' : 'Failed to send — check the email address.',
     'google-failed':   lang === 'zh' ? 'Google 登录失败，请重试。' : 'Google sign-in failed. Please try again.',
-    'phone-required':  lang === 'zh' ? '请输入手机号' : 'Please enter your phone number',
-    'phone-failed':    lang === 'zh' ? '发送失败，请确认包含国家代码（如 +86 或 +1）。' : 'Failed to send — include your country code, e.g. +1 or +86.',
-    'otp-required':    lang === 'zh' ? '请输入验证码' : 'Please enter the code',
-    'otp-invalid':     lang === 'zh' ? '验证码无效，请重试。' : 'Invalid code — please try again.',
+    'phone-required':    lang === 'zh' ? '请输入手机号' : 'Please enter your phone number',
+    'phone-no-plus':     lang === 'zh' ? '请以 + 和国家代码开头，如 +86 或 +1' : 'Must start with + and country code, e.g. +1 or +86',
+    'phone-invalid':     lang === 'zh' ? '手机号格式无效，请检查后重试。' : 'Invalid phone number — please check and try again.',
+    'phone-not-enabled': lang === 'zh' ? '手机登录未在后台开启，请联系管理员。' : 'Phone sign-in is not enabled — please contact the admin.',
+    'phone-throttled':   lang === 'zh' ? '发送次数过多，请稍后再试。' : 'Too many attempts — please wait a moment and try again.',
+    'phone-failed':      lang === 'zh' ? '发送失败，请确认包含国家代码（如 +86 或 +1）。' : 'Failed to send — include your country code, e.g. +1 or +86.',
+    'otp-required':      lang === 'zh' ? '请输入验证码' : 'Please enter the code',
+    'otp-invalid':       lang === 'zh' ? '验证码无效，请重试。' : 'Invalid code — please try again.',
   }
 
   const handleSendLink = async () => {
@@ -100,15 +104,22 @@ export default function AuthPage() {
 
   const handleSendCode = async () => {
     if (!phone.trim()) { setError('phone-required'); return }
+    // Normalise to E.164: keep leading +, strip spaces and dashes
+    const normalised = phone.trim().replace(/[\s\-()]/g, '')
+    if (!normalised.startsWith('+')) { setError('phone-no-plus'); return }
     setLoading(true); setError('')
     try {
       clearRecaptcha()
       recaptchaRef.current = new RecaptchaVerifier(auth, 'phone-recaptcha', { size: 'invisible' })
-      const result = await signInWithPhoneNumber(auth, phone.trim(), recaptchaRef.current)
+      const result = await signInWithPhoneNumber(auth, normalised, recaptchaRef.current)
       confirmationRef.current = result
       setPhoneStep('enter-otp')
     } catch (e) {
-      setError('phone-failed')
+      console.error('Phone auth error:', e.code, e.message)
+      if (e.code === 'auth/operation-not-allowed') setError('phone-not-enabled')
+      else if (e.code === 'auth/invalid-phone-number')  setError('phone-invalid')
+      else if (e.code === 'auth/too-many-requests')     setError('phone-throttled')
+      else setError('phone-failed')
       clearRecaptcha()
     } finally { setLoading(false) }
   }
