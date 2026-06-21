@@ -54,10 +54,20 @@ export default function AuthPage() {
     inviteOnly:  lang === 'zh' ? '仅限受邀成员' : 'Invite-only members only',
   }
 
+  // Error keys translated at render time — stays in sync when language toggles
+  const errors = {
+    'email-required':  lang === 'zh' ? '请输入邮箱' : 'Please enter your email',
+    'email-failed':    lang === 'zh' ? '发送失败，请检查邮箱地址。' : 'Failed to send — check the email address.',
+    'google-failed':   lang === 'zh' ? 'Google 登录失败，请重试。' : 'Google sign-in failed. Please try again.',
+    'phone-required':  lang === 'zh' ? '请输入手机号' : 'Please enter your phone number',
+    'phone-failed':    lang === 'zh' ? '发送失败，请确认包含国家代码（如 +86 或 +1）。' : 'Failed to send — include your country code, e.g. +1 or +86.',
+    'otp-required':    lang === 'zh' ? '请输入验证码' : 'Please enter the code',
+    'otp-invalid':     lang === 'zh' ? '验证码无效，请重试。' : 'Invalid code — please try again.',
+  }
+
   const handleSendLink = async () => {
-    if (!email.trim()) { setError(lang === 'zh' ? '请输入邮箱' : 'Please enter your email'); return }
-    setLoading(true)
-    setError('')
+    if (!email.trim()) { setError('email-required'); return }
+    setLoading(true); setError('')
     try {
       const actionCodeSettings = {
         url: window.location.origin + window.location.pathname,
@@ -67,7 +77,7 @@ export default function AuthPage() {
       localStorage.setItem('serendipity_email_for_link', email.trim())
       setSent(true)
     } catch (e) {
-      setError(lang === 'zh' ? '发送失败，请检查邮箱地址。' : 'Failed to send — check the email address.')
+      setError('email-failed')
     } finally {
       setLoading(false)
     }
@@ -80,9 +90,7 @@ export default function AuthPage() {
       const result = await signInWithPopup(auth, provider)
       await redirectAfterAuth(result.user.uid, navigate)
     } catch (e) {
-      if (e.code !== 'auth/popup-closed-by-user') {
-        setError(lang === 'zh' ? 'Google 登录失败，请重试。' : 'Google sign-in failed. Please try again.')
-      }
+      if (e.code !== 'auth/popup-closed-by-user') setError('google-failed')
     }
   }
 
@@ -91,7 +99,7 @@ export default function AuthPage() {
   }
 
   const handleSendCode = async () => {
-    if (!phone.trim()) { setError(lang === 'zh' ? '请输入手机号' : 'Please enter your phone number'); return }
+    if (!phone.trim()) { setError('phone-required'); return }
     setLoading(true); setError('')
     try {
       clearRecaptcha()
@@ -100,19 +108,19 @@ export default function AuthPage() {
       confirmationRef.current = result
       setPhoneStep('enter-otp')
     } catch (e) {
-      setError(lang === 'zh' ? '发送失败，请确认包含国家代码（如 +86 或 +1）。' : 'Failed to send. Make sure to include country code, e.g. +86 or +1.')
+      setError('phone-failed')
       clearRecaptcha()
     } finally { setLoading(false) }
   }
 
   const handleVerifyOtp = async () => {
-    if (!otp.trim()) { setError(lang === 'zh' ? '请输入验证码' : 'Please enter the code'); return }
+    if (!otp.trim()) { setError('otp-required'); return }
     setLoading(true); setError('')
     try {
       const result = await confirmationRef.current.confirm(otp.trim())
       await redirectAfterAuth(result.user.uid, navigate)
     } catch (e) {
-      setError(lang === 'zh' ? '验证码无效，请重试。' : 'Invalid code — please try again.')
+      setError('otp-invalid')
     } finally { setLoading(false) }
   }
 
@@ -168,7 +176,7 @@ export default function AuthPage() {
               </button>
             </div>
 
-            {error && <p className="auth-error">{error}</p>}
+            {error && <p className="auth-error">{errors[error] ?? error}</p>}
 
             {/* ── Divider ── */}
             <div className="auth-divider">
