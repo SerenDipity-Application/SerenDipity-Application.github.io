@@ -116,7 +116,7 @@ function IntroContent({ navigate, s, lang, toggle }) {
         </div>
       </div>
 
-      <button className="intro-btn serif" onClick={() => navigate('/onboarding')}>
+      <button className="intro-btn serif" onClick={() => navigate('/auth')}>
         {s.introBtn} <span style={{marginLeft:6}}>→</span>
       </button>
     </div>

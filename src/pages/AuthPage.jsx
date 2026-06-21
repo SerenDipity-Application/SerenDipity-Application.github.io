@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   sendSignInLinkToEmail,
   GoogleAuthProvider,
-  OAuthProvider,
   signInWithPopup,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
 } from 'firebase/auth'
 import { auth } from '../firebase'
 import { useLang } from '../LangContext'
@@ -32,6 +33,11 @@ export default function AuthPage() {
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [phoneStep, setPhoneStep] = useState('idle') // 'idle' | 'enter-phone' | 'enter-otp'
+  const [phone, setPhone] = useState('')
+  const [otp, setOtp] = useState('')
+  const recaptchaRef = useRef(null)
+  const confirmationRef = useRef(null)
 
   const t = {
     heading:     lang === 'zh' ? '欢迎加入圈子' : 'Welcome to the Circle',
@@ -44,8 +50,7 @@ export default function AuthPage() {
     resend:      lang === 'zh' ? '重新发送' : 'Resend',
     orDivider:   lang === 'zh' ? '或' : 'or',
     google:      lang === 'zh' ? '使用 Google 继续' : 'Continue with Google',
-    apple:       lang === 'zh' ? '使用 Apple 继续' : 'Continue with Apple',
-    appleNote:   lang === 'zh' ? '需要 Apple 开发者账户配置' : 'Requires Apple Developer setup',
+    phone:       lang === 'zh' ? '使用手机号继续' : 'Continue with Phone',
     inviteOnly:  lang === 'zh' ? '仅限受邀成员' : 'Invite-only members only',
   }
 
@@ -81,19 +86,38 @@ export default function AuthPage() {
     }
   }
 
-  const handleApple = async () => {
-    setError('')
+  const clearRecaptcha = () => {
+    if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
+  }
+
+  const handleSendCode = async () => {
+    if (!phone.trim()) { setError(lang === 'zh' ? '请输入手机号' : 'Please enter your phone number'); return }
+    setLoading(true); setError('')
     try {
-      const provider = new OAuthProvider('apple.com')
-      provider.addScope('email')
-      provider.addScope('name')
-      const result = await signInWithPopup(auth, provider)
+      clearRecaptcha()
+      recaptchaRef.current = new RecaptchaVerifier(auth, 'phone-recaptcha', { size: 'invisible' })
+      const result = await signInWithPhoneNumber(auth, phone.trim(), recaptchaRef.current)
+      confirmationRef.current = result
+      setPhoneStep('enter-otp')
+    } catch (e) {
+      setError(lang === 'zh' ? '发送失败，请确认包含国家代码（如 +86 或 +1）。' : 'Failed to send. Make sure to include country code, e.g. +86 or +1.')
+      clearRecaptcha()
+    } finally { setLoading(false) }
+  }
+
+  const handleVerifyOtp = async () => {
+    if (!otp.trim()) { setError(lang === 'zh' ? '请输入验证码' : 'Please enter the code'); return }
+    setLoading(true); setError('')
+    try {
+      const result = await confirmationRef.current.confirm(otp.trim())
       await redirectAfterAuth(result.user.uid, navigate)
     } catch (e) {
-      if (e.code !== 'auth/popup-closed-by-user') {
-        setError(lang === 'zh' ? 'Apple 登录失败，请确认已在 Firebase 中配置 Apple 登录。' : 'Apple sign-in failed. Make sure Apple is configured in Firebase Console.')
-      }
-    }
+      setError(lang === 'zh' ? '验证码无效，请重试。' : 'Invalid code — please try again.')
+    } finally { setLoading(false) }
+  }
+
+  const resetPhone = () => {
+    setPhoneStep('idle'); setPhone(''); setOtp(''); setError(''); clearRecaptcha()
   }
 
   return (
@@ -164,12 +188,66 @@ export default function AuthPage() {
               {t.google}
             </button>
 
-            <button className="auth-social-btn auth-apple-btn" onClick={handleApple}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-              </svg>
-              {t.apple}
-            </button>
+            {/* ── Phone sign-in ── */}
+            {phoneStep === 'idle' && (
+              <button className="auth-social-btn" onClick={() => { setPhoneStep('enter-phone'); setError('') }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                {t.phone}
+              </button>
+            )}
+
+            {phoneStep === 'enter-phone' && (
+              <div className="auth-phone-section">
+                <div className="auth-email-row">
+                  <input
+                    className="auth-input"
+                    type="tel"
+                    placeholder={lang === 'zh' ? '+86 138 0000 0000' : '+1 650 555 1234'}
+                    value={phone}
+                    onChange={e => setPhone(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSendCode()}
+                    autoFocus
+                  />
+                  <button className="auth-send-btn" onClick={handleSendCode} disabled={loading}>
+                    {loading ? (lang === 'zh' ? '发送中…' : 'Sending…') : (lang === 'zh' ? '发送验证码' : 'Send Code')}
+                  </button>
+                </div>
+                <button className="auth-phone-back" onClick={resetPhone}>
+                  {lang === 'zh' ? '← 返回' : '← Back'}
+                </button>
+              </div>
+            )}
+
+            {phoneStep === 'enter-otp' && (
+              <div className="auth-phone-section">
+                <p className="auth-phone-hint">
+                  {lang === 'zh' ? `验证码已发送至 ${phone}` : `Code sent to ${phone}`}
+                </p>
+                <div className="auth-email-row">
+                  <input
+                    className="auth-input"
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    placeholder={lang === 'zh' ? '6 位验证码' : '6-digit code'}
+                    value={otp}
+                    onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                    onKeyDown={e => e.key === 'Enter' && handleVerifyOtp()}
+                    autoFocus
+                  />
+                  <button className="auth-send-btn" onClick={handleVerifyOtp} disabled={loading}>
+                    {loading ? (lang === 'zh' ? '验证中…' : 'Verifying…') : (lang === 'zh' ? '验证' : 'Verify')}
+                  </button>
+                </div>
+                <button className="auth-phone-back" onClick={() => { setPhoneStep('enter-phone'); setOtp(''); setError('') }}>
+                  {lang === 'zh' ? '← 重新发送' : '← Resend code'}
+                </button>
+              </div>
+            )}
+
+            <div id="phone-recaptcha" />
           </>
         )}
       </div>

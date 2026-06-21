@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { signOut } from 'firebase/auth'
+import { auth } from '../firebase'
 import { useLang } from '../LangContext'
 import { myProfile } from '../data'
 import { loadUser, saveUser } from '../userStorage'
@@ -74,6 +76,13 @@ export default function MyProfilePage() {
     navigator.clipboard.writeText(code).catch(() => {})
     setCopied(code)
     setTimeout(() => setCopied(null), 2000)
+  }
+
+  const handleSignOut = async () => {
+    await signOut(auth)
+    localStorage.removeItem('serendipity_user')
+    localStorage.removeItem('serendipity_profile')
+    navigate('/', { replace: true })
   }
 
   const handleShare = () => {
@@ -251,6 +260,9 @@ export default function MyProfilePage() {
               ? 'SerenDipity App 完整版预计 8 月上线。\n感谢大家成为我们的初始用户，欢迎继续和我们一起链接更多有趣的人！'
               : 'The full SerenDipity App launches in August.\nThank you for being an early member — we look forward to connecting you with even more remarkable people!'}
           </p>
+          <button className="my-signout-btn" onClick={handleSignOut}>
+            {lang === 'zh' ? '退出登录' : 'Sign Out'}
+          </button>
         </div>
       </div>
 

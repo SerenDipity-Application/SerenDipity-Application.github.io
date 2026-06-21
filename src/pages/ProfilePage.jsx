@@ -1,7 +1,9 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { members } from '../data'
 import './ProfilePage.css'
+
+const CACHE_KEY = id => `serendipity_member_${id}`
 
 const intentColorMap = {
   '寻找合作': { bg: '#D4EDE7', text: '#3D7A6B', dot: '#3D7A6B' },
@@ -17,8 +19,15 @@ const intentColorMap = {
 export default function ProfilePage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { lang, s } = useLang()
-  const member = members.find(m => m.id === parseInt(id)) || members[0]
+
+  const stateMember = location.state?.member
+  if (stateMember) sessionStorage.setItem(CACHE_KEY(id), JSON.stringify(stateMember))
+  const member = stateMember
+    || (() => { try { return JSON.parse(sessionStorage.getItem(CACHE_KEY(id))) } catch { return null } })()
+    || members.find(m => String(m.id) === id || String(m.uid) === id)
+    || members[0]
 
   const zhToEn = {'寻找合作':'Find Collaborators','结识朋友':'Make Friends','商务对接':'Business','寻觅伴侣':'Romance'}
   const displayIntents = member.intents.map(i => lang === 'en' ? (zhToEn[i] || i) : i)
@@ -76,7 +85,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="profile-footer">
-        <button className="profile-greet-btn" onClick={() => navigate(`/icebreaker/${member.id}`)}>
+        <button className="profile-greet-btn" onClick={() => navigate(`/icebreaker/${member.uid || member.id}`, { state: { member } })}>
           {s.profileGreetBtn}
         </button>
         <p className="profile-footer-hint">

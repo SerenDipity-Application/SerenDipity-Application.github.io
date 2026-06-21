@@ -269,6 +269,19 @@ function BottomNav() {
   )
 }
 
+// ── Auth guard — redirects unauthenticated users to /auth ────────────────────
+function RequireAuth({ children }) {
+  const { user, loading } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!loading && !user) navigate('/auth', { replace: true })
+  }, [user, loading])
+
+  if (loading || !user) return null
+  return children
+}
+
 // ── Email link completion + session restore ───────────────────────────────────
 function SessionRestorer() {
   const navigate = useNavigate()
@@ -298,7 +311,6 @@ function SessionRestorer() {
     signInWithEmailLink(auth, address, window.location.href)
       .then(async result => {
         localStorage.removeItem('serendipity_email_for_link')
-        // Clean the oobCode params from the URL
         window.history.replaceState({}, document.title, window.location.pathname)
         const snap = await getDoc(doc(db, 'users', result.user.uid))
         if (snap.exists() && snap.data().onboardingStatus === 'completed') {
@@ -310,18 +322,12 @@ function SessionRestorer() {
       .catch(() => navigate('/auth', { replace: true }))
   }, [])
 
-  // Route already-authenticated users away from pre-login pages
-  const guestOnlyPages = ['/', '/intro', '/auth']
+  // Route already-authenticated users away from the entry page only.
+  // /intro is intentionally excluded — users should be able to read it
+  // and press the button themselves before proceeding to /auth.
   useEffect(() => {
-    if (loading || !guestOnlyPages.includes(location.pathname)) return
-    if (!user) {
-      // Check for a local onboarding draft (unauthenticated but mid-form)
-      if (location.pathname === '/' && localStorage.getItem('serendipity_ob_draft')) {
-        navigate('/onboarding', { replace: true })
-      }
-      return
-    }
-    // Signed in — skip straight to directory (or onboarding if not finished)
+    if (loading || location.pathname !== '/') return
+    if (!user) return
     getDoc(doc(db, 'users', user.uid)).then(snap => {
       if (snap.exists() && snap.data().onboardingStatus === 'completed') {
         navigate('/directory', { replace: true })
@@ -371,20 +377,23 @@ function AppShell() {
       {!isAdmin && <GlobalOverlayButtons />}
       <div className={isAdmin ? '' : 'screen'}>
         <Routes>
-          <Route path="/"            element={<EntryPage />} />
-          <Route path="/intro"       element={<IntroPage />} />
-          <Route path="/auth"        element={<AuthPage />} />
-          <Route path="/onboarding"  element={<OnboardingPage />} />
-          <Route path="/directory"   element={<DirectoryPage />} />
-          <Route path="/profile/:id" element={<ProfilePage />} />
-          <Route path="/chat"        element={<ChatPage />} />
-          <Route path="/ai-chat"     element={<AIChatPage />} />
-          <Route path="/my-profile"  element={<MyProfilePage />} />
-          <Route path="/icebreaker/:id" element={<IcebreakerPage />} />
-          <Route path="/messages"        element={<MessagesPage />} />
-          <Route path="/dm/:id"         element={<DirectMessagePage />} />
-          <Route path="/invitations" element={<InvitationsPage />} />
-          <Route path="/admin"       element={<AdminPage />} />
+          {/* Public — no auth required */}
+          <Route path="/"      element={<EntryPage />} />
+          <Route path="/intro" element={<IntroPage />} />
+          <Route path="/auth"  element={<AuthPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+
+          {/* Protected — must be logged in */}
+          <Route path="/onboarding"     element={<RequireAuth><OnboardingPage /></RequireAuth>} />
+          <Route path="/directory"      element={<RequireAuth><DirectoryPage /></RequireAuth>} />
+          <Route path="/profile/:id"    element={<RequireAuth><ProfilePage /></RequireAuth>} />
+          <Route path="/chat"           element={<RequireAuth><ChatPage /></RequireAuth>} />
+          <Route path="/ai-chat"        element={<RequireAuth><AIChatPage /></RequireAuth>} />
+          <Route path="/my-profile"     element={<RequireAuth><MyProfilePage /></RequireAuth>} />
+          <Route path="/icebreaker/:id" element={<RequireAuth><IcebreakerPage /></RequireAuth>} />
+          <Route path="/messages"       element={<RequireAuth><MessagesPage /></RequireAuth>} />
+          <Route path="/dm/:id"         element={<RequireAuth><DirectMessagePage /></RequireAuth>} />
+          <Route path="/invitations"    element={<RequireAuth><InvitationsPage /></RequireAuth>} />
         </Routes>
       </div>
       <BottomNav />
