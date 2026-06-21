@@ -98,6 +98,9 @@ export default function AuthPage() {
     }
   }
 
+  // Match reCAPTCHA and SMS language to the current app language
+  auth.languageCode = lang === 'zh' ? 'zh-CN' : 'en'
+
   const clearRecaptcha = () => {
     if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
   }
