@@ -78,8 +78,8 @@ export default function AuthPage() {
   // Init invisible reCAPTCHA verifier when phone step opens
   useEffect(() => {
     if (phoneStep !== 'enter-phone') return
-    if (recaptchaRef.current) { recaptchaRef.current.clear() }
     try {
+      if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
       recaptchaRef.current = new RecaptchaVerifier(auth, 'phone-recaptcha', {
         size: 'invisible',
         callback: () => {},
@@ -87,7 +87,9 @@ export default function AuthPage() {
       })
     } catch (e) { console.error('reCAPTCHA init error:', e) }
     return () => {
-      if (recaptchaRef.current) { recaptchaRef.current.clear() }
+      try {
+        if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
+      } catch (e) { console.error('reCAPTCHA cleanup error:', e) }
     }
   }, [phoneStep])
 
