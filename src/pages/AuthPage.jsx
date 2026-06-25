@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   sendSignInLinkToEmail,
@@ -12,6 +12,26 @@ import { useLang } from '../LangContext'
 import { getDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase'
 import './AuthPage.css'
+
+// ── Country / region dialling codes ──────────────────────────────────────────
+// Key = ISO 3166-1 alpha-2, displayed in the user's current language.
+const COUNTRIES = [
+  { code: 'CN', dial: '+86',  zh: '中国大陆',   en: 'China'        },
+  { code: 'HK', dial: '+852', zh: '中国香港',   en: 'Hong Kong'    },
+  { code: 'TW', dial: '+886', zh: '中国台湾',   en: 'Taiwan'       },
+  { code: 'MO', dial: '+853', zh: '中国澳门',   en: 'Macau'        },
+  { code: 'US', dial: '+1',   zh: '美国/加拿大', en: 'US / Canada'  },
+  { code: 'GB', dial: '+44',  zh: '英国',       en: 'United Kingdom' },
+  { code: 'JP', dial: '+81',  zh: '日本',       en: 'Japan'        },
+  { code: 'KR', dial: '+82',  zh: '韩国',       en: 'South Korea'  },
+  { code: 'SG', dial: '+65',  zh: '新加坡',     en: 'Singapore'    },
+  { code: 'AU', dial: '+61',  zh: '澳大利亚',   en: 'Australia'    },
+  { code: 'DE', dial: '+49',  zh: '德国',       en: 'Germany'      },
+  { code: 'FR', dial: '+33',  zh: '法国',       en: 'France'       },
+  { code: 'MY', dial: '+60',  zh: '马来西亚',   en: 'Malaysia'     },
+  { code: 'TH', dial: '+66',  zh: '泰国',       en: 'Thailand'     },
+  { code: 'IN', dial: '+91',  zh: '印度',       en: 'India'        },
+]
 
 async function redirectAfterAuth(uid, navigate) {
   try {
@@ -34,11 +54,14 @@ export default function AuthPage() {
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
   const [phoneStep, setPhoneStep] = useState('idle') // 'idle' | 'enter-phone' | 'enter-otp'
-  const [phone, setPhone]       = useState('')
+  const [countryCode, setCountryCode] = useState('CN')
+  const [phoneLocal, setPhoneLocal] = useState('')
   const [otp, setOtp]           = useState('')
   const [recaptchaReady, setRecaptchaReady] = useState(false)
   const recaptchaRef  = useRef(null)
   const confirmationRef = useRef(null)
+
+  const selectedCountry = useMemo(() => COUNTRIES.find(c => c.code === countryCode), [countryCode])
 
   // Render visible reCAPTCHA widget when phone step opens
   useEffect(() => {
@@ -81,11 +104,11 @@ export default function AuthPage() {
     'email-failed':      lang === 'zh' ? '发送失败，请检查邮箱地址。' : 'Failed to send — check the email address.',
     'google-failed':     lang === 'zh' ? 'Google 登录失败，请重试。' : 'Google sign-in failed. Please try again.',
     'phone-required':    lang === 'zh' ? '请输入手机号' : 'Please enter your phone number',
-    'phone-no-plus':     lang === 'zh' ? '请以 + 和国家代码开头，如 +86 或 +1' : 'Must start with + and country code, e.g. +1 or +86',
+    'phone-no-plus':     lang === 'zh' ? '请选择国家/地区并输入手机号' : 'Choose a country/region and enter your phone number',
     'phone-invalid':     lang === 'zh' ? '手机号格式无效，请检查后重试。' : 'Invalid phone number — please check and try again.',
     'phone-not-enabled': lang === 'zh' ? '手机登录未在后台开启，请联系管理员。' : 'Phone sign-in is not enabled — please contact the admin.',
     'phone-throttled':   lang === 'zh' ? '发送次数过多，请稍后再试。' : 'Too many attempts — please wait a moment and try again.',
-    'phone-failed':      lang === 'zh' ? '发送失败，请确认包含国家代码（如 +86 或 +1）。' : 'Failed to send — include your country code, e.g. +1 or +86.',
+    'phone-failed':      lang === 'zh' ? '发送失败，请确认国家/地区与手机号是否匹配。' : 'Failed to send — check that the country/region matches the number.',
     'otp-required':      lang === 'zh' ? '请输入验证码' : 'Please enter the code',
     'otp-invalid':       lang === 'zh' ? '验证码无效，请重试。' : 'Invalid code — please try again.',
   }
@@ -122,9 +145,10 @@ export default function AuthPage() {
   auth.languageCode = lang === 'zh' ? 'zh-CN' : 'en'
 
   const handleSendCode = async () => {
-    if (!phone.trim()) { setError('phone-required'); return }
-    const normalised = phone.trim().replace(/[\s\-()]/g, '')
-    if (!normalised.startsWith('+')) { setError('phone-no-plus'); return }
+    const localDigits = phoneLocal.trim().replace(/\D/g, '')
+    if (!localDigits) { setError('phone-required'); return }
+    if (!selectedCountry?.dial) { setError('phone-no-plus'); return }
+    const normalised = `${selectedCountry.dial}${localDigits}`
     setLoading(true); setError('')
     try {
       const result = await signInWithPhoneNumber(auth, normalised, recaptchaRef.current)
@@ -153,7 +177,7 @@ export default function AuthPage() {
   }
 
   const resetPhone = () => {
-    setPhoneStep('idle'); setPhone(''); setOtp(''); setError(''); setRecaptchaReady(false)
+    setPhoneStep('idle'); setPhoneLocal(''); setOtp(''); setError(''); setRecaptchaReady(false)
   }
 
   return (
@@ -235,13 +259,32 @@ export default function AuthPage() {
 
             {phoneStep === 'enter-phone' && (
               <div className="auth-phone-section">
-                <div className="auth-email-row">
+                <div className="auth-phone-row">
+                  <div className="auth-phone-select-wrap">
+                    <select
+                      className="auth-phone-select"
+                      value={countryCode}
+                      onChange={e => setCountryCode(e.target.value)}
+                      aria-label={lang === 'zh' ? '国家/地区' : 'Country / region'}
+                    >
+                      {COUNTRIES.map(c => (
+                        <option key={c.code} value={c.code}>
+                          {lang === 'zh' ? c.zh : c.en} {c.dial}
+                        </option>
+                      ))}
+                    </select>
+                    <svg className="auth-phone-select-caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </div>
                   <input
-                    className="auth-input"
+                    className="auth-input auth-phone-local"
                     type="tel"
-                    placeholder={lang === 'zh' ? '+86 138 0000 0000' : '+1 650 555 1234'}
-                    value={phone}
-                    onChange={e => setPhone(e.target.value)}
+                    inputMode="numeric"
+                    placeholder={selectedCountry?.code === 'CN' ? '138 0000 0000' : 'phone number'}
+                    value={phoneLocal}
+                    onChange={e => setPhoneLocal(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSendCode()}
                     autoFocus
                   />
                 </div>
@@ -258,7 +301,9 @@ export default function AuthPage() {
             {phoneStep === 'enter-otp' && (
               <div className="auth-phone-section">
                 <p className="auth-phone-hint">
-                  {lang === 'zh' ? `验证码已发送至 ${phone}` : `Code sent to ${phone}`}
+                  {lang === 'zh'
+                    ? `验证码已发送至 ${selectedCountry?.dial} ${phoneLocal}`
+                    : `Code sent to ${selectedCountry?.dial} ${phoneLocal}`}
                 </p>
                 <div className="auth-email-row">
                   <input
