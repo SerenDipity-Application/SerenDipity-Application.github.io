@@ -53,11 +53,11 @@ export default function AuthPage() {
   const [sent, setSent]         = useState(false)
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
-  const [phoneStep, setPhoneStep] = useState('idle') // 'idle' | 'enter-phone' | 'enter-otp'
+  const [phoneStep, setPhoneStep] = useState('enter-phone') // 'idle' | 'enter-phone' | 'enter-otp'
+  const [emailStep, setEmailStep]   = useState('idle')      // 'idle' | 'enter-email'
   const [countryCode, setCountryCode] = useState('CN')
   const [phoneLocal, setPhoneLocal] = useState('')
   const [otp, setOtp]           = useState('')
-  const [recaptchaReady, setRecaptchaReady] = useState(false)
   const [countryOpen, setCountryOpen] = useState(false)
   const recaptchaRef  = useRef(null)
   const confirmationRef = useRef(null)
@@ -75,23 +75,18 @@ export default function AuthPage() {
     return () => document.removeEventListener('mousedown', onDown)
   }, [countryOpen])
 
-  // Render visible reCAPTCHA widget when phone step opens
+  // Init invisible reCAPTCHA verifier when phone step opens
   useEffect(() => {
     if (phoneStep !== 'enter-phone') return
-    setRecaptchaReady(false)
     if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
-    const timer = setTimeout(() => {
-      try {
-        recaptchaRef.current = new RecaptchaVerifier(auth, 'phone-recaptcha', {
-          size: 'normal',
-          callback: () => setRecaptchaReady(true),
-          'expired-callback': () => setRecaptchaReady(false),
-        })
-        recaptchaRef.current.render()
-      } catch (e) { console.error('reCAPTCHA init error:', e) }
-    }, 100)
+    try {
+      recaptchaRef.current = new RecaptchaVerifier(auth, 'phone-recaptcha', {
+        size: 'invisible',
+        callback: () => {},
+        'expired-callback': () => {},
+      })
+    } catch (e) { console.error('reCAPTCHA init error:', e) }
     return () => {
-      clearTimeout(timer)
       if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
     }
   }, [phoneStep])
@@ -108,6 +103,8 @@ export default function AuthPage() {
     orDivider:  lang === 'zh' ? '或' : 'or',
     google:     lang === 'zh' ? '使用 Google 继续' : 'Continue with Google',
     phone:      lang === 'zh' ? '使用手机号继续' : 'Continue with Phone',
+    emailBtn:   lang === 'zh' ? '使用邮箱继续' : 'Continue with Email',
+    emailBack:  lang === 'zh' ? '← 返回' : '← Back',
     inviteOnly: lang === 'zh' ? '仅限受邀成员' : 'Invite-only members only',
   }
 
@@ -173,7 +170,6 @@ export default function AuthPage() {
       else if (e.code === 'auth/too-many-requests')    setError('phone-throttled')
       else setError('phone-failed')
       if (recaptchaRef.current) { recaptchaRef.current.clear(); recaptchaRef.current = null }
-      setRecaptchaReady(false)
     } finally { setLoading(false) }
   }
 
@@ -188,8 +184,8 @@ export default function AuthPage() {
     } finally { setLoading(false) }
   }
 
-  const resetPhone = () => {
-    setPhoneStep('idle'); setPhoneLocal(''); setOtp(''); setError(''); setRecaptchaReady(false)
+  const resetEmail = () => {
+    setEmailStep('idle'); setError('')
   }
 
   return (
@@ -220,55 +216,11 @@ export default function AuthPage() {
             <p className="auth-sent-sub">{t.sentSub}</p>
             <p className="auth-spam-note">{lang === 'zh' ? '如果没有收到，请检查垃圾邮件文件夹。' : "If you don't see it, please check your spam folder."}</p>
             <p className="auth-sent-email">{email}</p>
-            <button className="auth-resend" onClick={() => setSent(false)}>{t.resend}</button>
+            <button className="auth-resend" onClick={() => { setSent(false); setEmailStep('enter-email') }}>{t.resend}</button>
           </div>
         ) : (
           <>
-            {/* ── Email magic link ── */}
-            <div className="auth-email-row">
-              <input
-                className="auth-input"
-                type="email"
-                placeholder={t.emailPh}
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSendLink()}
-              />
-              <button className="auth-send-btn" onClick={handleSendLink} disabled={loading}>
-                {loading ? t.sending : t.sendLink}
-              </button>
-            </div>
-
-            {error && <p className="auth-error">{errors[error] ?? error}</p>}
-
-            {/* ── Divider ── */}
-            <div className="auth-divider">
-              <div className="auth-divider-line" />
-              <span className="auth-divider-text">{t.orDivider}</span>
-              <div className="auth-divider-line" />
-            </div>
-
-            {/* ── Google ── */}
-            <button className="auth-social-btn" onClick={handleGoogle}>
-              <svg viewBox="0 0 24 24" width="18" height="18">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              {t.google}
-            </button>
-
-            {/* ── Phone sign-in ── */}
-            {phoneStep === 'idle' && (
-              <button className="auth-social-btn" onClick={() => { setPhoneStep('enter-phone'); setError('') }}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                </svg>
-                {t.phone}
-              </button>
-            )}
-
+            {/* ── Phone sign-in — PRIMARY, expanded by default ── */}
             {phoneStep === 'enter-phone' && (
               <div className="auth-phone-section">
                 <div className="auth-phone-row">
@@ -314,11 +266,8 @@ export default function AuthPage() {
                   />
                 </div>
                 <div id="phone-recaptcha" className="auth-recaptcha" />
-                <button className="auth-send-btn" onClick={handleSendCode} disabled={loading || !recaptchaReady}>
+                <button className="auth-send-btn" onClick={handleSendCode} disabled={loading}>
                   {loading ? (lang === 'zh' ? '发送中…' : 'Sending…') : (lang === 'zh' ? '发送验证码' : 'Send Code')}
-                </button>
-                <button className="auth-phone-back" onClick={resetPhone}>
-                  {lang === 'zh' ? '← 返回' : '← Back'}
                 </button>
               </div>
             )}
@@ -348,6 +297,59 @@ export default function AuthPage() {
                 </div>
                 <button className="auth-phone-back" onClick={() => { setPhoneStep('enter-phone'); setOtp(''); setError('') }}>
                   {lang === 'zh' ? '← 重新发送' : '← Resend code'}
+                </button>
+              </div>
+            )}
+
+            {error && <p className="auth-error">{errors[error] ?? error}</p>}
+
+            {/* ── Divider ── */}
+            <div className="auth-divider">
+              <div className="auth-divider-line" />
+              <span className="auth-divider-text">{t.orDivider}</span>
+              <div className="auth-divider-line" />
+            </div>
+
+            {/* ── Google ── */}
+            <button className="auth-social-btn" onClick={handleGoogle}>
+              <svg viewBox="0 0 24 24" width="18" height="18">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              {t.google}
+            </button>
+
+            {/* ── Email sign-in — collapsed behind a button ── */}
+            {emailStep === 'idle' && (
+              <button className="auth-social-btn" onClick={() => { setEmailStep('enter-email'); setError('') }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="M2 6l10 7 10-7" />
+                </svg>
+                {t.emailBtn}
+              </button>
+            )}
+
+            {emailStep === 'enter-email' && (
+              <div className="auth-phone-section">
+                <div className="auth-email-row">
+                  <input
+                    className="auth-input"
+                    type="email"
+                    placeholder={t.emailPh}
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSendLink()}
+                    autoFocus
+                  />
+                  <button className="auth-send-btn" onClick={handleSendLink} disabled={loading}>
+                    {loading ? t.sending : t.sendLink}
+                  </button>
+                </div>
+                <button className="auth-phone-back" onClick={resetEmail}>
+                  {t.emailBack}
                 </button>
               </div>
             )}
