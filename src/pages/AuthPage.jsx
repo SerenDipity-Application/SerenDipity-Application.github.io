@@ -58,10 +58,22 @@ export default function AuthPage() {
   const [phoneLocal, setPhoneLocal] = useState('')
   const [otp, setOtp]           = useState('')
   const [recaptchaReady, setRecaptchaReady] = useState(false)
+  const [countryOpen, setCountryOpen] = useState(false)
   const recaptchaRef  = useRef(null)
   const confirmationRef = useRef(null)
+  const countryRef = useRef(null)
 
   const selectedCountry = useMemo(() => COUNTRIES.find(c => c.code === countryCode), [countryCode])
+
+  // Close the country dropdown when clicking outside it
+  useEffect(() => {
+    if (!countryOpen) return
+    const onDown = e => {
+      if (countryRef.current && !countryRef.current.contains(e.target)) setCountryOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [countryOpen])
 
   // Render visible reCAPTCHA widget when phone step opens
   useEffect(() => {
@@ -260,22 +272,35 @@ export default function AuthPage() {
             {phoneStep === 'enter-phone' && (
               <div className="auth-phone-section">
                 <div className="auth-phone-row">
-                  <div className="auth-phone-select-wrap">
-                    <select
+                  <div className="auth-phone-select-wrap" ref={countryRef}>
+                    <button
+                      type="button"
                       className="auth-phone-select"
-                      value={countryCode}
-                      onChange={e => setCountryCode(e.target.value)}
+                      onClick={() => setCountryOpen(o => !o)}
                       aria-label={lang === 'zh' ? '国家/地区' : 'Country / region'}
+                      aria-expanded={countryOpen}
                     >
-                      {COUNTRIES.map(c => (
-                        <option key={c.code} value={c.code}>
-                          {lang === 'zh' ? c.zh : c.en} {c.dial}
-                        </option>
-                      ))}
-                    </select>
-                    <svg className="auth-phone-select-caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
+                      <span className="auth-phone-select-code">{selectedCountry?.dial}</span>
+                      <svg className={`auth-phone-select-caret ${countryOpen ? 'open' : ''}`} viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </button>
+                    {countryOpen && (
+                      <ul className="auth-phone-dropdown">
+                        {COUNTRIES.map(c => (
+                          <li key={c.code}>
+                            <button
+                              type="button"
+                              className={`auth-phone-dropdown-item ${c.code === countryCode ? 'active' : ''}`}
+                              onClick={() => { setCountryCode(c.code); setCountryOpen(false); }}
+                            >
+                              <span className="auth-phone-dropdown-name">{lang === 'zh' ? c.zh : c.en}</span>
+                              <span className="auth-phone-dropdown-code">{c.dial}</span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                   <input
                     className="auth-input auth-phone-local"
