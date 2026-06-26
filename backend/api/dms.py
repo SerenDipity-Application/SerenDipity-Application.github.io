@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, desc
 from pydantic import BaseModel
+from sqlalchemy import cast, String
 from database import get_db
 from models.user import DMThread, DMMessage
 from api.users import require_auth, User
@@ -54,6 +55,7 @@ async def send_message(
     if not thread:
         thread = DMThread(id=tid, participants=[user.uid, body.other_uid])
         db.add(thread)
+        await db.flush()  # ensure thread is persisted before referencing it in dm_messages
 
     msg = DMMessage(thread_id=tid, sender_uid=user.uid, text=body.text)
     thread.last_message = body.text
@@ -61,8 +63,18 @@ async def send_message(
 
     db.add(msg)
     await db.commit()
+    await db.refresh(msg)
 
-    return {"thread_id": tid, "message": "sent"}
+    return {
+        "thread_id": tid,
+        "message": {
+            "id": msg.id,
+            "thread_id": msg.thread_id,
+            "sender_uid": msg.sender_uid,
+            "text": msg.text,
+            "created_at": str(msg.timestamp),
+        }
+    }
 
 
 @router.get("/threads")
@@ -72,7 +84,7 @@ async def list_threads(
 ):
     result = await db.execute(
         select(DMThread)
-        .where(DMThread.participants.contains(user.uid))
+        .where(cast(DMThread.participants, String).contains(user.uid))
         .order_by(desc(DMThread.last_timestamp))
     )
     threads = result.scalars().all()

@@ -1,6 +1,7 @@
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { members } from '../data'
+import { mbtiDisplay } from '../mbti'
 import './ProfilePage.css'
 
 const CACHE_KEY = id => `serendipity_member_${id}`
@@ -44,8 +45,14 @@ export default function ProfilePage() {
           </div>
         </div>
         <div className="profile-header-meta">
-          <span className="profile-meta-item">🎓 {lang === 'en' ? member.schoolEn : member.school} · {member.college}</span>
+          <span className="profile-meta-item">🎓
+            {lang === 'en' ? member.schoolEn : member.school}
+            {member.college ? ` · ${member.college}` : ''}
+            {member.major ? ` · ${member.major}` : ''}
+            {(member.enrollmentYear && member.graduationYear) ? ` · ${member.enrollmentYear}-${member.graduationYear}` : ''}
+          </span>
           <span className="profile-meta-item">📍 {member.city}</span>
+          {member.mbti && <span className="profile-meta-item">🧠 {mbtiDisplay(member.mbti, lang)}</span>}
         </div>
       </div>
 

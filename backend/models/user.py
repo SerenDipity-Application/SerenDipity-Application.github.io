@@ -21,6 +21,12 @@ class User(Base):
     quote        = Column(String, default="")
     intents      = Column(JSON, default=list)
     hidden_signals = Column(String, default="")
+    mbti         = Column(String, default="")
+    enrollment_year = Column(Integer, nullable=True)
+    graduation_year = Column(Integer, nullable=True)
+    major        = Column(String, default="")
+    company      = Column(String, default="")
+    position     = Column(String, default="")
     photo_url    = Column(Text, default="")
     onboarding_status = Column(String, default="started")  # started | in_progress | completed
     onboarding_progress = Column(JSON, default=dict)

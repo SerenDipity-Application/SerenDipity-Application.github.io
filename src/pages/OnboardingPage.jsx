@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
 import { saveUser } from '../userStorage'
@@ -45,6 +45,111 @@ const INTENTS = {
   ],
 }
 
+import { MBTI_TYPES, MBTI_MAP, mbtiDisplay } from '../mbti'
+
+// ── Custom MBTI dropdown ──────────────────────────────────────────────────────
+function MbtiDropdown({ value, onChange, lang }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const selected = value ? MBTI_MAP[value] : null
+
+  return (
+    <div className="ob-mbti-dropdown" ref={ref}>
+      <button
+        className={`ob-mbti-trigger ${open ? 'ob-mbti-trigger-open' : ''}`}
+        onClick={() => setOpen(!open)}
+      >
+        {selected
+          ? <span className="ob-mbti-selected">{mbtiDisplay(value, lang)}</span>
+          : <span className="ob-mbti-placeholder">
+              {lang === 'zh' ? '选择你的人格类型 …' : 'Select your personality type …'}
+            </span>
+        }
+        <span className={`ob-mbti-arrow ${open ? 'ob-mbti-arrow-up' : ''}`}>▾</span>
+      </button>
+
+      {open && (
+        <div className="ob-mbti-menu">
+          {MBTI_TYPES.map(t => {
+            const display = lang === 'zh' ? `${t.code} ${t.zhName} — ${t.descZh}` : `${t.code} ${t.enName} — ${t.descEn}`
+            const isActive = value === t.code
+            return (
+              <button
+                key={t.code}
+                className={`ob-mbti-option ${isActive ? 'ob-mbti-option-active' : ''}`}
+                onClick={() => { onChange(t.code); setOpen(false) }}
+              >
+                <span className="ob-mbti-option-code">{t.code}</span>
+                <span className="ob-mbti-option-name">
+                  {lang === 'zh' ? t.zhName : t.enName}
+                </span>
+                <span className="ob-mbti-option-desc">
+                  {lang === 'zh' ? t.descZh : t.descEn}
+                </span>
+                {isActive && <span className="ob-mbti-option-check">✓</span>}
+              </button>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Year picker dropdown ──────────────────────────────────────────────────────
+function YearPicker({ value, onChange, placeholder, lang, error }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const currentYear = new Date().getFullYear()
+  const years = []
+  for (let y = currentYear - 30; y <= currentYear + 4; y++) years.push(y)
+
+  return (
+    <div className="ob-mbti-dropdown" ref={ref}>
+      <button
+        className={`ob-mbti-trigger ${open ? 'ob-mbti-trigger-open' : ''} ${error ? 'ob-field-error' : ''}`}
+        onClick={() => setOpen(!open)}
+      >
+        {value
+          ? <span className="ob-mbti-selected">{value}</span>
+          : <span className="ob-mbti-placeholder">{placeholder}</span>
+        }
+        <span className={`ob-mbti-arrow ${open ? 'ob-mbti-arrow-up' : ''}`}>▾</span>
+      </button>
+      {open && (
+        <div className="ob-mbti-menu ob-year-menu">
+          {years.map(y => (
+            <button
+              key={y}
+              className={`ob-mbti-option ${value === y ? 'ob-mbti-option-active' : ''}`}
+              onClick={() => { onChange(y); setOpen(false) }}
+            >
+              <span className="ob-year-option">{y}</span>
+              {value === y && <span className="ob-mbti-option-check">✓</span>}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Field component ───────────────────────────────────────────────────────────
 function Field({ placeholder, value, onChange, error, type = 'text', multiline }) {
   if (multiline) {
@@ -76,9 +181,10 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState({
     name: '', enName: '', city: '',
-    school: '', customSchool: '',
-    industry: '', credentials: '', quote: '',
-    intents: [], signals: '',
+    school: '', customSchool: '', major: '',
+    enrollmentYear: '', graduationYear: '',
+    industry: '', credentials: '', company: '', position: '', quote: '',
+    intents: [], signals: '', mbti: '',
   })
   const [errors, setErrors] = useState({})
 
@@ -117,9 +223,14 @@ export default function OnboardingPage() {
     if (step === 1) {
       if (!answers.school) e.school = true
       if (answers.school === 'other' && !answers.customSchool.trim()) e.customSchool = true
+      if (!answers.major.trim()) e.major = true
+      if (!answers.enrollmentYear) e.enrollmentYear = true
+      if (!answers.graduationYear) e.graduationYear = true
     }
     if (step === 2) {
       if (!answers.industry.trim()) e.industry = true
+      if (!answers.company.trim()) e.company = true
+      if (!answers.position.trim()) e.position = true
     }
     if (step === 3) {
       if (answers.intents.length === 0) e.intents = true
@@ -141,11 +252,17 @@ export default function OnboardingPage() {
       enName:       answers.enName || answers.name,
       city:         answers.city,
       school:       institution,
+      major:        answers.major,
+      enrollmentYear: answers.enrollmentYear || null,
+      graduationYear: answers.graduationYear || null,
       industry:     answers.industry,
+      company:      answers.company,
+      position:     answers.position,
       credentials:  answers.credentials,
       quote:        answers.quote,
       intents:      answers.intents.map(id => intents.find(i => i.id === id)?.title || id),
       hiddenSignals: answers.signals,
+      mbti:         answers.mbti,
     }
 
     if (isLast) {
@@ -254,6 +371,18 @@ export default function OnboardingPage() {
               onChange={v => set('city', v)}
               error={errors.city}
             />
+
+            {/* ── MBTI ── */}
+            <div className="ob-mbti-section">
+              <p className="ob-mbti-heading">
+                {lang === 'zh' ? '人格类型（可选）' : 'Personality type (optional)'}
+              </p>
+              <MbtiDropdown
+                value={answers.mbti}
+                onChange={v => set('mbti', v)}
+                lang={lang}
+              />
+            </div>
           </div>
         )}
 
@@ -279,6 +408,34 @@ export default function OnboardingPage() {
                 error={errors.customSchool}
               />
             )}
+
+            {/* Education details — shown after a school is selected */}
+            {(answers.school) && (
+              <>
+                <Field
+                  placeholder={lang === 'zh' ? '你的专业是什么？' : 'What is your major?'}
+                  value={answers.major}
+                  onChange={v => set('major', v)}
+                  error={errors.major}
+                />
+                <div className="ob-year-row">
+                  <YearPicker
+                    value={answers.enrollmentYear}
+                    onChange={v => set('enrollmentYear', v)}
+                    placeholder={lang === 'zh' ? '入学年份' : 'Start year'}
+                    lang={lang}
+                    error={errors.enrollmentYear}
+                  />
+                  <YearPicker
+                    value={answers.graduationYear}
+                    onChange={v => set('graduationYear', v)}
+                    placeholder={lang === 'zh' ? '毕业年份' : 'Grad year'}
+                    lang={lang}
+                    error={errors.graduationYear}
+                  />
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -286,15 +443,22 @@ export default function OnboardingPage() {
         {step === 2 && (
           <div className="ob-fields">
             <Field
-              placeholder={lang === 'zh' ? '你目前在做什么？职业 / 行业' : 'What do you do? Role / industry'}
+              placeholder={lang === 'zh' ? '你目前在做什么？行业' : 'What industry are you in?'}
               value={answers.industry}
               onChange={v => set('industry', v)}
               error={errors.industry}
             />
             <Field
-              placeholder={lang === 'zh' ? '背景资料（LinkedIn、公司、学术机构等）' : 'Credentials — LinkedIn, company, affiliation…'}
-              value={answers.credentials}
-              onChange={v => set('credentials', v)}
+              placeholder={lang === 'zh' ? '公司（仅用于匹配，不会公开显示）' : 'Company (for matching only, not shown publicly)'}
+              value={answers.company}
+              onChange={v => set('company', v)}
+              error={errors.company}
+            />
+            <Field
+              placeholder={lang === 'zh' ? '职位（仅用于匹配，不会公开显示）' : 'Position (for matching only, not shown publicly)'}
+              value={answers.position}
+              onChange={v => set('position', v)}
+              error={errors.position}
             />
             <Field
               placeholder={lang === 'zh' ? '用一句话描述你自己，或分享你正在思考的事…' : 'Something that makes you you — a thought, project, or obsession…'}

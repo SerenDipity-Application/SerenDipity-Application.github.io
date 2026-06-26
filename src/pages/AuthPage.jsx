@@ -11,7 +11,7 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 async function redirectAfterAuth() {
   try {
     const me = await api.users.getMe()
-    if (me.onboarding_status === 'completed') return '/directory'
+    if (me.onboardingStatus === 'completed') return '/directory'
     return '/onboarding'
   } catch {
     return '/onboarding'

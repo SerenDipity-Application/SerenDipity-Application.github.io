@@ -114,7 +114,16 @@ export default function DirectMessagePage() {
     if (!text) return
     setInput('')
     if (useFirestore) {
-      await sendMessage(tid, text, myUid, theirUid)
+      const result = await sendMessage(tid, text, myUid, theirUid)
+      // Optimistic — append message immediately, no waiting for poll
+      const msg = result.message
+      setMessages(prev => [...prev, {
+        id: msg.id,
+        text: msg.text,
+        senderUid: msg.sender_uid,
+        time: nowTime(),
+        day: today(),
+      }])
     } else {
       setMessages(prev => [...prev, { id: Date.now(), side: 'me', text, time: nowTime(), day: today() }])
     }

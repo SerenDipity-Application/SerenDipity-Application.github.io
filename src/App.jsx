@@ -292,7 +292,7 @@ function SessionRestorer() {
     if (loading || location.pathname !== '/') return
     if (!user) return
     api.users.getMe().then(me => {
-      if (me.onboarding_status === 'completed') {
+      if (me.onboardingStatus === 'completed') {
         navigate('/directory', { replace: true })
       } else {
         navigate('/onboarding', { replace: true })

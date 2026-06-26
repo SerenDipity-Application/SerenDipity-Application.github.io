@@ -65,6 +65,14 @@
 .chat-item-name { font-size: 15px; font-weight: 600; color: var(--navy); }
 .chat-item-time { font-size: 12px; color: var(--text-light); }
 .chat-item-school { font-size: 12px; color: var(--text-light); margin-bottom: 3px; }
+.chat-item-mbti {
+  display: inline;
+  font-size: 10px;
+  font-weight: 600;
+  color: #C9A84C;
+  margin-left: 6px;
+  letter-spacing: 0.5px;
+}
 .chat-item-preview { font-size: 13px; color: var(--text-mid); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
 .chat-match-stars { font-size: 11px; color: var(--gold); letter-spacing: 1px; }
 .chat-empty { padding: 24px 20px; color: var(--text-light); font-family: 'Inter', sans-serif; font-size: 14px; }

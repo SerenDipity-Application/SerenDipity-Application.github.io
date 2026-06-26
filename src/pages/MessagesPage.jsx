@@ -89,8 +89,8 @@ export default function MessagesPage() {
             const otherUid = thread.participants?.find(p => p !== myUid)
             const other = profiles[otherUid] || {}
             const name  = lang === 'zh'
-              ? (other.zhName || other.enName || otherUid?.slice(0, 8) || '—')
-              : (other.enName || other.zhName || otherUid?.slice(0, 8) || '—')
+              ? (other.zhName || other.enName || other.username || otherUid?.slice(0, 8) || '—')
+              : (other.enName || other.zhName || other.username || otherUid?.slice(0, 8) || '—')
             const initials = other.initials || (name || '?').slice(0, 2).toUpperCase()
             const color    = other.color || '#4A3A5A'
             const preview  = thread.lastMessage || ''

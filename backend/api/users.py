@@ -25,6 +25,11 @@ async def require_auth(authorization: str = Header(...), db: AsyncSession = Depe
 
 
 # ── Schemas ──────────────────────────────────────
+def _to_snake(name: str) -> str:
+    """Convert camelCase to snake_case for field-name matching."""
+    import re
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
+
 class UserProfile(BaseModel):
     zh_name: str = ""
     en_name: str = ""
@@ -35,10 +40,20 @@ class UserProfile(BaseModel):
     quote: str = ""
     intents: list[str] = []
     hidden_signals: str = ""
+    mbti: str = ""
+    enrollment_year: int | None = None
+    graduation_year: int | None = None
+    major: str = ""
+    company: str = ""
+    position: str = ""
     photo_url: str = ""
     onboarding_status: str = "started"
     onboarding_progress: dict = {}
     check_in_number: int | None = None
+
+    class Config:
+        alias_generator = _to_snake
+        populate_by_name = True
 
 
 class UserResponse(BaseModel):
@@ -54,6 +69,12 @@ class UserResponse(BaseModel):
     quote: str = ""
     intents: list = []
     hiddenSignals: str = ""
+    mbti: str = ""
+    enrollmentYear: int | None = None
+    graduationYear: int | None = None
+    major: str = ""
+    company: str = ""
+    position: str = ""
     photoURL: str = ""
     onboardingStatus: str = "started"
     onboardingProgress: dict = {}
@@ -72,16 +93,38 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
+AVATAR_COLORS = [
+    "#6C5B7B", "#C06C84", "#355C7D", "#F67280", "#2A363B",
+    "#99B898", "#E84A5F", "#A8E6CF", "#FF8C94", "#4A3A5A",
+    "#D4A574", "#8B5E83", "#3B5998", "#6A9FB5", "#C27BA0",
+]
+
+def _compute_initials(user: User) -> str:
+    name = user.en_name or user.zh_name or user.username or ""
+    parts = name.strip().split()
+    if len(parts) >= 2:
+        return (parts[0][0] + parts[1][0]).upper()
+    return name[:2].upper()
+
+def _compute_color(user: User) -> str:
+    idx = hash(user.uid) % len(AVATAR_COLORS)
+    return AVATAR_COLORS[idx]
+
 def user_to_response(u: User) -> UserResponse:
     return UserResponse(
         uid=u.uid, username=u.username, email=u.email,
         zhName=u.zh_name or "", enName=u.en_name or "", city=u.city or "",
         school=u.school or "", industry=u.industry or "", credentials=u.credentials or "",
         quote=u.quote or "", intents=u.intents or [], hiddenSignals=u.hidden_signals or "",
-        photoURL=u.photo_url or "", onboardingStatus=u.onboarding_status or "started",
+        photoURL=u.photo_url or "", mbti=u.mbti or "",
+        enrollmentYear=u.enrollment_year, graduationYear=u.graduation_year,
+        major=u.major or "", company=u.company or "", position=u.position or "",
+        onboardingStatus=u.onboarding_status or "started",
         onboardingProgress=u.onboarding_progress or {}, isAdmin=u.is_admin or False,
         verified=u.verified or False, flagged=u.flagged or False,
         checkInNumber=u.check_in_number,
+        initials=_compute_initials(u),
+        color=_compute_color(u),
     )
 
 

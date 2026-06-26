@@ -363,7 +363,7 @@ export default function AdminPage() {
             )}
             {filtered.map((u) => {
               const uid  = u.uid || u._docId
-              const name = u.zhName || u.enName || '—'
+              const name = u.zhName || u.enName || u.username || '—'
               const isSaving = saving[uid]
               const obStatus = u.onboardingStatus || 'started'
               const progressLabel = getProgressLabel(u)

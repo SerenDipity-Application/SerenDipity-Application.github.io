@@ -5,6 +5,7 @@ import { useLang } from '../LangContext'
 import { myProfile } from '../data'
 import { loadUser, saveUser } from '../userStorage'
 import { uploadProfilePhoto, fetchOwnPhotoURL } from '../firestoreUsers'
+import { mbtiDisplay } from '../mbti'
 import './MyProfilePage.css'
 
 const INV_CODES = ['SD-MB-7A21', 'SD-MB-7A22', 'SD-MB-7A23', 'SD-MB-7A24', 'SD-MB-7A25']
@@ -102,9 +103,10 @@ export default function MyProfilePage() {
   const primaryName   = p.zhName || p.enName || '—'
   const secondaryName = p.enName && p.enName !== primaryName ? p.enName : ''
   const schoolLabel   = p.school || p.schoolEn || '—'
+  const majorLabel    = p.major || ''
+  const yearLabel     = (p.enrollmentYear && p.graduationYear) ? `${p.enrollmentYear}-${p.graduationYear}` : (p.enrollmentYear || p.graduationYear || '')
   const intents       = p.intents || []
   const quote         = lang === 'en' ? (p.quoteEn || p.quote || '') : (p.quote || p.quoteEn || '')
-
   const rows = [
     { icon: '💼', label: s.myRowLabels[1], value: p.industry || '' },
     { icon: '📍', label: s.myRowLabels[3], value: lang === 'en' ? (p.cityEn || p.city || '') : (p.city || p.cityEn || '') },
@@ -165,9 +167,12 @@ export default function MyProfilePage() {
         </div>
         <div className="my-school-row">
           <span className="my-school-text">
-            {schoolLabel}{p.college ? ` · ${p.college}` : ''}
+            {schoolLabel}{p.college ? ` · ${p.college}` : ''}{majorLabel ? ` · ${majorLabel}` : ''}{yearLabel ? ` · ${yearLabel}` : ''}
           </span>
         </div>
+        {p.mbti && (
+          <div className="my-mbti-badge">{mbtiDisplay(p.mbti, lang)}</div>
+        )}
         {p.checkInNumber && (
           <div className="my-checkin-badge">
             ✦ #{String(p.checkInNumber).padStart(3, '0')}

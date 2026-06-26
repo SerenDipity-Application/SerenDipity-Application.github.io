@@ -4,6 +4,7 @@ import { useLang } from '../LangContext'
 import { useAuth } from '../AuthContext'
 import { members as demoMembers } from '../data'
 import { subscribeToUsers } from '../firestoreUsers'
+import { mbtiDisplay } from '../mbti'
 import './DirectoryPage.css'
 
 const AVATAR_COLORS = ['#4A3A5A','#3D5A7A','#5A3D7A','#7A4A3D','#3D7A6B','#6B4A7A']
@@ -73,7 +74,7 @@ export default function DirectoryPage() {
     // hide own profile
     if (user?.uid && (m.uid === user.uid)) return false
     // hide truly incomplete profiles (no display name or "SD" placeholder)
-    const name = m.zhName || m.enName || ''
+    const name = m.zhName || m.enName || m.username || ''
     if (!name || name === 'SD') return false
     const filterLabel = s.dirFilters[activeFilter]
     const isAll = activeFilter === 0
@@ -141,7 +142,7 @@ export default function DirectoryPage() {
           const id       = m.uid || m.id || idx
           const initials = getInitials(m)
           const color    = getColor(m)
-          const name1    = m.zhName || m.enName || '—'
+          const name1    = m.zhName || m.enName || m.username || '—'
           const name2    = m.enName && m.enName !== name1 ? m.enName : ''
           const school   = lang === 'en' ? (m.schoolEn || m.school || '') : (m.school || m.schoolEn || '')
           const role     = lang === 'en' ? (m.roleEn   || m.role   || m.industry || '') : (m.role || m.roleEn || m.industry || '')
@@ -165,7 +166,12 @@ export default function DirectoryPage() {
                   {name2 && <span className="dir-en-name serif">{name2}</span>}
                 </div>
                 {role && <p className="dir-role-line">{role}</p>}
-                {school && <p className="dir-school-line">{school}{m.college ? ` · ${m.college}` : ''}</p>}
+                {(school || m.mbti || m.major) && (
+                  <p className="dir-school-line">
+                    {school}{m.college ? ` · ${m.college}` : ''}{m.major ? ` · ${m.major}` : ''}
+                    {m.mbti && <span className="dir-mbti-tag">{mbtiDisplay(m.mbti, lang)}</span>}
+                  </p>
+                )}
 
                 {intents.length > 0 && (
                   <div className="dir-tags-row">

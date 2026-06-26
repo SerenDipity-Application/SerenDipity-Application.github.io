@@ -1,14 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLang } from '../LangContext'
-import { members } from '../data'
+import api from '../api'
+import { useAuth } from '../AuthContext'
 import './AIChatPage.css'
 
 export default function AIChatPage() {
   const navigate = useNavigate()
   const { lang, s } = useLang()
+  const { user } = useAuth()
   const [input, setInput] = useState('')
-  const rec = members[3]
+  const [rec, setRec] = useState(null)
+
+  // Load a recommended user from the API (exclude self, pick first)
+  useEffect(() => {
+    api.users.list().then(users => {
+      const others = (users || []).filter(u => u.uid !== user?.uid)
+      setRec(others[0] || null)
+    }).catch(() => setRec(null))
+  }, [user?.uid])
 
   return (
     <div className="ai-page">
@@ -29,23 +39,42 @@ export default function AIChatPage() {
           <p>{s.aiGreeting}</p>
         </div>
 
-        <div className="ai-rec-card">
-          <p className="ai-rec-label">{s.aiRecommended}</p>
-          <div className="ai-rec-person">
-            <div className="ai-rec-avatar" style={{background: rec.color}}>{rec.initials}</div>
-            <div>
-              <p className="ai-rec-name">{rec.zhName} <span className="ai-rec-en serif">{rec.enName}</span></p>
-              <p className="ai-rec-info">🏛 {lang === 'en' ? rec.schoolEn : rec.school} · 💼 {lang === 'en' ? rec.industryEn : rec.industry}</p>
+        {rec ? (
+          <div className="ai-rec-card">
+            <p className="ai-rec-label">{s.aiRecommended}</p>
+            <div className="ai-rec-person">
+              <div className="ai-rec-avatar" style={{background: rec.photoURL ? 'transparent' : rec.color}}>
+                {rec.photoURL
+                  ? <img src={rec.photoURL} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  : (rec.initials || rec.username?.slice(0, 2).toUpperCase())
+                }
+              </div>
+              <div>
+                <p className="ai-rec-name">
+                  {lang === 'zh' ? (rec.zhName || rec.username) : (rec.enName || rec.zhName || rec.username)}
+                  {rec.enName && rec.zhName && <span className="ai-rec-en serif"> {rec.enName}</span>}
+                </p>
+                <p className="ai-rec-info">🏛 {rec.school || rec.schoolEn || '—'} · 💼 {rec.industry || rec.industryEn || '—'}</p>
+              </div>
+            </div>
+            <div className="ai-rec-reason">
+              <p>{s.aiReason}</p>
+            </div>
+            <div className="ai-rec-actions">
+              <button className="ai-ice-btn" onClick={() => navigate(`/icebreaker/${rec.uid || rec.id}`)}>{s.aiIceBtn}</button>
+              <button className="ai-card-btn" onClick={() => navigate(`/profile/${rec.uid || rec.id}`)}>{s.aiCardBtn}</button>
             </div>
           </div>
-          <div className="ai-rec-reason">
-            <p>{s.aiReason}</p>
+        ) : (
+          <div className="ai-rec-card">
+            <p className="ai-rec-label">{s.aiRecommended}</p>
+            <div className="ai-rec-person" style={{justifyContent: 'center', padding: '20px 0'}}>
+              <p style={{color: 'var(--text-light)', fontSize: 13}}>
+                {lang === 'zh' ? '正在为你匹配合适的人选…' : 'Finding the best match for you…'}
+              </p>
+            </div>
           </div>
-          <div className="ai-rec-actions">
-            <button className="ai-ice-btn" onClick={() => navigate(`/icebreaker/${rec.id}`)}>{s.aiIceBtn}</button>
-            <button className="ai-card-btn" onClick={() => navigate(`/profile/${rec.id}`)}>{s.aiCardBtn}</button>
-          </div>
-        </div>
+        )}
 
         <div className="ai-bubble ai-bubble-system">
           <p>{s.aiFollowUp}</p>

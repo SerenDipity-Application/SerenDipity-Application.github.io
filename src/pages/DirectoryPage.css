@@ -179,7 +179,27 @@
   font-size: 11px;
   color: var(--text-light);
   font-family: 'Inter', sans-serif;
+  margin-bottom: 6px;
+}
+
+/* Work line on directory cards */
+.dir-work-line {
+  font-size: 11px;
+  color: var(--text-mid);
+  font-family: 'Inter', sans-serif;
   margin-bottom: 8px;
+  font-weight: 500;
+}
+
+/* MBTI tag on directory cards — inline within school line */
+.dir-mbti-tag {
+  display: inline;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: #C9A84C;
+  margin-left: 6px;
+  letter-spacing: 0.5px;
 }
 
 /* "Looking for" tags */

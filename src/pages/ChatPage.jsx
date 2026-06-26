@@ -4,6 +4,7 @@ import { useLang } from '../LangContext'
 import { useAuth } from '../AuthContext'
 import { members as demoMembers } from '../data'
 import { loadUserFromFirestore, subscribeToUsers } from '../firestoreUsers'
+import { mbtiDisplay } from '../mbti'
 import './ChatPage.css'
 
 // Score how well `other` matches `me` based on public intents + hidden signals
@@ -104,7 +105,7 @@ export default function ChatPage() {
           </p>
         )}
         {ranked.map(m => {
-          const name     = lang === 'zh' ? (m.zhName || m.enName) : (m.enName || m.zhName)
+          const name     = lang === 'zh' ? (m.zhName || m.enName || m.username) : (m.enName || m.zhName || m.username)
           const school   = lang === 'zh' ? (m.school || m.schoolEn) : (m.schoolEn || m.school)
           const industry = lang === 'zh' ? (m.industry || m.industryEn) : (m.industryEn || m.industry)
           const preview  = lang === 'zh' ? (m.quote || m.quoteEn) : (m.quoteEn || m.quote)
@@ -116,8 +117,11 @@ export default function ChatPage() {
               className="chat-item"
               onClick={() => navigate(`/dm/${m.uid || m.id}`, { state: { member: m } })}
             >
-              <div className="chat-item-avatar" style={{ background: m.color || '#4A3A5A' }}>
-                {m.initials || (name || '?').slice(0, 2).toUpperCase()}
+              <div className="chat-item-avatar" style={{ background: m.photoURL ? 'transparent' : (m.color || '#4A3A5A') }}>
+                {m.photoURL
+                  ? <img src={m.photoURL} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                  : (m.initials || (name || '?').slice(0, 2).toUpperCase())
+                }
               </div>
               <div className="chat-item-info">
                 <div className="chat-item-name-row">
@@ -126,7 +130,10 @@ export default function ChatPage() {
                     <span className="chat-match-stars">{'✦'.repeat(stars)}</span>
                   )}
                 </div>
-                <p className="chat-item-school">{[school, industry].filter(Boolean).join(' · ')}</p>
+                <p className="chat-item-school">
+                  {[school, m.major].filter(Boolean).join(' · ')}
+                  {m.mbti && <span className="chat-item-mbti">{mbtiDisplay(m.mbti, lang)}</span>}
+                </p>
                 {preview && <p className="chat-item-preview">{preview}</p>}
               </div>
             </div>

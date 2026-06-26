@@ -1,24 +1,25 @@
 # ── Base image with Python dependencies only ────────────────────────────
 # Source code is mounted at /app at runtime — no rebuild needed.
 # venv lives at /opt/venv so the volume mount doesn't shadow it.
+#
+# NOTE: uv uses UV_PROJECT_ENVIRONMENT to create the venv directly at the
+# final location. DO NOT mv the venv after uv sync — that would break the
+# shebangs in all console scripts (uvicorn, etc.) by leaving them pointing
+# to the pre-move interpreter path.
 
 FROM python:3.12-slim
-
-# Runtime deps
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq5 \
-    && rm -rf /var/lib/apt/lists/*
 
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
 # ── Install Python deps to /opt/venv (outside /app mount) ─────────────
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+ENV VIRTUAL_ENV=/opt/venv
+
 WORKDIR /build
 COPY backend/pyproject.toml backend/uv.lock ./
-RUN uv sync --no-dev --frozen
-# Move venv out of mount path
-RUN mv .venv /opt/venv
-ENV VIRTUAL_ENV=/opt/venv
+RUN uv sync --no-dev --frozen --no-install-project
+
 ENV PATH="/opt/venv/bin:$PATH"
 
 WORKDIR /app

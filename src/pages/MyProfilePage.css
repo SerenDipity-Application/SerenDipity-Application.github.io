@@ -122,6 +122,21 @@
 }
 .my-school-text { font-size: 13px; color: rgba(255,255,255,0.6); font-family: 'Inter', sans-serif; }
 
+/* MBTI badge */
+.my-mbti-badge {
+  margin-top: 10px;
+  background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.35);
+  border-radius: 4px;
+  padding: 4px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  color: #C9A84C;
+  letter-spacing: 2px;
+  position: relative; z-index: 1;
+}
+
 /* Check-in number badge */
 .my-checkin-badge {
   margin-top: 12px;

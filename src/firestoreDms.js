@@ -10,7 +10,8 @@ export function threadId(uidA, uidB) {
 }
 
 export async function sendMessage(tid, text, senderUid, otherUid) {
-  await api.dms.send(tid, otherUid, text)
+  const result = await api.dms.send(tid, otherUid, text)
+  return result
 }
 
 // Polling-based message subscription (replaces Firestore onSnapshot)
