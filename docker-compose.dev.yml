@@ -1,0 +1,16 @@
+# ── Development override — mount source for hot reload ──────────────────
+# Usage:  docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+# Then:   edit code → docker compose restart web  (or uvicorn --reload auto-restarts)
+
+services:
+  web:
+    volumes:
+      - ./backend/api:/app/api
+      - ./backend/models:/app/models
+      - ./backend/services:/app/services
+      - ./backend/main.py:/app/main.py
+      - ./backend/config.py:/app/config.py
+      - ./backend/database.py:/app/database.py
+      - ./backend/static:/app/static
+      # ── Keep venv from image — not mounted ────────────────────────────
+    command: uv run uvicorn main:app --host 0.0.0.0 --port 8080 --reload
