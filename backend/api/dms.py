@@ -101,10 +101,10 @@ async def list_messages(
     result = await db.execute(
         select(DMMessage)
         .where(DMMessage.thread_id == thread_id)
-        .order_by(DMMessage.created_at)
+        .order_by(DMMessage.timestamp)
     )
     msgs = result.scalars().all()
     return [MessageResponse(
         id=m.id, thread_id=m.thread_id, sender_uid=m.sender_uid,
-        text=m.text, created_at=str(m.created_at),
+        text=m.text, created_at=str(m.timestamp),
     ) for m in msgs]
