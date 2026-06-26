@@ -273,6 +273,7 @@ function RequireAuth({ children }) {
   const navigate = useNavigate()
 
   useEffect(() => {
+    console.log('[RequireAuth] loading:', loading, 'user:', user?.uid || null)
     if (!loading && !user) navigate('/auth', { replace: true })
   }, [user, loading])
 

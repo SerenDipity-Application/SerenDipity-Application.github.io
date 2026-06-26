@@ -38,8 +38,11 @@ export function AuthProvider({ children }) {
   const refreshUser = async () => {
     try {
       const u = await api.users.getMe()
+      console.log('[Auth] refreshUser got:', u)
       setRealUser({ uid: u.uid, email: u.email || null })
-    } catch {
+      console.log('[Auth] realUser set to:', { uid: u.uid, email: u.email })
+    } catch (e) {
+      console.error('[Auth] refreshUser failed:', e)
       clearToken()
       setRealUser(null)
     }
