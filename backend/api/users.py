@@ -45,22 +45,28 @@ class UserResponse(BaseModel):
     uid: str
     username: str
     email: str | None = None
-    zh_name: str
-    en_name: str
-    city: str
-    school: str
-    industry: str
-    credentials: str
-    quote: str
-    intents: list
-    hidden_signals: str
-    photo_url: str
-    onboarding_status: str
-    onboarding_progress: dict
-    is_admin: bool = False
+    zhName: str = ""
+    enName: str = ""
+    city: str = ""
+    school: str = ""
+    industry: str = ""
+    credentials: str = ""
+    quote: str = ""
+    intents: list = []
+    hiddenSignals: str = ""
+    photoURL: str = ""
+    onboardingStatus: str = "started"
+    onboardingProgress: dict = {}
+    isAdmin: bool = False
     verified: bool = False
     flagged: bool = False
-    check_in_number: int | None = None
+    checkInNumber: int | None = None
+    schoolEn: str = ""
+    industryEn: str = ""
+    quoteEn: str = ""
+    cityEn: str = ""
+    color: str = "#4A3A5A"
+    initials: str = ""
 
     class Config:
         from_attributes = True
@@ -69,13 +75,13 @@ class UserResponse(BaseModel):
 def user_to_response(u: User) -> UserResponse:
     return UserResponse(
         uid=u.uid, username=u.username, email=u.email,
-        zh_name=u.zh_name, en_name=u.en_name, city=u.city,
-        school=u.school, industry=u.industry, credentials=u.credentials,
-        quote=u.quote, intents=u.intents or [], hidden_signals=u.hidden_signals or "",
-        photo_url=u.photo_url or "", onboarding_status=u.onboarding_status or "started",
-        onboarding_progress=u.onboarding_progress or {}, is_admin=u.is_admin or False,
+        zhName=u.zh_name or "", enName=u.en_name or "", city=u.city or "",
+        school=u.school or "", industry=u.industry or "", credentials=u.credentials or "",
+        quote=u.quote or "", intents=u.intents or [], hiddenSignals=u.hidden_signals or "",
+        photoURL=u.photo_url or "", onboardingStatus=u.onboarding_status or "started",
+        onboardingProgress=u.onboarding_progress or {}, isAdmin=u.is_admin or False,
         verified=u.verified or False, flagged=u.flagged or False,
-        check_in_number=u.check_in_number,
+        checkInNumber=u.check_in_number,
     )
 
 
