@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" fill="none">
+
+  <!-- Shield outline -->
+  <path d="M100 8 L185 40 L185 120 Q185 175 100 210 Q15 175 15 120 L15 40 Z"
+        fill="#0D1B2A" stroke="#C9A84C" stroke-width="2.5"/>
+  <!-- Inner shield border -->
+  <path d="M100 18 L175 46 L175 118 Q175 168 100 200 Q25 168 25 118 L25 46 Z"
+        fill="none" stroke="#C9A84C" stroke-width="1" opacity="0.5"/>
+
+  <!-- Crown — centered at x=100 -->
+  <polygon points="100,4  106,15 100,13 94,15"  fill="#C9A84C"/>
+  <polygon points="74,11  79,22  73,23  68,16"  fill="#C9A84C"/>
+  <polygon points="126,11 132,16 127,23 121,22" fill="#C9A84C"/>
+
+  <!-- ── Laurel LEFT (shifted up 10px) ── -->
+  <g fill="#C9A84C">
+    <path d="M56 86  Q46 78  49 66  Q59 72  56 86Z"  opacity="0.75"/>
+    <path d="M53 102 Q41 96  43 83  Q55 87  53 102Z" opacity="0.75"/>
+    <path d="M53 119 Q40 115 43 102 Q55 104 53 119Z" opacity="0.75"/>
+    <path d="M56 136 Q43 135 45 121 Q57 122 56 136Z" opacity="0.70"/>
+    <path d="M62 152 Q50 154 50 139 Q62 138 62 152Z" opacity="0.65"/>
+    <line x1="58" y1="66" x2="62" y2="155" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- ── Laurel RIGHT (mirror, shifted up 10px) ── -->
+  <g fill="#C9A84C">
+    <path d="M144 86  Q154 78  151 66  Q141 72  144 86Z"  opacity="0.75"/>
+    <path d="M147 102 Q159 96  157 83  Q145 87  147 102Z" opacity="0.75"/>
+    <path d="M147 119 Q160 115 157 102 Q145 104 147 119Z" opacity="0.75"/>
+    <path d="M144 136 Q157 135 155 121 Q143 122 144 136Z" opacity="0.70"/>
+    <path d="M138 152 Q150 154 150 139 Q138 138 138 152Z" opacity="0.65"/>
+    <line x1="142" y1="66" x2="138" y2="155" stroke="#C9A84C" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- Berries — symmetric around x=100, shifted up 10px -->
+  <circle cx="76"  cy="162" r="3"   fill="#C9A84C" opacity="0.80"/>
+  <circle cx="85"  cy="168" r="2.5" fill="#C9A84C" opacity="0.70"/>
+  <circle cx="93"  cy="172" r="2"   fill="#C9A84C" opacity="0.60"/>
+  <circle cx="124" cy="162" r="3"   fill="#C9A84C" opacity="0.80"/>
+  <circle cx="115" cy="168" r="2.5" fill="#C9A84C" opacity="0.70"/>
+  <circle cx="107" cy="172" r="2"   fill="#C9A84C" opacity="0.60"/>
+
+  <!-- Letter S — raised to match wreath -->
+  <text x="100" y="116"
+        text-anchor="middle"
+        dominant-baseline="middle"
+        font-family="Georgia, serif"
+        font-size="72"
+        font-style="italic"
+        fill="#C9A84C"
+        opacity="0.95">S</text>
+
+  <!-- Bottom rule -->
+  <line x1="68" y1="178" x2="132" y2="178" stroke="#C9A84C" stroke-width="0.8" opacity="0.5"/>
+
+</svg>

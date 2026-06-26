@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth'
-import { auth } from './firebase'
+import api, { getToken, clearToken, getUserFromToken } from './api'
 
 const AuthContext = createContext(null)
 
@@ -23,15 +22,34 @@ export function AuthProvider({ children }) {
   const [realUser, setRealUser] = useState(undefined)
   const [impersonated, setImpersonated] = useState(() => getImpersonation())
 
+  // On mount: validate cached token by fetching /users/me
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, u => setRealUser(u ?? null))
-    return unsub
+    const token = getToken()
+    if (!token) {
+      setRealUser(null)
+      return
+    }
+    api.users.getMe()
+      .then(u => setRealUser({ uid: u.uid, email: u.email || null }))
+      .catch(() => { clearToken(); setRealUser(null) })
   }, [])
 
+  // Called after login/register — refresh user state without page reload
+  const refreshUser = async () => {
+    try {
+      const u = await api.users.getMe()
+      setRealUser({ uid: u.uid, email: u.email || null })
+    } catch {
+      clearToken()
+      setRealUser(null)
+    }
+  }
+
   const signOut = () => {
-    firebaseSignOut(auth)
+    api.auth.logout()
     stopImpersonation()
     setImpersonated(null)
+    setRealUser(null)
     localStorage.removeItem('serendipity_profile')
     localStorage.removeItem('serendipity_ob_draft')
   }
@@ -42,7 +60,6 @@ export function AuthProvider({ children }) {
   }
 
   // When impersonating, synthesize a user-like object with the target's UID.
-  // All hooks that call user.uid will use the impersonated UID automatically.
   const user = impersonated
     ? { uid: impersonated.uid, email: impersonated.email || null, _impersonated: true }
     : realUser
@@ -53,6 +70,7 @@ export function AuthProvider({ children }) {
       realUser,
       impersonated,
       loading: realUser === undefined,
+      refreshUser,
       signOut,
       startImpersonation: (profile) => { startImpersonation(profile); setImpersonated(profile) },
       exitImpersonation,

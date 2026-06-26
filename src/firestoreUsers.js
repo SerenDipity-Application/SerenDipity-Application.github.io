@@ -1,17 +1,13 @@
-import {
-  doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc,
-  collection, onSnapshot, serverTimestamp,
-} from 'firebase/firestore'
-import { db, auth } from './firebase'
+// ── User data operations — now backed by FastAPI instead of Firestore ─────
+// Function signatures preserved for backward compatibility with all page components.
 
-const COLLECTION = 'users'
+import api from './api'
+import { getUserFromToken, getToken } from './api'
 
 // ── User ID ───────────────────────────────────────────────────────────────────
-// Prefer the Firebase Auth UID (real identity, cross-device).
-// Falls back to a localStorage UUID for unauthenticated flows (e.g. mid-onboarding
-// before sign-in completes), ensuring the admin panel still sees partial progress.
 function getUserId() {
-  if (auth.currentUser) return auth.currentUser.uid
+  const cached = getUserFromToken()
+  if (cached?.uid) return cached.uid
   let id = localStorage.getItem('serendipity_uid')
   if (!id) {
     id = crypto.randomUUID()
@@ -21,98 +17,120 @@ function getUserId() {
 }
 
 export function getExistingUserId() {
-  return auth.currentUser?.uid ?? localStorage.getItem('serendipity_uid')
+  const cached = getUserFromToken()
+  return cached?.uid ?? localStorage.getItem('serendipity_uid')
 }
 
-// ── Start onboarding — called immediately when Q1 appears ────────────────────
-// Creates the Firestore record so the user shows up in the admin panel right away.
+// ── Onboarding ────────────────────────────────────────────────────────────────
 export async function startOnboarding() {
   const uid = getUserId()
-  await setDoc(doc(db, COLLECTION, uid), {
-    uid,
-    onboardingStatus: 'started',
-    onboardingProgress: {
-      currentQ: 1,
-      currentChapter: 'YOUR WORLD',
-      completed: false,
-    },
-    startedAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  }, { merge: true })   // merge so we don't overwrite if they return mid-flow
-}
-
-// ── Update progress after each answer ────────────────────────────────────────
-// Writes partial answers + current position so admin can see live progress.
-export async function updateOnboardingProgress(partialProfile, progressState) {
-  const uid = getUserId()
-  await updateDoc(doc(db, COLLECTION, uid), {
-    ...partialProfile,
-    uid,
-    onboardingProgress: progressState,
-    onboardingStatus: progressState.completed ? 'completed' : 'in_progress',
-    updatedAt: serverTimestamp(),
-  })
-  if (progressState.completed) {
-    localStorage.setItem('serendipity_profile', JSON.stringify(partialProfile))
+  try {
+    await api.users.updateMe({
+      uid,
+      onboarding_status: 'started',
+      onboarding_progress: { currentQ: 1, currentChapter: 'YOUR WORLD', completed: false },
+    })
+  } catch {
+    // User might not be created yet — that's ok, progress will be saved later
   }
 }
 
-// ── Write own profile (final save — kept for backward compat) ─────────────────
-export async function saveUserToFirestore(profile) {
-  const uid = getUserId()
-  await setDoc(doc(db, COLLECTION, uid), {
-    ...profile,
-    uid,
-    onboardingStatus: 'completed',
-    onboardingProgress: { currentQ: 9, currentChapter: 'YOUR SIGNALS', completed: true },
-    updatedAt: serverTimestamp(),
-  }, { merge: true })
-  localStorage.setItem('serendipity_profile', JSON.stringify(profile))
+export async function updateOnboardingProgress(partialProfile, progressState) {
+  try {
+    await api.users.updateMe({
+      ...partialProfile,
+      onboarding_progress: progressState,
+      onboarding_status: progressState.completed ? 'completed' : 'in_progress',
+    })
+    if (progressState.completed) {
+      localStorage.setItem('serendipity_profile', JSON.stringify(partialProfile))
+    }
+  } catch (e) {
+    console.error('Failed to update onboarding progress:', e)
+  }
 }
 
-// ── Read own profile (session cache → Firestore fallback) ─────────────────────
+export async function saveUserToFirestore(profile) {
+  try {
+    await api.users.updateMe({
+      ...profile,
+      onboarding_status: 'completed',
+      onboarding_progress: { currentQ: 9, currentChapter: 'YOUR SIGNALS', completed: true },
+    })
+    localStorage.setItem('serendipity_profile', JSON.stringify(profile))
+  } catch (e) {
+    console.error('Failed to save user:', e)
+  }
+}
+
+// ── Read ──────────────────────────────────────────────────────────────────────
 export async function loadUserFromFirestore() {
   const cached = localStorage.getItem('serendipity_profile')
   if (cached) return JSON.parse(cached)
-  const uid = getUserId()
-  const snap = await getDoc(doc(db, COLLECTION, uid))
-  return snap.exists() ? snap.data() : null
+  try {
+    return await api.users.getMe()
+  } catch {
+    return null
+  }
 }
 
-// ── Read all users (one-time) ─────────────────────────────────────────────────
 export async function loadAllUsers() {
-  const snap = await getDocs(collection(db, COLLECTION))
-  return snap.docs.map(d => d.data())
+  try {
+    return await api.users.list()
+  } catch {
+    return []
+  }
 }
 
-// ── Real-time listener for all users ─────────────────────────────────────────
+// ── Real-time replaced with polling ──────────────────────────────────────────
+// Firestore onSnapshot is replaced by setInterval-based polling.
+// Returns an unsubscribe function (clears the interval).
+
 export function subscribeToUsers(callback, onError) {
-  return onSnapshot(
-    collection(db, COLLECTION),
-    snap => callback(snap.docs.map(d => ({ ...d.data(), _docId: d.id }))),
-    err => { console.warn('Firestore snapshot error:', err); onError?.(err) }
-  )
+  let active = true
+  let timer = null
+
+  const poll = async () => {
+    if (!active) return
+    try {
+      const users = await api.users.list()
+      if (active) {
+        callback(users.map(u => ({ ...u, _docId: u.uid })))
+      }
+    } catch (err) {
+      console.warn('User poll error:', err)
+      onError?.(err)
+    }
+    if (active) {
+      timer = setTimeout(poll, 5000) // poll every 5 seconds
+    }
+  }
+
+  poll() // initial fetch
+  return () => { active = false; clearTimeout(timer) }
 }
 
-// ── Admin: update any fields on a user record ─────────────────────────────────
+// ── Admin ─────────────────────────────────────────────────────────────────────
 export async function adminUpdateUser(uid, fields) {
-  await updateDoc(doc(db, COLLECTION, uid), {
-    ...fields,
-    adminUpdatedAt: serverTimestamp(),
-  })
+  try {
+    await api.users.update(uid, fields)
+  } catch (e) {
+    console.error('Admin update failed:', e)
+  }
 }
 
-// ── Admin: delete a user record ───────────────────────────────────────────────
 export async function adminDeleteUser(uid) {
-  await deleteDoc(doc(db, COLLECTION, uid))
+  try {
+    await api.users.remove(uid)
+  } catch (e) {
+    console.error('Admin delete failed:', e)
+  }
 }
 
-// ── Compress image with Canvas, save data URL directly to Firestore ──────────
-// Avoids Firebase Storage entirely — no Storage rules or setup needed.
+// ── Photo ─────────────────────────────────────────────────────────────────────
 function compressImage(file, maxPx = 300, quality = 0.82) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('Image load timed out')), 15000)
-
     const reader = new FileReader()
     reader.onerror = (err) => { clearTimeout(timer); reject(err) }
     reader.onload = (e) => {
@@ -137,10 +155,12 @@ function compressImage(file, maxPx = 300, quality = 0.82) {
 }
 
 export async function uploadProfilePhoto(file) {
-  const uid = getUserId()
   const dataUrl = await compressImage(file)
-  await setDoc(doc(db, COLLECTION, uid), { photoURL: dataUrl, updatedAt: serverTimestamp() }, { merge: true })
-  // Merge photoURL into serendipity_user only if a real profile already exists there
+  try {
+    await api.users.updateMe({ photo_url: dataUrl })
+  } catch (e) {
+    console.error('Photo upload failed:', e)
+  }
   try {
     const { loadUser, saveUser } = await import('./userStorage')
     const existing = loadUser()
@@ -157,16 +177,19 @@ export async function uploadProfilePhoto(file) {
 }
 
 export async function fetchOwnPhotoURL() {
-  const uid = getUserId()
-  if (!uid) return null
-  const snap = await getDoc(doc(db, COLLECTION, uid))
-  return snap.exists() ? (snap.data().photoURL || null) : null
+  try {
+    const me = await api.users.getMe()
+    return me?.photo_url || null
+  } catch {
+    return null
+  }
 }
 
-// ── Admin: assign sequential check-in number ─────────────────────────────────
+// ── Check-in number ───────────────────────────────────────────────────────────
 export async function assignCheckInNumber(uid, number) {
-  await updateDoc(doc(db, COLLECTION, uid), {
-    checkInNumber: number,
-    adminUpdatedAt: serverTimestamp(),
-  })
+  try {
+    await api.users.update(uid, { check_in_number: number })
+  } catch (e) {
+    console.error('Assign check-in number failed:', e)
+  }
 }

@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
-import { isSignInWithEmailLink, signInWithEmailLink, getRedirectResult } from 'firebase/auth'
-import { getDoc, doc } from 'firebase/firestore'
-import { auth, db } from './firebase'
 import { AuthProvider, useAuth } from './AuthContext'
 import { subscribeToNotifications, acceptNotification, rejectNotification } from './firestoreNotifications'
 import { useLang } from './LangContext'
+import api from './api'
 import EntryPage from './pages/EntryPage'
 import IntroPage from './pages/IntroPage'
 import AuthPage from './pages/AuthPage'
@@ -282,54 +280,18 @@ function RequireAuth({ children }) {
   return children
 }
 
-// ── Email link completion + session restore ───────────────────────────────────
+// ── Session restore — redirect authenticated users from entry page ─────────
 function SessionRestorer() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, loading } = useAuth()
 
-  // Handle any pending Google redirect result (safety net for redirect flows)
-  useEffect(() => {
-    getRedirectResult(auth).then(async result => {
-      if (!result?.user) return
-      const snap = await getDoc(doc(db, 'users', result.user.uid))
-      if (snap.exists() && snap.data().onboardingStatus === 'completed') {
-        navigate('/directory', { replace: true })
-      } else {
-        navigate('/onboarding', { replace: true })
-      }
-    }).catch(() => {})
-  }, [])
-
-  // Complete email magic link sign-in (runs on every page load)
-  useEffect(() => {
-    if (!isSignInWithEmailLink(auth, window.location.href)) return
-    const email = localStorage.getItem('serendipity_email_for_link')
-    const address = email ?? window.prompt('Please confirm your email to sign in:')
-    if (!address) return
-
-    signInWithEmailLink(auth, address, window.location.href)
-      .then(async result => {
-        localStorage.removeItem('serendipity_email_for_link')
-        window.history.replaceState({}, document.title, window.location.pathname)
-        const snap = await getDoc(doc(db, 'users', result.user.uid))
-        if (snap.exists() && snap.data().onboardingStatus === 'completed') {
-          navigate('/directory', { replace: true })
-        } else {
-          navigate('/onboarding', { replace: true })
-        }
-      })
-      .catch(() => navigate('/auth', { replace: true }))
-  }, [])
-
   // Route already-authenticated users away from the entry page only.
-  // /intro is intentionally excluded — users should be able to read it
-  // and press the button themselves before proceeding to /auth.
   useEffect(() => {
     if (loading || location.pathname !== '/') return
     if (!user) return
-    getDoc(doc(db, 'users', user.uid)).then(snap => {
-      if (snap.exists() && snap.data().onboardingStatus === 'completed') {
+    api.users.getMe().then(me => {
+      if (me.onboarding_status === 'completed') {
         navigate('/directory', { replace: true })
       } else {
         navigate('/onboarding', { replace: true })

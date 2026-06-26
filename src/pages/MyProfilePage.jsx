@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { signOut } from 'firebase/auth'
-import { auth } from '../firebase'
+import { useAuth } from '../AuthContext'
 import { useLang } from '../LangContext'
 import { myProfile } from '../data'
 import { loadUser, saveUser } from '../userStorage'
@@ -78,8 +77,10 @@ export default function MyProfilePage() {
     setTimeout(() => setCopied(null), 2000)
   }
 
-  const handleSignOut = async () => {
-    await signOut(auth)
+  const { signOut } = useAuth()
+
+  const handleSignOut = () => {
+    signOut()
     localStorage.removeItem('serendipity_user')
     localStorage.removeItem('serendipity_profile')
     navigate('/', { replace: true })

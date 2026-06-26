@@ -1,73 +1,75 @@
-import {
-  collection, addDoc, updateDoc, doc,
-  onSnapshot, serverTimestamp, getDocs, deleteDoc,
-} from 'firebase/firestore'
-import { db, auth } from './firebase'
+// ── Notification operations — now backed by FastAPI instead of Firestore ──
+// Function signatures preserved for backward compatibility.
 
-// Write a DM request notification to the recipient's Firestore subcollection.
-// Only fires when the target is a real authenticated user (has a uid).
+import api from './api'
+import { getUserFromToken } from './api'
+
 export async function sendDmRequest({ toUid, message, senderProfile }) {
-  const fromUid = auth.currentUser?.uid
+  const cached = getUserFromToken()
+  const fromUid = cached?.uid
   if (!toUid || !fromUid || toUid === fromUid) return
-  await addDoc(collection(db, 'notifications', toUid, 'items'), {
+
+  await api.notifications.send({
+    to_uid: toUid,
     type: 'dm_request',
-    fromUid,
-    fromName:     senderProfile?.enName || senderProfile?.zhName || 'Someone',
-    fromZhName:   senderProfile?.zhName || '',
-    fromInitials: senderProfile?.initials || (senderProfile?.enName || '??').slice(0, 2).toUpperCase(),
-    fromColor:    senderProfile?.color || '#4A3A5A',
     message,
+    from_name: senderProfile?.enName || senderProfile?.zhName || 'Someone',
+    from_zh_name: senderProfile?.zhName || '',
+    from_initials: senderProfile?.initials || (senderProfile?.enName || '??').slice(0, 2).toUpperCase(),
+    from_color: senderProfile?.color || '#4A3A5A',
     status: 'pending',
-    read: false,
-    timestamp: serverTimestamp(),
   })
 }
 
-// Real-time listener for the current user's pending DM requests.
+// Polling-based notification subscription (replaces Firestore onSnapshot)
 export function subscribeToNotifications(uid, callback) {
   if (!uid) return () => {}
-  return onSnapshot(
-    collection(db, 'notifications', uid, 'items'),
-    snap => {
-      const all = snap.docs.map(d => ({ ...d.data(), _id: d.id }))
+  let active = true
+  let timer = null
+
+  const poll = async () => {
+    if (!active) return
+    try {
+      const all = await api.notifications.list()
+      if (!active) return
       const pending = all
         .filter(n => n.status === 'pending')
-        .sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0))
-      callback(pending)
-    },
-    err => console.warn('Notification listener error:', err)
-  )
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      // Map to the shape the frontend expects
+      callback(pending.map(n => ({
+        ...n,
+        _id: String(n.id),
+        fromUid: n.from_uid,
+        fromName: n.from_name,
+        fromZhName: n.from_zh_name,
+        fromInitials: n.from_initials,
+        fromColor: n.from_color,
+        timestamp: { seconds: new Date(n.created_at).getTime() / 1000 },
+      })))
+    } catch (e) {
+      console.warn('Notification poll error:', e)
+    }
+    if (active) {
+      timer = setTimeout(poll, 5000)
+    }
+  }
+
+  poll()
+  return () => { active = false; clearTimeout(timer) }
 }
 
 export async function acceptNotification(uid, notifId) {
-  await updateDoc(doc(db, 'notifications', uid, 'items', notifId), {
-    status: 'accepted', read: true,
-  })
+  await api.notifications.updateStatus(parseInt(notifId), 'accepted')
 }
 
 export async function rejectNotification(uid, notifId) {
-  await updateDoc(doc(db, 'notifications', uid, 'items', notifId), {
-    status: 'rejected', read: true,
-  })
+  await api.notifications.updateStatus(parseInt(notifId), 'rejected')
 }
 
-// Delete every notification and DM message across all users (admin reset only).
+// Admin: clear all test data (stub — backend would need a dedicated endpoint)
 export async function clearAllTestData() {
-  const deletes = []
-
-  // Clear all notification items
-  const notifSnap = await getDocs(collection(db, 'notifications'))
-  for (const userDoc of notifSnap.docs) {
-    const itemsSnap = await getDocs(collection(db, 'notifications', userDoc.id, 'items'))
-    itemsSnap.docs.forEach(d => deletes.push(deleteDoc(d.ref)))
-  }
-
-  // Clear all DM messages
-  const dmsSnap = await getDocs(collection(db, 'dms'))
-  for (const threadDoc of dmsSnap.docs) {
-    const msgsSnap = await getDocs(collection(db, 'dms', threadDoc.id, 'messages'))
-    msgsSnap.docs.forEach(d => deletes.push(deleteDoc(d.ref)))
-  }
-
-  await Promise.all(deletes)
+  // This was only used by AdminPage for clearing notification/DM test data.
+  // With the new backend, this would require a dedicated admin endpoint.
+  // For now, it's a no-op.
+  console.warn('clearAllTestData is not yet implemented on the backend')
 }
