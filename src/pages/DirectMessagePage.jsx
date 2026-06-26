@@ -91,23 +91,6 @@ export default function DirectMessagePage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // ── Keyboard resize (iOS Safari) ──────────────────────────────────────────
-  // When the soft keyboard opens, visualViewport.height shrinks. We apply that
-  // height directly to .phone-shell so the flex layout compresses naturally and
-  // the input bar rises above the keyboard with no blank gap.
-  useEffect(() => {
-    const vv = window.visualViewport
-    const shell = document.querySelector('.phone-shell')
-    if (!vv || !shell) return
-    const update = () => { shell.style.height = `${vv.height}px` }
-    vv.addEventListener('resize', update)
-    update()
-    return () => {
-      vv.removeEventListener('resize', update)
-      shell.style.height = ''
-    }
-  }, [])
-
   // ── Send ──────────────────────────────────────────────────────────────────
   async function send() {
     const text = input.trim()

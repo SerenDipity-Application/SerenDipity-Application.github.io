@@ -1,4 +1,4 @@
-.ai-page { min-height: 100%; background: var(--ivory); display: flex; flex-direction: column; }
+.ai-page { height: 100%; background: var(--ivory); display: flex; flex-direction: column; }
 .ai-header {
   background: linear-gradient(160deg, #0D1B2A, #1A2E42);
   display: flex; align-items: center; gap: 10px;
