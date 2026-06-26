@@ -80,6 +80,14 @@ def user_to_response(u: User) -> UserResponse:
 
 
 # ── Routes ───────────────────────────────────────
+@router.get("", response_model=list[UserResponse])
+async def list_users_root(user: User = Depends(require_auth), db: AsyncSession = Depends(get_db)):
+    """Handle /users (no trailing slash) — same as /users/"""
+    result = await db.execute(select(User))
+    users = result.scalars().all()
+    return [user_to_response(u) for u in users]
+
+
 @router.get("/me", response_model=UserResponse)
 async def get_me(user: User = Depends(require_auth)):
     return user_to_response(user)

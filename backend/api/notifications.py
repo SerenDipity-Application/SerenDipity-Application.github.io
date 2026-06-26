@@ -48,6 +48,24 @@ async def send_notification(
     return {"id": notif.id, "message": "sent"}
 
 
+@router.get("", response_model=list[NotificationResponse])
+async def list_notifications_root(user: User = Depends(require_auth), db: AsyncSession = Depends(get_db)):
+    """Handle /notifications (no trailing slash)"""
+    result = await db.execute(
+        select(Notification)
+        .where(Notification.to_uid == user.uid)
+        .order_by(desc(Notification.created_at))
+    )
+    notifs = result.scalars().all()
+    return [NotificationResponse(
+        id=n.id, to_uid=n.to_uid, from_uid=n.from_uid,
+        type=n.type, status=n.status, message=n.message,
+        from_name=n.from_name or "", from_zh_name=n.from_zh_name or "",
+        from_initials=n.from_initials or "", from_color=n.from_color or "#4A3A5A",
+        read=n.read or False, created_at=str(n.created_at),
+    ) for n in notifs]
+
+
 @router.get("/", response_model=list[NotificationResponse])
 async def list_notifications(
     user: User = Depends(require_auth),
